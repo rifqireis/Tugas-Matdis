@@ -35,7 +35,9 @@
     };
   });
   const idx = {}; nodes.forEach((n,i) => idx[n.id] = i);
-  const edges = EDGES.map(e => ({ source: idx[e.source], target: idx[e.target] }));
+  const edges = EDGES
+    .filter(e => idx[e.source] !== undefined && idx[e.target] !== undefined)
+    .map(e => ({ source: idx[e.source], target: idx[e.target] }));
 
   // ----- Build adjacency for neighbor lookup -----
   const adj = {}; nodes.forEach(n => adj[n.id] = new Set());
@@ -250,7 +252,7 @@
         <div class="selected-row"><span class="l">Degree</span><span class="v">${deg}</span></div>
         <div class="selected-row"><span class="l">PageRank</span><span class="v">${(pr*100).toFixed(2)}%</span></div>
         <div class="selected-row"><span class="l">Betweenness</span><span class="v">${(bw*100).toFixed(2)}%</span></div>
-        <div class="selected-row"><span class="l">Followers</span><span class="v">${n.followers}M</span></div>
+        <div class="selected-row"><span class="l">Followers</span><span class="v">${n.followers >= 1e6 ? (n.followers/1e6).toFixed(1)+'M' : n.followers >= 1e3 ? (n.followers/1e3).toFixed(1)+'K' : n.followers}</span></div>
         <button class="btn-ghost" id="clear-sel" style="margin-top:14px; width:100%; border: 1px solid var(--border);">Batal pilih</button>
       </div>`;
     document.getElementById('clear-sel').addEventListener('click', clearSelection);
