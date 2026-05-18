@@ -47,7 +47,6 @@
       <a href="graf.html">Graf</a>
       <a href="ranking.html" class="active">Ranking</a>
       <a href="algoritma.html">Algoritma</a>
-      <a href="simulasi.html">Simulasi</a>
     </div>
     <div class="nav-badge">Kelompok 2 · 2026</div>
   </div>
@@ -64,8 +63,8 @@
       </div>
       <div class="s4">
         <p class="lede-sm">
-          PageRank menangkap kualitas pengaruh. Degree menangkap volume kolaborasi.
-          Betweenness menangkap peran sebagai jembatan. Beda algoritma, beda jawaban.
+          PageRank menangkap kualitas pengaruh berdasarkan struktur jaringan. Degree menangkap
+          volume kolaborasi langsung. Beda algoritma, beda sudut pandang.
         </p>
       </div>
     </div>
@@ -78,9 +77,7 @@
     <div class="filter-row">
       <div class="rank-tabs">
         <button data-tab="pagerank" class="active">PageRank</button>
-        <button data-tab="pagerank_w">Weighted PR</button>
         <button data-tab="degree">Degree</button>
-        <button data-tab="betweenness">Betweenness</button>
       </div>
       <div style="margin-left:auto;" class="row">
         <input id="search" class="input-field" type="text" placeholder="Cari node..." style="width: 180px;">
@@ -117,7 +114,7 @@
         <h2 class="h2">Apakah peringkatnya konsisten?</h2>
         <p class="lede-sm" style="margin-top: 18px;">
           Tidak selalu. Beberapa node punya banyak koneksi (Degree tinggi) tapi koneksinya ke akun kecil
-          (PageRank rendah). Yang menarik: node yang konsisten masuk top 10 di ketiga algoritma —
+          (PageRank rendah). Yang menarik: node yang konsisten masuk top 10 di kedua algoritma —
           mereka adalah <em>true influencer</em>.
         </p>
       </div>
@@ -127,7 +124,7 @@
           <div>
             <div class="eyebrow" style="margin-bottom: 12px;">Top 10 side-by-side</div>
             <table class="rank-table">
-              <thead><tr><th style="width:24px;">#</th><th>PageRank</th><th>Degree</th><th>Btw.</th></tr></thead>
+              <thead><tr><th style="width:24px;">#</th><th>PageRank</th><th>Degree</th></tr></thead>
               <tbody id="compare-tbody"></tbody>
             </table>
           </div>
@@ -135,8 +132,7 @@
             <div class="eyebrow" style="margin-bottom: 12px;">Konsisten di semua</div>
             <div id="overlap-list"></div>
             <p style="margin-top: 16px; color: var(--text2); font-size: 13.5px;">
-              Node-node ini bukan hanya populer di satu metrik — mereka berperan di volume,
-              kualitas, dan posisi sekaligus.
+              Node-node ini konsisten di PageRank dan Degree — berperan di volume dan kualitas pengaruh sekaligus.
             </p>
           </div>
         </div>
@@ -149,7 +145,7 @@
 <footer>
   <div class="container">
     <div>Kelompok 2 — Teori Graf · IF2151 · 2026</div>
-    <div class="mono">PageRank · Degree · Betweenness</div>
+    <div class="mono">PageRank · Degree Centrality</div>
   </div>
 </footer>
 
@@ -160,15 +156,11 @@
 
   const METRIC_LABEL = {
     pagerank: 'PageRank',
-    pagerank_w: 'Weighted PageRank',
     degree: 'Degree Centrality',
-    betweenness: 'Betweenness',
   };
   const METRIC_EXPLAIN = {
     pagerank: '<strong>PageRank</strong> — Skor pengaruh berlapis. Node mendapat skor tinggi jika terhubung ke node-node yang juga berpengaruh, bukan hanya banyak koneksi. Damping factor 0.85.',
-    pagerank_w: '<strong>Weighted PageRank</strong> — PageRank yang mempertimbangkan dua faktor: (1) <em>Log-normalized followers</em> sebagai bobot edge — link ke kreator besar bernilai lebih tinggi, tapi tidak ekstrem; (2) <em>Community dampening</em> — koneksi antar kreator lokal Bengkulu diperkuat (×1.5), koneksi internasional di-dampen (×0.6) agar tidak mendominasi analisis komunitas Indonesia.',
     degree: '<strong>Degree Centrality</strong> — Jumlah koneksi langsung dibagi (N−1). Mengukur volume kolaborasi: siapa yang paling banyak bekerja sama.',
-    betweenness: '<strong>Betweenness Centrality</strong> — Seberapa sering sebuah node berada di shortest path antara pasangan node lain. Tinggi berarti node ini adalah jembatan kritis.',
   };
 
   const state = { tab: 'pagerank', search: '', com: '' };
@@ -248,7 +240,6 @@
   // ---- Comparison ----
   const top10pr = topBy(SCORES.pagerank, 10);
   const top10dg = topBy(SCORES.degree, 10);
-  const top10bw = topBy(SCORES.betweenness, 10);
 
   document.getElementById('compare-tbody').innerHTML = Array.from({length: 10}, (_, i) => {
     const cell = (n) => {
@@ -262,14 +253,13 @@
         <td class="rank-num">${String(i+1).padStart(2,'0')}</td>
         <td>${cell(top10pr[i])}</td>
         <td>${cell(top10dg[i])}</td>
-        <td>${cell(top10bw[i])}</td>
       </tr>`;
   }).join('');
 
   // ---- Overlap ----
   const ids10 = (arr) => new Set(arr.map(x => x.id));
-  const a = ids10(top10pr), b = ids10(top10dg), c = ids10(top10bw);
-  const overlap = [...a].filter(x => b.has(x) && c.has(x))
+  const a = ids10(top10pr), b = ids10(top10dg);
+  const overlap = [...a].filter(x => b.has(x))
     .map(id => NODES.find(n => n.id === id))
     .map(n => ({ ...n, pr: SCORES.pagerank[n.id] }))
     .sort((x,y) => y.pr - x.pr);

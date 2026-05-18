@@ -165,101 +165,10 @@ function pageRank(d = 0.85, iters = 60) {
   return pr;
 }
 
-/**
- * Weighted PageRank berbasis zona komunitas (tanpa followers).
- * Bobot edge hanya dari community factor — mencerminkan kekuatan
- * pengaruh antar zona yang diamati (nasional, lokal).
- *
- * bobot_edge(A→B) = communityFactor(A.com, B.com)
- *
- * Community factor:
- *   - lokal → lokal      : ×1.5  (perkuat ikatan dalam komunitas lokal)
- *   - * → lokal          : ×1.3  (koneksi masuk ke lokal sedikit dinaikkan)
- *   - lokal → nasional   : ×0.9  (lokal ke nasional sedikit diredam)
- *   - selainnya          : ×1.0  (netral)
- */
-function weightedPageRank(d = 0.85, iters = 80) {
-  const nodeById = {};
-  NODES.forEach(n => nodeById[n.id] = n);
-
-  function communityFactor(sourceCom, targetCom) {
-    if (sourceCom === 'lokal' && targetCom === 'lokal') return 1.5;
-    if (targetCom === 'lokal') return 1.3;
-    if (sourceCom === 'lokal' && targetCom === 'nasional') return 0.9;
-    return 1.0;
-  }
-
-  const adj = {};
-  NODES.forEach(n => adj[n.id] = []);
-
-  EDGES.forEach(e => {
-    const src = e.source, tgt = e.target;
-    if (!nodeById[src] || !nodeById[tgt]) return;
-    const w = communityFactor(nodeById[src].com, nodeById[tgt].com);
-    adj[src].push({ target: tgt, weight: w });
-  });
-
-  NODES.forEach(n => {
-    const links = adj[n.id];
-    const total = links.reduce((s, l) => s + l.weight, 0);
-    if (total > 0) links.forEach(l => l.weight /= total);
-  });
-
-  const N = NODES.length;
-  let pr = {};
-  NODES.forEach(n => pr[n.id] = 1 / N);
-
-  for (let k = 0; k < iters; k++) {
-    const next = {};
-    NODES.forEach(n => next[n.id] = (1 - d) / N);
-    NODES.forEach(n => {
-      adj[n.id].forEach(({ target, weight }) => {
-        next[target] += d * pr[n.id] * weight;
-      });
-    });
-    pr = next;
-  }
-
-  return pr;
-}
-
-function betweennessCentrality() {
-  // Brandes' algorithm, directed
-  const adj = adjacency();
-  const bc = {};
-  NODES.forEach(n => bc[n.id] = 0);
-  NODES.forEach(s => {
-    const S = [];
-    const P = {}; NODES.forEach(n => P[n.id] = []);
-    const sigma = {}; NODES.forEach(n => sigma[n.id] = 0); sigma[s.id] = 1;
-    const dist = {}; NODES.forEach(n => dist[n.id] = -1); dist[s.id] = 0;
-    const Q = [s.id];
-    while (Q.length) {
-      const v = Q.shift(); S.push(v);
-      adj[v].forEach(w => {
-        if (dist[w] < 0) { dist[w] = dist[v] + 1; Q.push(w); }
-        if (dist[w] === dist[v] + 1) { sigma[w] += sigma[v]; P[w].push(v); }
-      });
-    }
-    const delta = {}; NODES.forEach(n => delta[n.id] = 0);
-    while (S.length) {
-      const w = S.pop();
-      P[w].forEach(v => { delta[v] += (sigma[v]/sigma[w]) * (1 + delta[w]); });
-      if (w !== s.id) bc[w] += delta[w];
-    }
-  });
-  // Normalize (directed: divide by (N-1)(N-2))
-  const norm = (NODES.length - 1) * (NODES.length - 2);
-  NODES.forEach(n => bc[n.id] = bc[n.id] / norm);
-  return bc;
-}
-
 // Cache results
 const SCORES = {
-  degree:      degreeCentrality(),
-  pagerank:    pageRank(),
-  pagerank_w:  weightedPageRank(),
-  betweenness: betweennessCentrality(),
+  degree:   degreeCentrality(),
+  pagerank: pageRank(),
 };
 
 // Helper: top N by score

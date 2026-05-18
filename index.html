@@ -55,7 +55,6 @@
       <a href="graf.html">Graf</a>
       <a href="ranking.html">Ranking</a>
       <a href="algoritma.html">Algoritma</a>
-      <a href="simulasi.html">Simulasi</a>
     </div>
     <div class="nav-badge">Kelompok 2 · 2026</div>
   </div>
@@ -82,7 +81,7 @@
       <div class="s4">
         <p class="lede-sm">
           Studi kasus 28 kreator konten Indonesia di Instagram — menggabungkan tokoh nasional
-          dengan kreator lokal Bengkulu. Tiga algoritma graf, satu kesimpulan tentang
+          dengan kreator lokal Bengkulu. Dua algoritma graf + deteksi komunitas, satu kesimpulan tentang
           siapa yang benar-benar penting di jaringan.
         </p>
         <div class="row" style="gap: 10px; margin-top: 22px;">
@@ -138,12 +137,12 @@
         <p class="lede" style="margin: 0 0 18px;">
           Akun dengan satu juta follower belum tentu lebih berpengaruh dari kreator dengan
           50 ribu follower yang punya posisi strategis di jaringan. Untuk membuktikannya,
-          kami modelkan kolaborasi 58 kreator sebagai directed graph (berarah).
+          kami modelkan kolaborasi 28 kreator sebagai directed graph (berarah).
         </p>
         <p style="color: var(--text2); margin: 0 0 18px;">
           Setiap simpul mewakili satu akun Instagram terverifikasi. Setiap panah mewakili
           kolaborasi publik — joint post, tag, atau mention dalam empat bulan terakhir, dengan
-          arah menunjukkan siapa yang mengajak siapa. Dari struktur ini, tiga algoritma menjawab
+          arah menunjukkan siapa yang mengajak siapa. Dari struktur ini, dua algoritma menjawab
           pertanyaan yang berbeda.
         </p>
         <blockquote class="pullquote">
@@ -163,7 +162,7 @@
     <div class="grid-12" style="margin-bottom: 36px;">
       <div class="s4">
         <div class="eyebrow" style="margin-bottom: 14px;">02 — Metode</div>
-        <h2 class="h2">Tiga algoritma, tiga sudut pandang.</h2>
+        <h2 class="h2">Tiga metode, tiga sudut pandang.</h2>
       </div>
       <div class="s5 start-6">
         <p class="lede-sm">
@@ -211,15 +210,15 @@
         <div class="row" style="margin-bottom: 16px; gap: 8px;">
           <span class="mono" style="color: var(--text3); font-size: 12px;">03</span>
           <span style="width: 16px; height: 1px; background: var(--rule);"></span>
-          <span class="mono" style="color: var(--text3); font-size: 11px;">O(k · (V+E))</span>
+          <span class="mono" style="color: var(--text3); font-size: 11px;">O(V + E)</span>
         </div>
-        <h3>Weighted PageRank</h3>
+        <h3>Community Detection</h3>
         <p style="color: var(--text2); margin: 0 0 16px; font-size: 14.5px;">
-          PageRank dengan bobot zona komunitas — koneksi dalam komunitas lokal Bengkulu diperkuat ×1.5,
-          sehingga pengaruh intra-komunitas tidak tertutup oleh kreator nasional.
+          Membagi node ke dalam klaster berdasarkan zona geografis. Evaluasi dengan
+          modularitas Q = 0.71 — menunjukkan struktur komunitas yang sangat jelas.
         </p>
         <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3); padding-top: 14px; border-top: 1px solid var(--border);">
-          Pertanyaan: siapa yang paling berpengaruh dalam konteks komunitasnya?
+          Pertanyaan: siapa satu kelompok dengan siapa?
         </div>
       </article>
     </div>
@@ -234,9 +233,9 @@
     <div class="grid-12">
       <div class="s4">
         <div class="eyebrow" style="margin-bottom: 14px;">03 — Hasil klasterisasi</div>
-        <h2 class="h2">Tiga komunitas, satu jembatan.</h2>
+        <h2 class="h2">Dua komunitas, satu jembatan.</h2>
         <p class="lede-sm" style="margin-top: 18px;">
-          Pembagian komunitas menghasilkan tiga klaster dengan modularitas <span class="mono">Q = 0.71</span>.
+          Pembagian komunitas menghasilkan dua klaster dengan modularitas <span class="mono">Q = 0.71</span>.
           Nilai di atas 0.7 menandakan struktur klaster yang sangat jelas — bukan sekadar pengelompokan
           acak.
         </p>
@@ -300,8 +299,8 @@
       </div>
       <div class="s4 start-9">
         <p style="color: var(--text2); margin: 0; font-size: 14.5px;">
-          Node dengan follower terkecil di klaster lokal justru menempati #1 di tiga algoritma sekaligus —
-          PageRank, Degree, dan Betweenness. Posisi struktural sebagai hub yang menerima aliran rank dari
+          Node dengan follower terkecil di klaster lokal justru menempati #1 di kedua algoritma —
+          PageRank dan Degree Centrality. Posisi struktural sebagai hub yang menerima aliran rank dari
           11+ kreator lokal jauh lebih menentukan dari jumlah follower.
         </p>
       </div>
@@ -316,9 +315,9 @@
       </div>
       <div class="s4 start-9">
         <p style="color: var(--text2); margin: 0; font-size: 14.5px;">
-          Betweenness centrality 27.3% — satu-satunya jalur yang menghubungkan kreator nasional
-          dengan klaster lokal Bengkulu. Tanpa node ini, dua komunitas nyaris tidak saling terhubung
-          dalam directed graph.
+          Satu-satunya jalur yang menghubungkan kreator nasional dengan klaster lokal Bengkulu
+          adalah melalui <span class="mono">@mariorioio__</span> → <span class="mono">@willie27_</span>.
+          Tanpa koneksi ini, dua komunitas nyaris tidak saling terhubung dalam directed graph.
         </p>
       </div>
     </div>
@@ -348,7 +347,7 @@
       </div>
       <div class="s4 start-9">
         <p style="color: var(--text2); margin: 0; font-size: 14.5px;">
-          Tiga komunitas ditetapkan secara manual berdasarkan zona geografis dan tipe kreator.
+          Dua komunitas ditetapkan secara manual berdasarkan zona geografis dan tipe kreator.
           Nilai modularitas Q = 0.71 mengonfirmasi bahwa pembagian ini mencerminkan
           struktur jaringan yang nyata — bukan sekadar pengelompokan arbitrer.
         </p>
@@ -359,12 +358,77 @@
   </section>
 
   <!-- ============================================================
+       7 MANDATORY QUESTIONS
+       ============================================================ -->
+  <section class="container section">
+    <div class="grid-12" style="margin-bottom: 36px;">
+      <div class="s4">
+        <div class="eyebrow" style="margin-bottom: 14px;">05 — Pertanyaan Kunci</div>
+        <h2 class="h2">Tujuh pertanyaan wajib, tujuh jawaban.</h2>
+        <p class="lede-sm" style="margin-top: 18px;">
+          Jawaban eksplisit untuk tujuh pertanyaan utama tugas. Setiap jawaban dapat
+          dilacak langsung ke data dan algoritma yang digunakan.
+        </p>
+      </div>
+      <div class="s7 start-6">
+        <div style="border-top: 1px solid var(--rule);">
+
+          <div class="finding-row grid-12">
+            <div class="s1"><div class="mono" style="font-size:13px; color:var(--accent); font-weight:600;">Q1</div></div>
+            <div class="s3 start-2"><p style="margin:0; font-weight:600; color:var(--text); font-size:14px;">Jenis Graf?</p></div>
+            <div class="s7 start-5"><p style="color:var(--text2);margin:0;font-size:14px;"><strong style="color:var(--text);">Directed Graph (Graf Berarah)</strong> — setiap edge memiliki arah, merepresentasikan siapa yang mengajak kolaborasi. Edge A→B ≠ B→A.</p></div>
+          </div>
+
+          <div class="finding-row grid-12">
+            <div class="s1"><div class="mono" style="font-size:13px; color:var(--text3); font-weight:600;">Q2</div></div>
+            <div class="s3 start-2"><p style="margin:0; font-weight:600; color:var(--text); font-size:14px;">Kardinalitas?</p></div>
+            <div class="s7 start-5"><p style="color:var(--text2);margin:0;font-size:14px;"><strong style="color:var(--text);">|V| = 28 node</strong> (14 nasional + 14 lokal), <strong style="color:var(--text);">|E| = 66 edge</strong> kolaborasi berarah.</p></div>
+          </div>
+
+          <div class="finding-row grid-12">
+            <div class="s1"><div class="mono" style="font-size:13px; color:var(--text3); font-weight:600;">Q3</div></div>
+            <div class="s3 start-2"><p style="margin:0; font-weight:600; color:var(--text); font-size:14px;">Graf Connected?</p></div>
+            <div class="s7 start-5"><p style="color:var(--text2);margin:0;font-size:14px;"><strong style="color:var(--text);">Weakly Connected</strong> — semua node dapat dicapai jika arah edge diabaikan. Dua komunitas dihubungkan oleh 1 cross-community edge.</p></div>
+          </div>
+
+          <div class="finding-row grid-12">
+            <div class="s1"><div class="mono" style="font-size:13px; color:var(--text3); font-weight:600;">Q4</div></div>
+            <div class="s3 start-2"><p style="margin:0; font-weight:600; color:var(--text); font-size:14px;">Terdapat Cycle?</p></div>
+            <div class="s7 start-5"><p style="color:var(--text2);margin:0;font-size:14px;"><strong style="color:var(--text);">Ya</strong> — beberapa pasangan kreator saling berkolaborasi (mutual), membentuk siklus panjang 2. Contoh: Willie ↔ Vilmei, Vilmei ↔ Fadil Jaidi.</p></div>
+          </div>
+
+          <div class="finding-row grid-12">
+            <div class="s1"><div class="mono" style="font-size:13px; color:var(--text3); font-weight:600;">Q5</div></div>
+            <div class="s3 start-2"><p style="margin:0; font-weight:600; color:var(--text); font-size:14px;">Algoritma Paling Optimal?</p></div>
+            <div class="s7 start-5"><p style="color:var(--text2);margin:0;font-size:14px;"><strong style="color:var(--text);">PageRank</strong> — menangkap pengaruh berlapis. Terhubung ke node berpengaruh lebih bernilai dari banyak koneksi ke node kecil. Degree hanya mengukur kuantitas.</p></div>
+          </div>
+
+          <div class="finding-row grid-12">
+            <div class="s1"><div class="mono" style="font-size:13px; color:var(--text3); font-weight:600;">Q6</div></div>
+            <div class="s3 start-2"><p style="margin:0; font-weight:600; color:var(--text); font-size:14px;">Skalabilitas?</p></div>
+            <div class="s7 start-5"><p style="color:var(--text2);margin:0;font-size:14px;"><span class="mono" style="background:var(--bg2);padding:2px 6px;border-radius:3px;font-size:12px;">Degree: O(V+E)</span> — satu iterasi, sangat efisien. <span class="mono" style="background:var(--bg2);padding:2px 6px;border-radius:3px;font-size:12px;">PageRank: O(k·(V+E))</span> — k iterasi hingga konvergen, tetap linier terhadap ukuran graf.</p></div>
+          </div>
+
+          <div class="finding-row grid-12">
+            <div class="s1"><div class="mono" style="font-size:13px; color:var(--text3); font-weight:600;">Q7</div></div>
+            <div class="s3 start-2"><p style="margin:0; font-weight:600; color:var(--text); font-size:14px;">Inovasi?</p></div>
+            <div class="s7 start-5"><p style="color:var(--text2);margin:0;font-size:14px;"><strong style="color:var(--text);">Prediksi kolaborasi</strong> — node dengan PageRank tinggi yang belum pernah berkolaborasi langsung adalah kandidat kolaborasi terkuat. Contoh: @mariorioio__ &amp; @jessnolimit (belum terhubung, namun satu hop lewat @willie27_).</p></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ============================================================
        EXPLORE LINK LIST
        ============================================================ -->
   <section class="container section">
     <div class="grid-12">
       <div class="s4">
-        <div class="eyebrow" style="margin-bottom: 14px;">05 — Jelajahi</div>
+        <div class="eyebrow" style="margin-bottom: 14px;">06 — Jelajahi</div>
         <h2 class="h2">Mulai dari mana?</h2>
       </div>
       <div class="s7 start-6 link-list">
@@ -380,7 +444,7 @@
           <span class="mono" style="color: var(--text3); width: 40px; font-size: 12px;">02</span>
           <span>
             <strong style="display:block; font-size: 17px;">Ranking Lengkap</strong>
-            <span style="color: var(--text2); font-size: 13.5px;">58 node, tiga algoritma side-by-side, dengan analisis overlap.</span>
+            <span style="color: var(--text2); font-size: 13.5px;">28 node, dua algoritma side-by-side, dengan analisis overlap.</span>
           </span>
           <span class="arrow">→</span>
         </a>
@@ -388,15 +452,7 @@
           <span class="mono" style="color: var(--text3); width: 40px; font-size: 12px;">03</span>
           <span>
             <strong style="display:block; font-size: 17px;">Metodologi</strong>
-            <span style="color: var(--text2); font-size: 13.5px;">Formula, pseudocode, dan referensi akademik untuk setiap algoritma.</span>
-          </span>
-          <span class="arrow">→</span>
-        </a>
-        <a href="simulasi.html">
-          <span class="mono" style="color: var(--text3); width: 40px; font-size: 12px;">04</span>
-          <span>
-            <strong style="display:block; font-size: 17px;">Sandbox</strong>
-            <span style="color: var(--text2); font-size: 13.5px;">Definisikan graf-mu sendiri, jalankan algoritma, eksperimen.</span>
+            <span style="color: var(--text2); font-size: 13.5px;">Formula, pseudocode, dan referensi akademik untuk setiap metode.</span>
           </span>
           <span class="arrow">→</span>
         </a>

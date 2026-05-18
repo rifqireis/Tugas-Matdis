@@ -363,7 +363,7 @@
   }
 
   function renderSelectedPane(n) {
-    const pr = SCORES.pagerank[n.id], dg = SCORES.degree[n.id], bw = SCORES.betweenness[n.id];
+    const pr = SCORES.pagerank[n.id];
     const com = COMMUNITIES[n.com];
     const outDeg = adj[n.id].size;
     const inD = inDeg[n.id];
@@ -378,7 +378,6 @@
         <div class="selected-row"><span class="l">In-degree</span><span class="v">${inD}</span></div>
         <div class="selected-row"><span class="l">Out-degree</span><span class="v">${outDeg}</span></div>
         <div class="selected-row"><span class="l">PageRank</span><span class="v">${(pr*100).toFixed(2)}%</span></div>
-        <div class="selected-row"><span class="l">Betweenness</span><span class="v">${(bw*100).toFixed(2)}%</span></div>
         <div class="selected-row"><span class="l">Followers</span><span class="v">${n.followers >= 1e6 ? (n.followers/1e6).toFixed(1)+'M' : n.followers >= 1e3 ? (n.followers/1e3).toFixed(1)+'K' : n.followers}</span></div>
         <button class="btn-ghost" id="clear-sel" style="margin-top:14px;width:100%;border:1px solid var(--border);">Batal pilih</button>
       </div>`;
@@ -391,7 +390,6 @@
   const sizeBtns = {
     pagerank: document.getElementById('size-pagerank'),
     degree: document.getElementById('size-degree'),
-    betweenness: document.getElementById('size-betweenness'),
   };
   Object.entries(sizeBtns).forEach(([k, btn]) => {
     btn.addEventListener('click', () => {
