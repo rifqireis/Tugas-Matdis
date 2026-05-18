@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="scale.js"></script>
+<title>Simulasi — InfluenceGraph</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .sim-shell {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 860px) {
+    .sim-shell { grid-template-columns: 1fr; }
+  }
+
+  .sim-canvas {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    min-height: 440px;
+    position: relative;
+  }
+  #sim-svg {
+    width: 100%; height: 440px;
+    display: block;
+    background: var(--bg2);
+  }
+
+  .preset-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 0; margin-bottom: 18px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .preset-grid button {
+    padding: 12px 14px; font-size: 12.5px; font-weight: 500;
+    background: var(--bg2); color: var(--text);
+    border: none; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    cursor: pointer; text-align: left;
+    transition: background .15s, color .15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .preset-grid button:nth-child(2n) { border-right: none; }
+  .preset-grid button:nth-last-child(-n+2) { border-bottom: none; }
+  .preset-grid button:hover { background: var(--bg3); color: var(--accent); }
+  .preset-grid button .mono { display: block; font-size: 10.5px; color: var(--text3); margin-top: 4px; font-weight: 400; }
+
+  .result-table { width: 100%; font-size: 13px; border-collapse: collapse; }
+  .result-table th {
+    padding: 10px 12px; font-size: 10.5px; font-weight: 500;
+    color: var(--text3); font-family: 'IBM Plex Mono', monospace;
+    border-bottom: 1px solid var(--rule);
+    text-transform: uppercase; letter-spacing: 1px;
+    text-align: left;
+  }
+  .result-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+  }
+  .result-table td.mono { font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+  .result-table tr.top td { color: var(--text); font-weight: 600; }
+  .result-table tr:hover td { background: var(--bg3); }
+  .result-table tbody tr:last-child td { border-bottom: none; }
+
+  .sim-node circle { stroke: var(--bg); stroke-width: 1.5; cursor: pointer; transition: r .25s, fill .25s; }
+  .sim-edge { stroke: #b8b09e; stroke-width: 1.5; }
+
+  .toolbar-fab {
+    position: absolute; top: 12px; right: 12px;
+    background: var(--bg2);
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 6px 12px; font-size: 11px; color: var(--text2);
+    font-family: 'IBM Plex Mono', monospace;
+    display: flex; gap: 14px;
+  }
+  .toolbar-fab strong { color: var(--text); font-weight: 500; }
+
+  .algo-pick {
+    display: flex; gap: 0;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    margin-bottom: 14px; padding: 3px;
+  }
+  .algo-pick button {
+    flex: 1; padding: 7px 10px; border-radius: var(--radius-xs);
+    background: transparent; border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 12.5px; font-weight: 500;
+    color: var(--text2); transition: background .15s, color .15s;
+  }
+  .algo-pick button:hover { color: var(--text); }
+  .algo-pick button.active { background: var(--text); color: var(--bg); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="nav-logo-icon">⬡</span>
+      <span>InfluenceGraph</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Beranda</a>
+      <a href="graf.html">Graf</a>
+      <a href="ranking.html">Ranking</a>
+      <a href="algoritma.html">Algoritma</a>
+      <a href="simulasi.html" class="active">Simulasi</a>
+    </div>
+    <div class="nav-badge">Kelompok 2 · 2026</div>
+  </div>
+</nav>
+
+<main class="page">
+
+  <!-- Masthead -->
+  <section class="container" style="padding-top: 64px; padding-bottom: 40px;">
+    <div class="grid-12" style="align-items: end;">
+      <div class="s8">
+        <div class="eyebrow" style="margin-bottom: 14px;">05 — Sandbox</div>
+        <h1 class="h1">Coba algoritma di graf-mu sendiri.</h1>
+      </div>
+      <div class="s4">
+        <p class="lede-sm">
+          Definisikan node dan edge, pilih algoritma, lihat hasil langsung. Cocok untuk
+          eksperimen "bagaimana kalau X kolaborasi dengan Y?" atau memahami algoritma di skala kecil.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="container" style="padding-top: 32px;">
+    <div class="sim-shell">
+
+      <!-- LEFT: input -->
+      <div>
+        <div class="eyebrow" style="margin-bottom: 12px;">Preset cepat</div>
+        <div class="preset-grid">
+          <button data-preset="star">Star (1 hub)<span class="mono">5 nodes · 4 edges</span></button>
+          <button data-preset="cycle">Cycle<span class="mono">6 nodes · 6 edges</span></button>
+          <button data-preset="bridge">Two Communities<span class="mono">8 nodes · 1 bridge</span></button>
+          <button data-preset="willie">Mini Willie<span class="mono">7 nodes · 9 edges</span></button>
+        </div>
+
+        <div class="eyebrow" style="margin-bottom: 12px;">Input manual</div>
+
+        <label class="input-label">Nodes</label>
+        <textarea id="nodes-input" class="input-field" placeholder="A, B, C, D">A, B, C, D, E</textarea>
+        <p style="font-size: 11px; color: var(--text3); margin: 4px 0 14px; font-family: 'IBM Plex Mono', monospace;">pisah dengan koma</p>
+
+        <label class="input-label">Edges</label>
+        <textarea id="edges-input" class="input-field" style="min-height: 110px;" placeholder="A-B&#10;A-C">A-B
+A-C
+A-D
+A-E
+B-C</textarea>
+        <p style="font-size: 11px; color: var(--text3); margin: 4px 0 18px; font-family: 'IBM Plex Mono', monospace;">satu per baris, format A-B</p>
+
+        <div class="row" style="gap: 8px;">
+          <button id="run-btn" class="btn-primary" style="flex: 1; justify-content: center;">Jalankan →</button>
+          <button id="clear-btn" class="btn-secondary">Reset</button>
+        </div>
+
+        <div id="err-msg" class="callout" style="margin-top: 14px; display: none; font-size: 12.5px; border-left-color: var(--neg);"></div>
+      </div>
+
+      <!-- RIGHT: canvas + results -->
+      <div style="display: flex; flex-direction: column; gap: 22px;">
+
+        <div class="sim-canvas">
+          <div class="toolbar-fab">
+            <span><strong id="n-count">5</strong> nodes</span>
+            <span><strong id="e-count">5</strong> edges</span>
+          </div>
+          <svg id="sim-svg" viewBox="0 0 700 440" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+
+        <div>
+          <div class="row-between" style="margin-bottom:12px;">
+            <div class="eyebrow">Hasil analisis</div>
+            <span class="mono" style="font-size: 11px; color: var(--text3);" id="iter-info">—</span>
+          </div>
+
+          <div class="algo-pick">
+            <button data-algo="pagerank" class="active">PageRank</button>
+            <button data-algo="degree">Degree</button>
+            <button data-algo="betweenness">Betweenness</button>
+          </div>
+
+          <div style="border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+            <table class="result-table">
+              <thead>
+                <tr>
+                  <th style="width:32px;">#</th>
+                  <th>Node</th>
+                  <th>Score</th>
+                  <th>Visual</th>
+                </tr>
+              </thead>
+              <tbody id="result-tbody"></tbody>
+            </table>
+          </div>
+
+          <div id="result-insight" class="callout" style="margin-top: 14px; font-size: 13.5px;"></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Tips -->
+  <section class="container section">
+    <div class="grid-12" style="margin-bottom: 28px;">
+      <div class="s4">
+        <div class="eyebrow" style="margin-bottom: 14px;">Cara membaca</div>
+        <h2 class="h2">Tips memakai sandbox.</h2>
+      </div>
+    </div>
+
+    <div class="grid-12" style="border-top: 1px solid var(--rule); padding-top: 28px;">
+      <div class="s4">
+        <div class="mono" style="font-size: 12px; color: var(--accent); margin-bottom: 10px; font-weight: 500;">01</div>
+        <h3 style="font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 22px; letter-spacing: -0.01em; line-height: 1.2; margin-bottom: 10px;">
+          Ukuran node = skor.
+        </h3>
+        <p style="font-size: 14px; color: var(--text2); margin: 0;">
+          Setelah dijalankan, ukuran lingkaran sebanding dengan skor algoritma yang dipilih.
+          Node terbesar = paling berpengaruh.
+        </p>
+      </div>
+      <div class="s4">
+        <div class="mono" style="font-size: 12px; color: var(--text3); margin-bottom: 10px;">02</div>
+        <h3 style="font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 22px; letter-spacing: -0.01em; line-height: 1.2; margin-bottom: 10px;">
+          Coba preset Two Communities.
+        </h3>
+        <p style="font-size: 14px; color: var(--text2); margin: 0;">
+          Lihat bagaimana Betweenness "menemukan" node jembatan — meski Degree-nya rendah,
+          Betweenness-nya jauh lebih tinggi karena semua shortest path antar komunitas melewatinya.
+        </p>
+      </div>
+      <div class="s4">
+        <div class="mono" style="font-size: 12px; color: var(--text3); margin-bottom: 10px;">03</div>
+        <h3 style="font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 22px; letter-spacing: -0.01em; line-height: 1.2; margin-bottom: 10px;">
+          Mainkan edge-nya.
+        </h3>
+        <p style="font-size: 14px; color: var(--text2); margin: 0;">
+          Tambah/hapus edge dan jalankan ulang. Perhatikan bagaimana PageRank lebih sensitif
+          terhadap koneksi ke hub vs Degree yang flat.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div>Kelompok 2 — Teori Graf · IF2151 · 2026</div>
+    <div class="mono">Sandbox eksperimen · perhitungan jalan di browser</div>
+  </div>
+</footer>
+
+<script>
+(function () {
+
+  const PRESETS = {
+    star:   { nodes: 'Hub, A, B, C, D', edges: 'Hub-A\nHub-B\nHub-C\nHub-D' },
+    cycle:  { nodes: 'A, B, C, D, E, F', edges: 'A-B\nB-C\nC-D\nD-E\nE-F\nF-A' },
+    bridge: { nodes: 'A1, A2, A3, BR, B1, B2, B3, B4', edges: 'A1-A2\nA1-A3\nA2-A3\nA3-BR\nBR-B1\nB1-B2\nB1-B3\nB2-B3\nB3-B4' },
+    willie: { nodes: 'Willie, Jess, Baim, Mario, RiskaBkl, DimasBkl, Tokopedia', edges: 'Willie-Jess\nWillie-Baim\nWillie-Mario\nWillie-RiskaBkl\nWillie-DimasBkl\nWillie-Tokopedia\nJess-Mario\nBaim-Tokopedia\nRiskaBkl-DimasBkl' },
+  };
+
+  const state = { nodes: [], edges: [], algo: 'pagerank', scores: null };
+  const svg = document.getElementById('sim-svg');
+  const ns = 'http://www.w3.org/2000/svg';
+  const VB = { w: 700, h: 440 };
+
+  function parseInput() {
+    const nodesRaw = document.getElementById('nodes-input').value;
+    const edgesRaw = document.getElementById('edges-input').value;
+    const nodes = nodesRaw.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+    const nodeSet = new Set(nodes);
+    if (nodes.length !== nodeSet.size) throw new Error('Ada nama node yang duplikat.');
+    if (nodes.length < 2) throw new Error('Butuh minimal 2 node.');
+    if (nodes.length > 40) throw new Error('Maksimal 40 node untuk sandbox.');
+    const edges = [];
+    edgesRaw.split('\n').forEach((line, i) => {
+      const t = line.trim(); if (!t) return;
+      const m = t.split(/\s*[-→]\s*/);
+      if (m.length !== 2) throw new Error(`Edge baris ${i+1} tidak valid (format: A-B)`);
+      const [a, b] = m;
+      if (!nodeSet.has(a)) throw new Error(`Node "${a}" tidak ada di daftar nodes`);
+      if (!nodeSet.has(b)) throw new Error(`Node "${b}" tidak ada di daftar nodes`);
+      if (a === b) return;
+      const key = [a, b].sort().join('|');
+      if (!edges.some(e => [e.source, e.target].sort().join('|') === key)) edges.push({ source: a, target: b });
+    });
+    return { nodes, edges };
+  }
+
+  function layoutNodes(nodeIds, edges) {
+    const cx = VB.w / 2, cy = VB.h / 2;
+    const nodes = nodeIds.map((id, i) => {
+      const a = (i / nodeIds.length) * Math.PI * 2;
+      return { id, x: cx + Math.cos(a) * 120, y: cy + Math.sin(a) * 120, vx: 0, vy: 0 };
+    });
+    const idx = {}; nodes.forEach((n,i) => idx[n.id] = i);
+    const eidx = edges.map(e => ({ source: idx[e.source], target: idx[e.target] }));
+    const k = nodeIds.length < 8 ? 95 : (nodeIds.length < 16 ? 75 : 55);
+    for (let iter = 0; iter < 220; iter++) {
+      nodes.forEach(n => { n.fx = 0; n.fy = 0; });
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i+1; j < nodes.length; j++) {
+          const a = nodes[i], b = nodes[j];
+          let dx = a.x - b.x, dy = a.y - b.y;
+          const d2 = dx*dx + dy*dy + 0.01;
+          const f = 1800 / d2; const d = Math.sqrt(d2);
+          a.fx += (dx/d) * f; a.fy += (dy/d) * f;
+          b.fx -= (dx/d) * f; b.fy -= (dy/d) * f;
+        }
+      }
+      eidx.forEach(e => {
+        const a = nodes[e.source], b = nodes[e.target];
+        const dx = b.x - a.x, dy = b.y - a.y;
+        const d = Math.sqrt(dx*dx + dy*dy) + 0.01;
+        const f = (d - k) * 0.08;
+        a.fx += (dx/d) * f; a.fy += (dy/d) * f;
+        b.fx -= (dx/d) * f; b.fy -= (dy/d) * f;
+      });
+      nodes.forEach(n => {
+        n.fx += (cx - n.x) * 0.008; n.fy += (cy - n.y) * 0.008;
+        n.vx = (n.vx + n.fx) * 0.6; n.vy = (n.vy + n.fy) * 0.6;
+        n.x += n.vx; n.y += n.vy;
+        n.x = Math.max(40, Math.min(VB.w - 40, n.x));
+        n.y = Math.max(40, Math.min(VB.h - 40, n.y));
+      });
+    }
+    return { nodes, idx, eidx };
+  }
+
+  function buildAdj(nodeIds, edges) {
+    const adj = {}; nodeIds.forEach(id => adj[id] = []);
+    edges.forEach(e => { adj[e.source].push(e.target); adj[e.target].push(e.source); });
+    return adj;
+  }
+  function degree(nodeIds, edges) {
+    const adj = buildAdj(nodeIds, edges);
+    const max = Math.max(1, nodeIds.length - 1);
+    const out = {}; nodeIds.forEach(id => out[id] = adj[id].length / max);
+    return out;
+  }
+  function pagerank(nodeIds, edges, d = 0.85, maxIter = 80, tol = 1e-7) {
+    const adj = buildAdj(nodeIds, edges);
+    const N = nodeIds.length;
+    let pr = {}; nodeIds.forEach(id => pr[id] = 1/N);
+    let iters = 0;
+    for (let k = 0; k < maxIter; k++) {
+      iters++;
+      const next = {}; nodeIds.forEach(id => next[id] = (1-d)/N);
+      nodeIds.forEach(id => {
+        const nbs = adj[id]; if (nbs.length === 0) return;
+        const share = (d * pr[id]) / nbs.length;
+        nbs.forEach(nb => next[nb] += share);
+      });
+      let diff = 0; nodeIds.forEach(id => diff = Math.max(diff, Math.abs(next[id] - pr[id])));
+      pr = next; if (diff < tol) break;
+    }
+    return { scores: pr, iters };
+  }
+  function betweenness(nodeIds, edges) {
+    const adj = buildAdj(nodeIds, edges);
+    const bc = {}; nodeIds.forEach(id => bc[id] = 0);
+    nodeIds.forEach(s => {
+      const S = [], P = {}, sigma = {}, dist = {};
+      nodeIds.forEach(id => { P[id] = []; sigma[id] = 0; dist[id] = -1; });
+      sigma[s] = 1; dist[s] = 0; const Q = [s];
+      while (Q.length) {
+        const v = Q.shift(); S.push(v);
+        adj[v].forEach(w => {
+          if (dist[w] < 0) { dist[w] = dist[v] + 1; Q.push(w); }
+          if (dist[w] === dist[v] + 1) { sigma[w] += sigma[v]; P[w].push(v); }
+        });
+      }
+      const delta = {}; nodeIds.forEach(id => delta[id] = 0);
+      while (S.length) {
+        const w = S.pop();
+        P[w].forEach(v => delta[v] += (sigma[v]/sigma[w]) * (1 + delta[w]));
+        if (w !== s) bc[w] += delta[w];
+      }
+    });
+    const norm = Math.max(1, (nodeIds.length-1)*(nodeIds.length-2));
+    nodeIds.forEach(id => bc[id] = bc[id] / norm);
+    return bc;
+  }
+
+  function render(layout, scores) {
+    svg.innerHTML = '';
+    const max = Math.max(...Object.values(scores));
+    const min = Math.min(...Object.values(scores));
+
+    const gE = document.createElementNS(ns, 'g');
+    state.edges.forEach(e => {
+      const a = layout.nodes[layout.idx[e.source]], b = layout.nodes[layout.idx[e.target]];
+      const line = document.createElementNS(ns, 'line');
+      line.classList.add('sim-edge');
+      line.setAttribute('x1', a.x); line.setAttribute('y1', a.y);
+      line.setAttribute('x2', b.x); line.setAttribute('y2', b.y);
+      gE.appendChild(line);
+    });
+    svg.appendChild(gE);
+
+    const gN = document.createElementNS(ns, 'g');
+    // Color interpolation: lighter accent for low, full accent for high
+    layout.nodes.forEach(n => {
+      const s = scores[n.id];
+      const t = max === min ? 0.5 : (s - min) / (max - min);
+      const r = 10 + t * 20;
+      const g = document.createElementNS(ns, 'g');
+      g.classList.add('sim-node');
+      g.setAttribute('transform', `translate(${n.x},${n.y})`);
+
+      // Accent tint scale
+      const accent = { L1: '#e8c8b6', L2: '#d99070', L3: '#c15f3c', L4: '#a04d2f' };
+      const color = t < 0.25 ? accent.L1 : t < 0.55 ? accent.L2 : t < 0.85 ? accent.L3 : accent.L4;
+
+      const c = document.createElementNS(ns, 'circle');
+      c.setAttribute('r', r); c.setAttribute('fill', color);
+      g.appendChild(c);
+
+      const txt = document.createElementNS(ns, 'text');
+      txt.setAttribute('text-anchor', 'middle');
+      txt.setAttribute('dy', -(r + 6));
+      txt.setAttribute('font-family', 'DM Sans, sans-serif');
+      txt.setAttribute('font-size', n.id.length > 8 ? '10' : '11');
+      txt.setAttribute('font-weight', '500');
+      txt.setAttribute('fill', 'var(--text)');
+      txt.setAttribute('paint-order', 'stroke');
+      txt.setAttribute('stroke', '#faf8f3');
+      txt.setAttribute('stroke-width', '3');
+      txt.textContent = n.id;
+      g.appendChild(txt);
+
+      const scoreTxt = document.createElementNS(ns, 'text');
+      scoreTxt.setAttribute('text-anchor', 'middle');
+      scoreTxt.setAttribute('dy', 4);
+      scoreTxt.setAttribute('font-family', 'IBM Plex Mono, monospace');
+      scoreTxt.setAttribute('font-size', '10');
+      scoreTxt.setAttribute('font-weight', '500');
+      scoreTxt.setAttribute('fill', t >= 0.55 ? '#fff' : '#1a1813');
+      scoreTxt.textContent = formatScore(s, state.algo);
+      g.appendChild(scoreTxt);
+
+      gN.appendChild(g);
+    });
+    svg.appendChild(gN);
+  }
+
+  function formatScore(s, algo) {
+    if (algo === 'pagerank') return (s*100).toFixed(1) + '%';
+    if (algo === 'degree')   return (s*100).toFixed(0) + '%';
+    return (s*100).toFixed(1) + '%';
+  }
+
+  function renderResults(scores) {
+    const sorted = Object.entries(scores).sort((a,b) => b[1] - a[1]);
+    const max = sorted[0]?.[1] || 0;
+    const tbody = document.getElementById('result-tbody');
+    tbody.innerHTML = sorted.map(([id, s], i) => {
+      const w = max === 0 ? 0 : (s/max) * 100;
+      return `
+        <tr class="${i === 0 ? 'top' : ''}">
+          <td class="mono">${String(i+1).padStart(2,'0')}</td>
+          <td>${id}</td>
+          <td class="mono">${formatScore(s, state.algo)}</td>
+          <td><div class="bar"><div class="bar-fill" style="width:${w}%;"></div></div></td>
+        </tr>`;
+    }).join('');
+
+    const top = sorted[0];
+    const insight = document.getElementById('result-insight');
+    const algoNames = { pagerank: 'PageRank', degree: 'Degree', betweenness: 'Betweenness' };
+    insight.innerHTML = `Pemenang menurut <strong>${algoNames[state.algo]}</strong>: <span class="mono"><strong>${top[0]}</strong></span> dengan skor <span class="mono">${formatScore(top[1], state.algo)}</span>.`;
+  }
+
+  function run() {
+    try {
+      const { nodes, edges } = parseInput();
+      document.getElementById('err-msg').style.display = 'none';
+      state.edges = edges; state.nodes = nodes;
+      const layout = layoutNodes(nodes, edges);
+      let scoresObj, iters = '—';
+      if (state.algo === 'pagerank') {
+        const res = pagerank(nodes, edges);
+        scoresObj = res.scores; iters = `konvergen · iterasi ${res.iters}`;
+      } else if (state.algo === 'degree') {
+        scoresObj = degree(nodes, edges);
+      } else {
+        scoresObj = betweenness(nodes, edges);
+      }
+      state.scores = scoresObj; state.layout = layout;
+      document.getElementById('n-count').textContent = nodes.length;
+      document.getElementById('e-count').textContent = edges.length;
+      document.getElementById('iter-info').textContent = iters;
+      render(layout, scoresObj);
+      renderResults(scoresObj);
+    } catch (e) {
+      const m = document.getElementById('err-msg');
+      m.style.display = 'block';
+      m.innerHTML = `<strong>Error</strong> — ${e.message}`;
+    }
+  }
+
+  document.getElementById('run-btn').addEventListener('click', run);
+  document.getElementById('clear-btn').addEventListener('click', () => {
+    document.getElementById('nodes-input').value = '';
+    document.getElementById('edges-input').value = '';
+    svg.innerHTML = '';
+    document.getElementById('result-tbody').innerHTML = '';
+    document.getElementById('result-insight').innerHTML = 'Definisikan node dan edge, lalu klik <strong>Jalankan</strong>.';
+    document.getElementById('iter-info').textContent = '—';
+    document.getElementById('n-count').textContent = '0';
+    document.getElementById('e-count').textContent = '0';
+  });
+
+  document.querySelectorAll('.preset-grid button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const p = PRESETS[btn.dataset.preset];
+      document.getElementById('nodes-input').value = p.nodes;
+      document.getElementById('edges-input').value = p.edges;
+      run();
+    });
+  });
+
+  document.querySelectorAll('.algo-pick button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.algo-pick button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.algo = btn.dataset.algo;
+      if (state.nodes.length && state.layout) {
+        let scoresObj, iters = '—';
+        if (state.algo === 'pagerank') {
+          const res = pagerank(state.nodes, state.edges);
+          scoresObj = res.scores; iters = `konvergen · iterasi ${res.iters}`;
+        } else if (state.algo === 'degree') {
+          scoresObj = degree(state.nodes, state.edges);
+        } else {
+          scoresObj = betweenness(state.nodes, state.edges);
+        }
+        state.scores = scoresObj;
+        document.getElementById('iter-info').textContent = iters;
+        render(state.layout, scoresObj);
+        renderResults(scoresObj);
+      }
+    });
+  });
+
+  run();
+})();
+</script>
+
+</body>
+</html>

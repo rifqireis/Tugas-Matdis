@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="scale.js"></script>
+<title>Ranking — InfluenceGraph</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .rank-tabs {
+    display: inline-flex; gap: 0;
+    background: transparent;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 3px;
+  }
+  .rank-tabs button {
+    padding: 7px 14px; border-radius: var(--radius-xs);
+    background: transparent; border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    color: var(--text2); transition: background .15s, color .15s;
+  }
+  .rank-tabs button:hover { color: var(--text); }
+  .rank-tabs button.active { background: var(--text); color: var(--bg); }
+
+  .filter-row {
+    display: flex; gap: 12px; align-items: center;
+    flex-wrap: wrap; margin-bottom: 22px;
+  }
+
+  .overlap-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+  }
+  .overlap-item:last-child { border-bottom: none; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="nav-logo-icon">⬡</span>
+      <span>InfluenceGraph</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Beranda</a>
+      <a href="graf.html">Graf</a>
+      <a href="ranking.html" class="active">Ranking</a>
+      <a href="algoritma.html">Algoritma</a>
+      <a href="simulasi.html">Simulasi</a>
+    </div>
+    <div class="nav-badge">Kelompok 2 · 2026</div>
+  </div>
+</nav>
+
+<main class="page">
+
+  <!-- Masthead -->
+  <section class="container" style="padding-top: 64px; padding-bottom: 40px;">
+    <div class="grid-12" style="align-items: end;">
+      <div class="s8">
+        <div class="eyebrow" style="margin-bottom: 14px;">03 — Ranking</div>
+        <h1 class="h1">Influencer paling berpengaruh, diurutkan tiga cara.</h1>
+      </div>
+      <div class="s4">
+        <p class="lede-sm">
+          PageRank menangkap kualitas pengaruh. Degree menangkap volume kolaborasi.
+          Betweenness menangkap peran sebagai jembatan. Beda algoritma, beda jawaban.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- Main table -->
+  <section class="container" style="padding-top: 32px;">
+    <div class="filter-row">
+      <div class="rank-tabs">
+        <button data-tab="pagerank" class="active">PageRank</button>
+        <button data-tab="degree">Degree</button>
+        <button data-tab="betweenness">Betweenness</button>
+      </div>
+      <div style="margin-left:auto;" class="row">
+        <input id="search" class="input-field" type="text" placeholder="Cari node..." style="width: 180px;">
+        <select id="com-filter" class="input-field" style="width: 180px;">
+          <option value="">Semua komunitas</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--bg2);">
+      <table class="rank-table" style="table-layout: auto;">
+        <thead>
+          <tr>
+            <th style="width:48px; padding-left: 20px;">#</th>
+            <th style="min-width: 180px;">Node</th>
+            <th style="min-width: 130px;">Komunitas</th>
+            <th id="th-score" class="col-score">PageRank</th>
+            <th class="col-bar"></th>
+            <th style="width:70px; text-align:right; padding-right: 20px;">Deg.</th>
+          </tr>
+        </thead>
+        <tbody id="rank-tbody"></tbody>
+      </table>
+    </div>
+
+    <p id="metric-explainer" style="margin-top: 18px; color: var(--text2); font-size: 14px; max-width: 70ch;"></p>
+  </section>
+
+  <!-- Comparison -->
+  <section class="container section">
+    <div class="grid-12">
+      <div class="s4">
+        <div class="eyebrow" style="margin-bottom: 14px;">03b — Komparasi</div>
+        <h2 class="h2">Apakah peringkatnya konsisten?</h2>
+        <p class="lede-sm" style="margin-top: 18px;">
+          Tidak selalu. Beberapa node punya banyak koneksi (Degree tinggi) tapi koneksinya ke akun kecil
+          (PageRank rendah). Yang menarik: node yang konsisten masuk top 10 di ketiga algoritma —
+          mereka adalah <em>true influencer</em>.
+        </p>
+      </div>
+
+      <div class="s7 start-6">
+        <div class="grid grid-2">
+          <div>
+            <div class="eyebrow" style="margin-bottom: 12px;">Top 10 side-by-side</div>
+            <table class="rank-table">
+              <thead><tr><th style="width:24px;">#</th><th>PageRank</th><th>Degree</th><th>Btw.</th></tr></thead>
+              <tbody id="compare-tbody"></tbody>
+            </table>
+          </div>
+          <div>
+            <div class="eyebrow" style="margin-bottom: 12px;">Konsisten di semua</div>
+            <div id="overlap-list"></div>
+            <p style="margin-top: 16px; color: var(--text2); font-size: 13.5px;">
+              Node-node ini bukan hanya populer di satu metrik — mereka berperan di volume,
+              kualitas, dan posisi sekaligus.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div>Kelompok 2 — Teori Graf · IF2151 · 2026</div>
+    <div class="mono">PageRank · Degree · Betweenness</div>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  const { NODES, COMMUNITIES, SCORES, topBy } = window.GRAPH;
+
+  const METRIC_LABEL = {
+    pagerank: 'PageRank',
+    degree: 'Degree Centrality',
+    betweenness: 'Betweenness',
+  };
+  const METRIC_EXPLAIN = {
+    pagerank: '<strong>PageRank</strong> — Skor pengaruh berlapis. Node mendapat skor tinggi jika terhubung ke node-node yang juga berpengaruh, bukan hanya banyak koneksi. Damping factor 0.85.',
+    degree: '<strong>Degree Centrality</strong> — Jumlah koneksi langsung dibagi (N−1). Mengukur volume kolaborasi: siapa yang paling banyak bekerja sama.',
+    betweenness: '<strong>Betweenness Centrality</strong> — Seberapa sering sebuah node berada di shortest path antara pasangan node lain. Tinggi berarti node ini adalah jembatan kritis.',
+  };
+
+  const state = { tab: 'pagerank', search: '', com: '' };
+
+  const comFilter = document.getElementById('com-filter');
+  Object.entries(COMMUNITIES).forEach(([k, c]) => {
+    const o = document.createElement('option');
+    o.value = k; o.textContent = c.label;
+    comFilter.appendChild(o);
+  });
+
+  const tbody = document.getElementById('rank-tbody');
+  function getDegree(id) { return (SCORES.degree[id] * (NODES.length - 1)) | 0; }
+  function formatScore(s) { return (s*100).toFixed(2) + '%'; }
+
+  function renderTable() {
+    const scoreMap = SCORES[state.tab];
+    const max = Math.max(...Object.values(scoreMap));
+    let rows = NODES.map(n => ({ ...n, score: scoreMap[n.id] }));
+    if (state.com) rows = rows.filter(r => r.com === state.com);
+    if (state.search) {
+      const q = state.search.toLowerCase();
+      rows = rows.filter(r => r.name.toLowerCase().includes(q) || r.id.toLowerCase().includes(q));
+    }
+    rows.sort((a,b) => b.score - a.score);
+
+    document.getElementById('th-score').textContent = METRIC_LABEL[state.tab];
+    document.getElementById('metric-explainer').innerHTML = METRIC_EXPLAIN[state.tab];
+
+    tbody.innerHTML = rows.slice(0, 30).map((r, i) => {
+      const com = COMMUNITIES[r.com];
+      const w = (r.score / max) * 100;
+      const initials = r.name.split(' ').map(p => p[0]).join('').slice(0,2).toUpperCase();
+      return `
+        <tr>
+          <td class="rank-num" style="padding-left: 20px;">${String(i+1).padStart(2,'0')}</td>
+          <td>
+            <div class="influencer-cell">
+              <div class="avatar">${initials}</div>
+              <div class="influencer-name">
+                <strong>${r.name}</strong>
+                <span class="influencer-handle">@${r.id}</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="row" style="gap: 6px;">
+              <span class="dot-square" style="background: ${com.color};"></span>
+              <span style="font-size: 13px; color: var(--text2);">${com.label}</span>
+            </span>
+          </td>
+          <td class="mono">${formatScore(r.score)}</td>
+          <td><div class="bar"><div class="bar-fill" style="width:${w}%; background: ${com.color};"></div></div></td>
+          <td class="mono" style="text-align:right; padding-right: 20px;">${getDegree(r.id)}</td>
+        </tr>
+      `;
+    }).join('');
+
+    if (rows.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--text3);">Tidak ada hasil yang cocok</td></tr>`;
+    }
+  }
+
+  document.querySelectorAll('.rank-tabs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.rank-tabs button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.tab = btn.dataset.tab;
+      renderTable();
+    });
+  });
+  document.getElementById('search').addEventListener('input', e => { state.search = e.target.value; renderTable(); });
+  comFilter.addEventListener('change', e => { state.com = e.target.value; renderTable(); });
+
+  renderTable();
+
+  // ---- Comparison ----
+  const top10pr = topBy(SCORES.pagerank, 10);
+  const top10dg = topBy(SCORES.degree, 10);
+  const top10bw = topBy(SCORES.betweenness, 10);
+
+  document.getElementById('compare-tbody').innerHTML = Array.from({length: 10}, (_, i) => {
+    const cell = (n) => {
+      const com = COMMUNITIES[n.com];
+      return `<span style="display:inline-flex; align-items:center; gap:6px;">
+        <span class="dot-square" style="background:${com.color};"></span>
+        <span style="font-size: 12.5px;">${n.name}</span></span>`;
+    };
+    return `
+      <tr>
+        <td class="rank-num">${String(i+1).padStart(2,'0')}</td>
+        <td>${cell(top10pr[i])}</td>
+        <td>${cell(top10dg[i])}</td>
+        <td>${cell(top10bw[i])}</td>
+      </tr>`;
+  }).join('');
+
+  // ---- Overlap ----
+  const ids10 = (arr) => new Set(arr.map(x => x.id));
+  const a = ids10(top10pr), b = ids10(top10dg), c = ids10(top10bw);
+  const overlap = [...a].filter(x => b.has(x) && c.has(x))
+    .map(id => NODES.find(n => n.id === id))
+    .map(n => ({ ...n, pr: SCORES.pagerank[n.id] }))
+    .sort((x,y) => y.pr - x.pr);
+
+  const ol = document.getElementById('overlap-list');
+  if (overlap.length === 0) {
+    ol.innerHTML = '<div style="color:var(--text3); font-size:13px; padding: 14px 0;">Tidak ada node yang konsisten di top 10 ketiga algoritma.</div>';
+  } else {
+    ol.innerHTML = overlap.map((n, i) => {
+      const com = COMMUNITIES[n.com];
+      const initials = n.name.split(' ').map(p => p[0]).join('').slice(0,2).toUpperCase();
+      return `
+        <div class="overlap-item">
+          <div class="mono" style="color: var(--text3); font-size: 11px; width: 20px;">${String(i+1).padStart(2,'0')}</div>
+          <div class="avatar">${initials}</div>
+          <div style="flex:1;">
+            <div style="font-weight:600; color:var(--text); font-size:14px;">${n.name}</div>
+            <div class="mono" style="font-size:11px; color:var(--text3);">@${n.id}</div>
+          </div>
+          <span class="dot-square" style="background:${com.color};"></span>
+        </div>`;
+    }).join('');
+  }
+})();
+</script>
+
+</body>
+</html>

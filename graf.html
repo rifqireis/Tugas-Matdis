@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="scale.js"></script>
+<title>Graf — InfluenceGraph</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .graf-shell {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    height: 600px;
+  }
+  @media (max-width: 860px) {
+    .graf-shell { grid-template-columns: 1fr; height: auto; }
+    .graf-canvas-wrap { height: 420px; }
+  }
+  .graf-canvas-wrap {
+    position: relative; background: var(--bg);
+    border-right: 1px solid var(--border);
+    overflow: hidden;
+  }
+  #graf-svg { width: 100%; height: 100%; display: block; cursor: grab; }
+  #graf-svg:active { cursor: grabbing; }
+  .graf-side {
+    padding: 22px; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 22px;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 0;
+    cursor: pointer; transition: opacity .2s;
+    font-size: 13px; color: var(--text2);
+    border-bottom: 1px solid var(--border);
+  }
+  .legend-item:hover { color: var(--text); }
+  .legend-item:last-child { border-bottom: none; }
+  .legend-item.muted { opacity: .35; }
+  .legend-count {
+    margin-left: auto; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--text3);
+  }
+  .legend-item .dot { width: 8px; height: 8px; }
+
+  .selected-node {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    background: var(--bg);
+  }
+  .selected-row {
+    display: flex; justify-content: space-between;
+    font-size: 12.5px; padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .selected-row:last-of-type { border-bottom: none; }
+  .selected-row .l { color: var(--text3); font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; }
+  .selected-row .v { font-family:'IBM Plex Mono',monospace; color: var(--text); font-weight: 500; }
+
+  .graf-toolbar {
+    position: absolute; top: 12px; left: 12px;
+    display: flex; gap: 0;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 3px;
+  }
+  .graf-toolbar button {
+    background: transparent; border: none; cursor: pointer;
+    padding: 6px 12px; border-radius: var(--radius-xs);
+    font-family: 'DM Sans', sans-serif; font-size: 12px;
+    font-weight: 500; color: var(--text2);
+    transition: background .15s, color .15s;
+  }
+  .graf-toolbar button:hover { color: var(--text); }
+  .graf-toolbar button.active { background: var(--text); color: var(--bg); }
+  .graf-toolbar .sep { width: 1px; background: var(--border); margin: 4px 2px; }
+
+  .graf-meta {
+    position: absolute; bottom: 12px; left: 12px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--text2);
+    display: flex; gap: 14px;
+  }
+  .graf-meta span strong { color: var(--text); font-weight: 500; }
+
+  .node-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 9.5px; font-weight: 500;
+    fill: var(--text); pointer-events: none;
+    paint-order: stroke; stroke: var(--bg); stroke-width: 3px;
+  }
+  .edge {
+    stroke: #b8b09e; stroke-opacity: .5;
+    transition: stroke .2s, stroke-opacity .2s, stroke-width .2s;
+  }
+  .edge.dim { stroke-opacity: .1; }
+  .edge.highlight { stroke: var(--accent); stroke-opacity: .9; stroke-width: 1.8; }
+  .node circle {
+    cursor: pointer;
+    transition: stroke-width .2s, opacity .2s;
+    stroke: var(--bg); stroke-width: 1.5;
+  }
+  .node.dim circle, .node.dim text { opacity: .18; }
+  .node.selected circle { stroke: var(--text); stroke-width: 2.5; }
+  .node.neighbor circle { stroke: var(--accent); stroke-width: 2.5; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="nav-logo-icon">⬡</span>
+      <span>InfluenceGraph</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Beranda</a>
+      <a href="graf.html" class="active">Graf</a>
+      <a href="ranking.html">Ranking</a>
+      <a href="algoritma.html">Algoritma</a>
+      <a href="simulasi.html">Simulasi</a>
+    </div>
+    <div class="nav-badge">Kelompok 2 · 2026</div>
+  </div>
+</nav>
+
+<main class="page">
+
+  <!-- Masthead -->
+  <section class="container" style="padding-top: 64px; padding-bottom: 36px;">
+    <div class="grid-12" style="align-items: end;">
+      <div class="s8">
+        <div class="eyebrow" style="margin-bottom: 14px;">02 — Visualisasi</div>
+        <h1 class="h1">Graf kolaborasi 65 kreator, satu tarikan napas.</h1>
+      </div>
+      <div class="s4">
+        <p class="lede-sm">
+          Force-directed layout. Setiap simpul adalah satu akun, setiap sisi adalah kolaborasi
+          terverifikasi. Ukuran simpul mengikuti algoritma yang dipilih.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="container" style="padding-bottom: 24px;">
+    <div class="graf-shell">
+      <div class="graf-canvas-wrap">
+        <div class="graf-toolbar">
+          <button id="size-pagerank" class="active">PageRank</button>
+          <button id="size-degree">Degree</button>
+          <button id="size-betweenness">Betweenness</button>
+          <div class="sep"></div>
+          <button id="toggle-labels" class="active">Label</button>
+          <button id="reset-view">Reset</button>
+        </div>
+
+        <svg id="graf-svg" viewBox="0 0 900 600" preserveAspectRatio="xMidYMid meet"></svg>
+
+        <div class="graf-meta">
+          <span><strong id="m-nodes">0</strong> nodes</span>
+          <span><strong id="m-edges">0</strong> edges</span>
+          <span>Q = <strong>0.71</strong></span>
+        </div>
+      </div>
+
+      <aside class="graf-side">
+        <div>
+          <div class="eyebrow" style="margin-bottom: 10px;">Komunitas</div>
+          <div id="legend"></div>
+        </div>
+
+        <div>
+          <div class="eyebrow" style="margin-bottom: 10px;">Detail node</div>
+          <div id="selected-pane" style="font-size:13px; color:var(--text3);">
+            Klik node pada graf untuk melihat detail.
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <p style="font-size: 12px; color: var(--text3); margin-top: 12px;">
+      <span class="kbd">drag</span> untuk geser node ·
+      <span class="kbd">scroll</span> untuk zoom ·
+      <span class="kbd">klik</span> komunitas untuk filter
+    </p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- Cara membaca + hub per komunitas -->
+  <section class="container section">
+    <div class="grid-12">
+      <div class="s4">
+        <div class="eyebrow" style="margin-bottom: 14px;">Hub per komunitas</div>
+        <h2 class="h2">Siapa yang memimpin tiap klaster.</h2>
+        <p class="lede-sm" style="margin-top: 18px;">
+          Tiga node dengan PageRank tertinggi di setiap komunitas — biasanya adalah "wajah"
+          yang dikenal publik dari klaster tersebut.
+        </p>
+      </div>
+
+      <div class="s7 start-6">
+        <div id="community-recap" class="grid grid-2" style="gap: 0;"></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div>Kelompok 2 — Teori Graf · IF2151 · 2026</div>
+    <div class="mono">Force-directed · Verlet integration</div>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script src="force-graph.js"></script>
+
+</body>
+</html>

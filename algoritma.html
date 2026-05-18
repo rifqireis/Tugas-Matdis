@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="scale.js"></script>
+<title>Algoritma — InfluenceGraph</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .code {
+    background: #1d1a14; color: #ede5d3;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px; line-height: 1.7;
+    border-radius: var(--radius-sm);
+    padding: 20px 22px; overflow-x: auto;
+    border: 1px solid #2a2620;
+  }
+  .code .kw { color: #d49a6a; }
+  .code .fn { color: #b6c98a; }
+  .code .num { color: #e8c878; }
+  .code .str { color: #a8c4a2; }
+  .code .cm { color: #6b6657; font-style: italic; }
+
+  .formula {
+    font-family: 'IBM Plex Mono', monospace; font-size: 14px;
+    background: var(--bg2); padding: 16px 18px;
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--accent);
+    border-radius: var(--radius-sm); color: var(--text);
+    line-height: 1.6;
+  }
+
+  .mini-graph { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+
+  .algo-toc {
+    position: sticky; top: 80px;
+    display: flex; flex-direction: column;
+  }
+  .algo-toc .eyebrow { margin-bottom: 14px; }
+  .algo-toc a {
+    padding: 8px 0;
+    font-size: 13.5px; color: var(--text2);
+    text-decoration: none; transition: color .15s, border-color .15s;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .algo-toc a:hover { color: var(--text); text-decoration: none; }
+  .algo-toc a.active { color: var(--text); border-bottom-color: var(--text); }
+  .algo-toc a .n { font-family: 'IBM Plex Mono', monospace; color: var(--text3); font-size: 11px; }
+  .algo-toc a.active .n { color: var(--accent); }
+
+  article.section-block { padding-bottom: 8px; }
+  article.section-block + article.section-block { border-top: 1px solid var(--rule); padding-top: 56px; margin-top: 56px; }
+
+  .step-row {
+    display: grid; grid-template-columns: 32px 1fr;
+    gap: 16px; align-items: start;
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+  }
+  .step-row:last-child { border-bottom: none; }
+  .step-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; font-weight: 500;
+    color: var(--accent); padding-top: 2px;
+  }
+  .step-body strong { color: var(--text); font-size: 14.5px; font-weight: 600; }
+  .step-body p { margin: 4px 0 0; color: var(--text2); font-size: 13.5px; line-height: 1.6; }
+
+  @media (max-width: 860px) {
+    .algo-toc { position: static; margin-bottom: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="nav-logo-icon">⬡</span>
+      <span>InfluenceGraph</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Beranda</a>
+      <a href="graf.html">Graf</a>
+      <a href="ranking.html">Ranking</a>
+      <a href="algoritma.html" class="active">Algoritma</a>
+      <a href="simulasi.html">Simulasi</a>
+    </div>
+    <div class="nav-badge">Kelompok 2 · 2026</div>
+  </div>
+</nav>
+
+<main class="page">
+
+  <!-- Masthead -->
+  <section class="container" style="padding-top: 64px; padding-bottom: 40px;">
+    <div class="grid-12" style="align-items: end;">
+      <div class="s8">
+        <div class="eyebrow" style="margin-bottom: 14px;">04 — Metodologi</div>
+        <h1 class="h1">Tiga algoritma graf, satu tujuan: memahami struktur pengaruh.</h1>
+      </div>
+      <div class="s4">
+        <p class="lede-sm">
+          Penjelasan formal dengan pseudocode dan kompleksitas. Disusun agar dapat
+          dipresentasikan langsung di sidang akhir.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="container" style="padding-top: 48px;">
+    <div class="grid-12">
+
+      <!-- TOC -->
+      <div class="s3 algo-toc">
+        <div class="eyebrow">Daftar Isi</div>
+        <a href="#degree" class="active"><span class="n">01</span><span>Degree Centrality</span></a>
+        <a href="#pagerank"><span class="n">02</span><span>PageRank</span></a>
+        <a href="#louvain"><span class="n">03</span><span>Louvain</span></a>
+        <a href="#betweenness"><span class="n">04</span><span>Betweenness</span></a>
+        <a href="#comparison"><span class="n">05</span><span>Komparasi</span></a>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="s8 start-5">
+
+        <!-- ========== DEGREE ========== -->
+        <article id="degree" class="section-block">
+          <div class="row" style="gap:10px; margin-bottom: 14px;">
+            <span class="mono" style="color: var(--text3); font-size: 12px;">01 — Lokal</span>
+            <span class="tag tag-mono">O(V + E)</span>
+          </div>
+          <h2 class="h2" style="margin-bottom: 14px;">Degree Centrality</h2>
+          <p class="lede-sm" style="margin-bottom: 24px;">
+            Algoritma paling sederhana: hitung jumlah tetangga setiap node, normalisasi dengan (N−1).
+            Jawaban langsung untuk pertanyaan <em>siapa yang paling banyak berkolaborasi?</em>
+          </p>
+
+          <div class="grid grid-2" style="margin-bottom: 22px;">
+            <div>
+              <div class="eyebrow" style="margin-bottom: 10px;">Definisi formal</div>
+              <div class="formula">C<sub>D</sub>(v) = deg(v) / (N − 1)</div>
+              <p style="font-size:13.5px; color:var(--text2); margin: 14px 0 0;">
+                Untuk graf 65 node, pembagi-nya 64. Node yang terhubung dengan semua orang akan
+                mendapat skor 1.0.
+              </p>
+            </div>
+            <div>
+              <div class="eyebrow" style="margin-bottom: 10px;">Visual</div>
+              <svg viewBox="0 0 320 220" class="mini-graph" style="width:100%; display:block;">
+                <line x1="160" y1="115" x2="80" y2="55" stroke="#b8b09e" stroke-width="1.2"/>
+                <line x1="160" y1="115" x2="240" y2="55" stroke="#b8b09e" stroke-width="1.2"/>
+                <line x1="160" y1="115" x2="60" y2="165" stroke="#b8b09e" stroke-width="1.2"/>
+                <line x1="160" y1="115" x2="160" y2="190" stroke="#b8b09e" stroke-width="1.2"/>
+                <line x1="160" y1="115" x2="260" y2="170" stroke="#b8b09e" stroke-width="1.2"/>
+                <line x1="80" y1="55" x2="60" y2="165" stroke="#b8b09e" stroke-width="1.2"/>
+                <line x1="240" y1="55" x2="260" y2="170" stroke="#b8b09e" stroke-width="1.2"/>
+                <circle cx="160" cy="115" r="22" fill="#c15f3c"/>
+                <text x="160" y="120" text-anchor="middle" fill="#fff" font-family="IBM Plex Mono" font-size="13" font-weight="500">5</text>
+                <circle cx="80" cy="55" r="9" fill="#d9d3c2"/>
+                <circle cx="240" cy="55" r="9" fill="#d9d3c2"/>
+                <circle cx="60" cy="165" r="9" fill="#d9d3c2"/>
+                <circle cx="160" cy="190" r="7" fill="#d9d3c2"/>
+                <circle cx="260" cy="170" r="9" fill="#d9d3c2"/>
+              </svg>
+              <p style="font-size: 11.5px; color: var(--text3); margin: 10px 0 0; font-family: 'IBM Plex Mono', monospace; letter-spacing: .3px;">
+                Node tengah: deg = 5 → skor 5/6 ≈ 0.83
+              </p>
+            </div>
+          </div>
+
+          <div class="eyebrow" style="margin-bottom: 10px;">Pseudocode</div>
+          <pre class="code"><span class="kw">function</span> <span class="fn">degreeCentrality</span>(G):
+  N = |V(G)|
+  scores = {}
+  <span class="kw">for</span> v <span class="kw">in</span> V(G):
+    scores[v] = |neighbors(v)| / (N − <span class="num">1</span>)
+  <span class="kw">return</span> scores
+
+<span class="cm">// Kompleksitas: O(V + E) — sekali jalan, sangat efisien</span>
+<span class="cm">// Memori:       O(V)</span></pre>
+
+          <div class="callout" style="margin-top: 20px;">
+            <strong>Kelemahan</strong> — tidak melihat kualitas tetangga. Akun dengan 50 follower kecil
+            bisa "menang" dari akun dengan 5 follower yang semuanya jutaan.
+          </div>
+        </article>
+
+        <!-- ========== PAGERANK ========== -->
+        <article id="pagerank" class="section-block">
+          <div class="row" style="gap:10px; margin-bottom: 14px;">
+            <span class="mono" style="color: var(--accent); font-size: 12px; font-weight: 500;">02 — Iteratif global</span>
+            <span class="tag tag-mono tag-accent">O(k · (V+E))</span>
+          </div>
+          <h2 class="h2" style="margin-bottom: 14px;">PageRank</h2>
+          <p class="lede-sm" style="margin-bottom: 24px;">
+            Algoritma dari Larry Page (Google, 1998). Mengasumsikan pengaruh "mengalir" melalui edge.
+            Node berpengaruh adalah node yang ditunjuk oleh node-node berpengaruh lain — rekursif.
+          </p>
+
+          <div class="eyebrow" style="margin-bottom: 10px;">Formula</div>
+          <div class="formula" style="margin-bottom: 22px;">
+            PR(v) = (1 − d) / N + d · Σ<sub>u ∈ in(v)</sub> [ PR(u) / |out(u)| ]
+          </div>
+
+          <div class="grid-12" style="gap: 0; margin-bottom: 28px; border: 1px solid var(--border); border-radius: var(--radius-sm);">
+            <div class="s4" style="padding: 18px 20px; border-right: 1px solid var(--border);">
+              <div class="eyebrow" style="margin-bottom: 6px;">d</div>
+              <div style="font-family: 'Instrument Serif', serif; font-size: 28px; color: var(--text);">0.85</div>
+              <div style="font-size: 12px; color: var(--text3); margin-top: 4px;">damping factor</div>
+            </div>
+            <div class="s4" style="padding: 18px 20px; border-right: 1px solid var(--border);">
+              <div class="eyebrow" style="margin-bottom: 6px;">Iterasi</div>
+              <div style="font-family: 'Instrument Serif', serif; font-size: 28px; color: var(--text);">≈ 50</div>
+              <div style="font-size: 12px; color: var(--text3); margin-top: 4px;">sampai konvergen</div>
+            </div>
+            <div class="s4" style="padding: 18px 20px;">
+              <div class="eyebrow" style="margin-bottom: 6px;">Tol</div>
+              <div style="font-family: 'Instrument Serif', serif; font-size: 28px; color: var(--text);">10<sup style="font-size: 18px;">−6</sup></div>
+              <div style="font-size: 12px; color: var(--text3); margin-top: 4px;">|ΔPR| threshold</div>
+            </div>
+          </div>
+
+          <div class="eyebrow" style="margin-bottom: 14px;">Langkah-langkah</div>
+          <div style="border-top: 1px solid var(--rule);">
+            <div class="step-row">
+              <div class="step-num">01</div>
+              <div class="step-body">
+                <strong>Inisialisasi</strong>
+                <p>Setiap node v diberi PR awal = 1/N. Untuk graf 65 node, PR awal ≈ 0.0154 untuk semua.</p>
+              </div>
+            </div>
+            <div class="step-row">
+              <div class="step-num">02</div>
+              <div class="step-body">
+                <strong>Distribusi pengaruh</strong>
+                <p>Setiap node membagi PR-nya secara merata ke semua tetangga. Tetangga menerima "voting" — semakin banyak vote dari node penting, semakin tinggi PR-nya.</p>
+              </div>
+            </div>
+            <div class="step-row">
+              <div class="step-num">03</div>
+              <div class="step-body">
+                <strong>Damping factor (d = 0.85)</strong>
+                <p>Mensimulasikan probabilitas user random meninggalkan jaringan (15%) — mencegah skor terjebak di "sink node". Tanpa damping, algoritma bisa divergen.</p>
+              </div>
+            </div>
+            <div class="step-row">
+              <div class="step-num">04</div>
+              <div class="step-body">
+                <strong>Iterasi sampai konvergen</strong>
+                <p>Ulangi langkah 2–3 sampai perubahan PR antar iterasi sangat kecil. Pada dataset kami, konvergen di iterasi ke-47.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="eyebrow" style="margin: 28px 0 10px;">Pseudocode</div>
+          <pre class="code"><span class="kw">function</span> <span class="fn">pageRank</span>(G, d=<span class="num">0.85</span>, maxIter=<span class="num">100</span>, tol=<span class="num">1e-6</span>):
+  N = |V(G)|
+  PR = { v: <span class="num">1</span>/N <span class="kw">for</span> v <span class="kw">in</span> V(G) }
+
+  <span class="kw">for</span> k <span class="kw">in</span> <span class="num">1</span>..maxIter:
+    PR_new = { v: (<span class="num">1</span> − d) / N <span class="kw">for</span> v <span class="kw">in</span> V(G) }
+    <span class="kw">for</span> u <span class="kw">in</span> V(G):
+      <span class="kw">if</span> |out(u)| > <span class="num">0</span>:
+        share = d · PR[u] / |out(u)|
+        <span class="kw">for</span> v <span class="kw">in</span> out(u):
+          PR_new[v] += share
+    <span class="kw">if</span> max(|PR_new[v] − PR[v]| <span class="kw">for</span> v) &lt; tol:
+      <span class="kw">break</span>
+    PR = PR_new
+  <span class="kw">return</span> PR</pre>
+
+          <div class="callout" style="margin-top: 20px;">
+            <strong>Pada dataset kami</strong> — <span class="mono">@willie27_</span> mendapat PR 3.42% — di atas
+            median (1.2%) karena terhubung ke 3 hub besar (Baim Wong, Jess No Limit) plus banyak kreator Bengkulu.
+          </div>
+        </article>
+
+        <!-- ========== LOUVAIN ========== -->
+        <article id="louvain" class="section-block">
+          <div class="row" style="gap:10px; margin-bottom: 14px;">
+            <span class="mono" style="color: var(--text3); font-size: 12px;">03 — Klastering</span>
+            <span class="tag tag-mono">O(E · log V)</span>
+          </div>
+          <h2 class="h2" style="margin-bottom: 14px;">Louvain Community Detection</h2>
+          <p class="lede-sm" style="margin-bottom: 24px;">
+            Algoritma greedy untuk memaksimalkan modularitas — metrik yang mengukur seberapa "rapat"
+            klaster dibanding ekspektasi acak. Diperkenalkan Blondel et al. (2008).
+          </p>
+
+          <div class="eyebrow" style="margin-bottom: 10px;">Modularitas (Q)</div>
+          <div class="formula" style="margin-bottom: 22px;">
+            Q = (1 / 2m) · Σ<sub>i,j</sub> [ A<sub>ij</sub> − (k<sub>i</sub> · k<sub>j</sub>) / 2m ] · δ(c<sub>i</sub>, c<sub>j</sub>)
+          </div>
+          <p style="font-size:13.5px; color:var(--text2); margin: -12px 0 26px;">
+            Q berkisar dari −1 sampai 1. Q > 0.3 = struktur komunitas terdeteksi; Q > 0.7 = sangat jelas.
+            Dataset kami: <strong style="color: var(--text);">Q = 0.71</strong>.
+          </p>
+
+          <div class="eyebrow" style="margin-bottom: 14px;">Langkah-langkah</div>
+          <div style="border-top: 1px solid var(--rule);">
+            <div class="step-row">
+              <div class="step-num">01</div>
+              <div class="step-body"><strong>Inisialisasi</strong><p>Setiap node menjadi komunitasnya sendiri. Awal: 65 komunitas.</p></div>
+            </div>
+            <div class="step-row">
+              <div class="step-num">02</div>
+              <div class="step-body"><strong>Phase 1 — Local moving</strong><p>Untuk setiap node, hitung ΔQ jika dipindahkan ke komunitas tetangga. Pindahkan ke yang memberi ΔQ paling besar. Ulangi sampai tidak ada perpindahan yang menambah Q.</p></div>
+            </div>
+            <div class="step-row">
+              <div class="step-num">03</div>
+              <div class="step-body"><strong>Phase 2 — Aggregation</strong><p>Setiap komunitas yang terbentuk dikompres menjadi satu super-node. Edge antar komunitas menjadi edge bobot antar super-node.</p></div>
+            </div>
+            <div class="step-row">
+              <div class="step-num">04</div>
+              <div class="step-body"><strong>Ulangi sampai Q tidak bertambah</strong><p>Phase 1 dan 2 diulang. Pada dataset kami, konvergen setelah 4 level dengan 6 komunitas final.</p></div>
+            </div>
+          </div>
+
+          <div class="callout" style="margin-top: 24px;">
+            <strong>Hasil — 6 komunitas</strong>: Kreator Nasional, Lokal Bengkulu, Internasional,
+            Organisasi/Media, Brand Endorsement, dan Politik/Tokoh Publik.
+          </div>
+        </article>
+
+        <!-- ========== BETWEENNESS ========== -->
+        <article id="betweenness" class="section-block">
+          <div class="row" style="gap:10px; margin-bottom: 14px;">
+            <span class="mono" style="color: var(--text3); font-size: 12px;">04 — Global</span>
+            <span class="tag tag-mono">O(V · E)</span>
+          </div>
+          <h2 class="h2" style="margin-bottom: 14px;">Betweenness Centrality</h2>
+          <p class="lede-sm" style="margin-bottom: 22px;">
+            Menghitung berapa banyak <em>shortest path</em> antar pasangan node yang melewati node v.
+            Tinggi = node ini adalah jembatan kritis dalam komunikasi jaringan.
+          </p>
+
+          <div class="eyebrow" style="margin-bottom: 10px;">Definisi</div>
+          <div class="formula" style="margin-bottom: 22px;">
+            C<sub>B</sub>(v) = Σ<sub>s≠v≠t</sub> [ σ<sub>st</sub>(v) / σ<sub>st</sub> ]
+          </div>
+          <p style="font-size:13.5px; color:var(--text2); margin: -12px 0 22px;">
+            σ<sub>st</sub> = total shortest path dari s ke t; σ<sub>st</sub>(v) = jumlah yang melewati v.
+            Implementasi: algoritma Brandes (2001) — BFS dari setiap source.
+          </p>
+
+          <div class="callout">
+            <strong>Pada dataset</strong> — Node dengan betweenness tinggi adalah "jembatan" antar
+            komunitas. <span class="mono">@willie27_</span> dan <span class="mono">@kotabkl</span> punya
+            betweenness terbesar. Putus mereka, dan komunikasi antar klaster terganggu.
+          </div>
+        </article>
+
+        <!-- ========== KOMPARASI ========== -->
+        <article id="comparison" class="section-block">
+          <div class="eyebrow" style="margin-bottom: 14px;">05 — Komparasi</div>
+          <h2 class="h2" style="margin-bottom: 22px;">Memilih algoritma yang tepat.</h2>
+
+          <table class="rank-table">
+            <thead>
+              <tr>
+                <th>Algoritma</th>
+                <th>Pertanyaan</th>
+                <th>Kompleksitas</th>
+                <th>Skala</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Degree</strong></td>
+                <td>Siapa paling banyak kolaborasi?</td>
+                <td class="mono">O(V + E)</td>
+                <td>Lokal</td>
+              </tr>
+              <tr>
+                <td><strong>PageRank</strong></td>
+                <td>Siapa paling berpengaruh secara kualitas?</td>
+                <td class="mono">O(k · (V+E))</td>
+                <td>Global iteratif</td>
+              </tr>
+              <tr>
+                <td><strong>Betweenness</strong></td>
+                <td>Siapa jembatan komunikasi?</td>
+                <td class="mono">O(V · E)</td>
+                <td>Global, mahal</td>
+              </tr>
+              <tr>
+                <td><strong>Louvain</strong></td>
+                <td>Komunitas apa yang muncul?</td>
+                <td class="mono">O(E · log V)</td>
+                <td>Klastering hierarkis</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p style="margin-top: 24px; color: var(--text2); font-size: 14px; max-width: 60ch;">
+            <strong style="color: var(--text);">Referensi:</strong>
+            Brandes, U. (2001). <em>A faster algorithm for betweenness centrality</em>.
+            Page, L. &amp; Brin, S. (1998). <em>The anatomy of a large-scale hypertextual web search engine</em>.
+            Blondel, V. et al. (2008). <em>Fast unfolding of communities in large networks</em>.
+          </p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div>Kelompok 2 — Teori Graf · IF2151 · 2026</div>
+    <div class="mono">Brandes (2001) · Page &amp; Brin (1998) · Blondel et al. (2008)</div>
+  </div>
+</footer>
+
+<script>
+  const links = document.querySelectorAll('.algo-toc a');
+  const sections = [...document.querySelectorAll('article[id]')];
+  function onScroll() {
+    let active = sections[0]?.id;
+    const y = window.scrollY + 120;
+    sections.forEach(s => { if (s.offsetTop <= y) active = s.id; });
+    links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + active));
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  links.forEach(a => a.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.getElementById(a.getAttribute('href').slice(1));
+    if (!target) return;
+    const y = target.getBoundingClientRect().top + window.scrollY - 80;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  }));
+</script>
+
+</body>
+</html>
