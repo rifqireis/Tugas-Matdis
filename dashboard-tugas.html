@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kelompok 2 — Social Network Influence Detection</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#faf9f6;--bg2:#ffffff;--bg3:#f3f1ec;--bg4:#ebe8e1;
+--text:#1a1a1a;--text2:#5a5a5a;--text3:#8a8a8a;
+--accent:#4f46e5;--accent2:#6366f1;--accent-light:#eef2ff;
+--green:#059669;--green-light:#ecfdf5;--green-dark:#064e3b;
+--red:#dc2626;--red-light:#fef2f2;
+--amber:#d97706;--amber-light:#fffbeb;--amber-dark:#78350f;
+--blue:#2563eb;--blue-light:#eff6ff;--blue-dark:#1e3a5f;
+--pink:#db2777;--pink-light:#fdf2f8;
+--teal:#0d9488;--teal-light:#f0fdfa;
+--border:#e5e2dc;--border2:#d5d0c8;
+--radius:14px;--radius-sm:10px;
+--shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.03);
+--shadow-lg:0 4px 24px rgba(0,0,0,0.06);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.75}
+::selection{background:var(--accent);color:#fff}
+.container{max-width:920px;margin:0 auto;padding:0 24px}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(250,249,246,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+nav .container{display:flex;align-items:center;justify-content:space-between;height:56px}
+nav .logo{font-weight:800;font-size:14px;letter-spacing:0.5px;color:var(--accent)}
+nav .nav-links{display:flex;gap:20px}
+nav .nav-links a{font-size:13px;color:var(--text2);text-decoration:none;transition:color .2s;font-weight:500}
+nav .nav-links a:hover{color:var(--accent)}
+.hero{padding:120px 0 48px;text-align:center}
+.hero .badge{display:inline-block;padding:6px 18px;background:var(--accent-light);color:var(--accent);font-size:12px;font-weight:700;border-radius:20px;margin-bottom:20px}
+.hero h1{font-size:clamp(28px,5vw,42px);font-weight:800;line-height:1.2;margin-bottom:16px}
+.hero p{font-size:16px;color:var(--text2);max-width:600px;margin:0 auto}
+section{padding:56px 0}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;font-weight:600}
+.section-title{font-size:24px;font-weight:800;margin-bottom:8px}
+.section-desc{font-size:15px;color:var(--text2);margin-bottom:28px;max-width:640px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:14px;box-shadow:var(--shadow);transition:box-shadow .3s}
+.card:hover{box-shadow:var(--shadow-lg)}
+.card h3{font-size:16px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.card p,.card li{font-size:14px;color:var(--text2);line-height:1.8}
+.card ul{padding-left:20px}
+.card ul li{margin-bottom:4px}
+.tag{display:inline-block;padding:3px 12px;border-radius:8px;font-size:11px;font-weight:700}
+.tag-green{background:var(--green-light);color:var(--green)}
+.tag-amber{background:var(--amber-light);color:var(--amber)}
+.tag-blue{background:var(--blue-light);color:var(--blue)}
+.tag-pink{background:var(--pink-light);color:var(--pink)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@media(max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.algo-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:16px}
+.algo-header{padding:20px 24px 16px;border-bottom:1px solid var(--border)}
+.algo-header h3{font-size:18px;font-weight:800;margin-bottom:2px}
+.algo-header .complexity{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--amber-dark);background:var(--amber-light);padding:4px 12px;border-radius:8px;display:inline-block;margin-top:8px}
+.algo-body{padding:20px 24px 24px}
+.algo-body p{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:12px}
+.algo-body ul{padding-left:20px;margin-bottom:12px}
+.algo-body li{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:2px}
+.algo-analogy{background:var(--accent-light);border-left:4px solid var(--accent);padding:14px 18px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:13px;color:var(--text);margin-top:14px;line-height:1.7}
+.graph-container{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px;box-shadow:var(--shadow)}
+canvas#graphCanvas{width:100%;border-radius:var(--radius-sm);background:var(--bg3)}
+.graph-controls{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.graph-btn{padding:7px 16px;font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text2);cursor:pointer;transition:all .2s}
+.graph-btn:hover{border-color:var(--accent);color:var(--accent)}
+.graph-btn.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+.rank-table{width:100%;border-collapse:collapse;font-size:13px}
+.rank-table th{text-align:left;padding:10px 12px;font-weight:700;color:var(--text3);border-bottom:2px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:1px}
+.rank-table td{padding:10px 12px;border-bottom:1px solid var(--border)}
+.rank-table tr:hover{background:var(--accent-light)}
+.rank-num{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent)}
+.rank-bar{height:8px;border-radius:4px;background:var(--bg3)}
+.rank-bar-fill{height:100%;border-radius:4px}
+.q-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;box-shadow:var(--shadow)}
+.q-num{min-width:32px;height:32px;border-radius:10px;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;font-family:'JetBrains Mono',monospace}
+.q-content h4{font-size:14px;font-weight:700;margin-bottom:4px}
+.q-content p{font-size:13px;color:var(--text2)}
+.timeline{position:relative;padding-left:36px}
+.timeline::before{content:'';position:absolute;left:13px;top:8px;bottom:8px;width:3px;background:var(--bg4);border-radius:2px}
+.tl-item{position:relative;margin-bottom:28px}
+.tl-dot{position:absolute;left:-36px;top:2px;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid var(--bg)}
+.tl-dot.active{background:var(--amber);box-shadow:0 0 0 4px var(--amber-light)}
+.tl-dot.pending{background:var(--bg4)}
+.tl-dot-inner{width:8px;height:8px;border-radius:50%;background:#fff}
+.tl-content h4{font-size:15px;font-weight:700;margin-bottom:4px}
+.tl-content p{font-size:13px;color:var(--text2)}
+.check-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);font-size:14px;cursor:pointer;user-select:none}
+.check-item:last-child{border-bottom:none}
+.check-box{width:22px;height:22px;border-radius:7px;border:2px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.check-box.checked{background:var(--green);border-color:var(--green)}
+.check-box.checked::after{content:'✓';color:#fff;font-size:13px;font-weight:700}
+.check-label{color:var(--text2)}.check-label.done{text-decoration:line-through;color:var(--text3)}
+.job-card{border-radius:var(--radius);padding:22px 24px;border:1px solid var(--border);box-shadow:var(--shadow);background:var(--bg2)}
+.job-card h3{font-size:15px;font-weight:800;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.job-card .job-desc{font-size:13px;color:var(--text2);margin-bottom:12px}
+.job-card ul{padding-left:18px}
+.job-card li{font-size:13px;color:var(--text2);margin-bottom:4px}
+.job-a{border-left:4px solid var(--accent)}.job-b{border-left:4px solid var(--green)}.job-c{border-left:4px solid var(--amber)}.job-d{border-left:4px solid var(--pink)}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px;text-align:center;box-shadow:var(--shadow)}
+.stat-num{font-size:32px;font-weight:800;font-family:'JetBrains Mono',monospace}
+.stat-label{font-size:12px;color:var(--text2);margin-top:4px;font-weight:500}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:32px 0}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3);padding:2px 8px;border-radius:6px;color:var(--amber-dark);font-weight:500}
+footer{padding:40px 0;text-align:center;color:var(--text3);font-size:13px;border-top:1px solid var(--border)}
+.fade-in{opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s}.fade-in.visible{opacity:1;transform:translateY(0)}
+.callout{border-radius:var(--radius);padding:18px 22px;margin-bottom:16px;font-size:14px;line-height:1.8}
+.callout-blue{background:var(--blue-light);border-left:4px solid var(--blue);color:var(--blue-dark)}
+.callout-amber{background:var(--amber-light);border-left:4px solid var(--amber);color:var(--amber-dark)}
+.compare-row{display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--border)}.compare-row:last-child{border-bottom:none}
+.compare-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.compare-content{flex:1}.compare-content h4{font-size:14px;font-weight:700;margin-bottom:2px}.compare-content p{font-size:13px;color:var(--text2)}
+canvas.mini-viz{width:100%;border-radius:var(--radius-sm);background:var(--bg3);display:block}
+</style>
+</head>
+<body>
+<nav><div class="container"><div class="logo">KELOMPOK 2</div><div class="nav-links"><a href="#overview">Overview</a><a href="#graf">Graf</a><a href="#algoritma">Algoritma</a><a href="#studi-kasus">Studi Kasus</a><a href="#output">Output</a><a href="#rencana">Rencana</a></div></div></nav>
+<div class="container">
+<div class="hero"><div class="badge">Tugas Teori Graf — Kelompok 2</div><h1>Social Network Influence Detection</h1><p>Mencari kreator konten paling berpengaruh di Instagram menggunakan teori graf dan algoritma PageRank, Degree Centrality, dan Community Detection.</p></div>
+<div class="grid-3 fade-in" style="margin-bottom:48px"><div class="stat-card"><div class="stat-num" style="color:var(--accent)">3</div><div class="stat-label">Algoritma graf</div></div><div class="stat-card"><div class="stat-num" style="color:var(--green)">7</div><div class="stat-label">Pertanyaan wajib</div></div><div class="stat-card"><div class="stat-num" style="color:var(--amber)">3</div><div class="stat-label">Hari deadline</div></div></div>
+
+<section id="overview" class="fade-in"><div class="section-label">01 / Overview</div><div class="section-title">Apa yang kita kerjakan?</div><div class="section-desc">Bayangkan sebuah startup minta kalian: siapa kreator konten Instagram yang paling berpengaruh? Jawabannya bukan sekadar lihat followers — tapi pakai analisis graf.</div>
+<div class="card"><h3>🎯 Inti masalah</h3><p>Followers hanya angka. Akun dengan 10 juta followers belum tentu lebih berpengaruh dari akun 2 juta followers. Yang penting bukan <strong>berapa banyak</strong> yang follow, tapi <strong>siapa</strong> yang berkolaborasi dengannya.</p><p style="margin-top:12px">Contoh: Kreator A punya 5 juta followers dari akun biasa. Kreator B punya 2 juta, tapi yang collab sama dia adalah Windah, Jess No Limit, dan MiauAug. Siapa lebih berpengaruh? Algoritma graf menjawabnya secara matematis.</p></div>
+<div class="grid-3" style="margin-top:14px"><div class="card" style="text-align:center"><h3 style="justify-content:center;font-size:28px;margin-bottom:12px">🔍</h3><p><strong>Cari influencer utama</strong></p><p style="font-size:13px">Siapa node paling strategis?</p></div><div class="card" style="text-align:center"><h3 style="justify-content:center;font-size:28px;margin-bottom:12px">👥</h3><p><strong>Analisis komunitas</strong></p><p style="font-size:13px">Kelompok mana yang terbentuk?</p></div><div class="card" style="text-align:center"><h3 style="justify-content:center;font-size:28px;margin-bottom:12px">🔗</h3><p><strong>Hubungan tersembunyi</strong></p><p style="font-size:13px">Koneksi tidak langsung</p></div></div></section>
+
+<div class="divider"></div>
+
+<section id="graf" class="fade-in"><div class="section-label">02 / Konsep Graf</div><div class="section-title">Apa itu graf dalam konteks tugas ini?</div><div class="section-desc">Graf adalah cara memodelkan jaringan media sosial secara matematis.</div>
+<div class="grid-2"><div class="card"><h3><span class="tag tag-blue">Node</span> Titik dalam graf</h3><p>Setiap akun Instagram = 1 node. Contoh: Windah, MiauAug, Jess No Limit.</p></div><div class="card"><h3><span class="tag tag-pink">Edge</span> Garis penghubung</h3><p>Hubungan kolaborasi antar akun = edge. Windah collab MiauAug → ada edge.</p></div></div>
+<div class="card" style="margin-top:14px"><h3>Visualisasi node dan edge</h3><canvas id="nodeEdgeViz" class="mini-viz" height="160"></canvas><p style="margin-top:12px;font-size:13px;color:var(--text3)">Lingkaran = node (akun). Garis berpanah = edge (kolaborasi). Panah menunjukkan arah: siapa yang mengajak siapa.</p></div>
+<div class="card" style="margin-top:14px"><h3><span class="tag tag-amber">Directed Graph</span> Graf berarah</h3><p>Edge punya arah panah. <code>A → B</code> artinya A berkolaborasi menuju B. Bisa satu arah atau dua arah (A ↔ B jika saling collab).</p><p style="margin-top:8px"><strong>Kenapa directed?</strong> Karena kolaborasi punya inisiatif — siapa yang mengajak siapa.</p></div>
+<div class="card" style="margin-top:14px"><h3>📌 Definisi edge kita</h3><div class="callout callout-blue" style="margin-top:8px">Edge A → B didefinisikan sebagai: <strong>akun A pernah berkolaborasi dengan akun B</strong> — kolaborasi konten, ikut lomba, bikin konten bareng, atau berpartisipasi dalam kegiatan yang sama.</div><p>Definisi ini harus konsisten dari awal sampai akhir.</p></div>
+<div class="card" style="margin-top:14px"><h3>🔄 Cycle dalam graf</h3><canvas id="cycleViz" class="mini-viz" height="180"></canvas><p style="margin-top:12px">Cycle = pengaruh berputar kembali ke asal. Windah collab MiauAug → MiauAug collab Jess → Jess collab Windah → cycle. PageRank dirancang untuk graf yang punya cycle.</p></div></section>
+
+<div class="divider"></div>
+
+<section id="algoritma" class="fade-in"><div class="section-label">03 / Algoritma</div><div class="section-title">3 algoritma yang kita pakai</div><div class="section-desc">Wajib minimal 2. Kita pakai 3 supaya analisis lebih kaya.</div>
+
+<div class="algo-card"><div class="algo-header" style="background:var(--blue-light)"><h3 style="color:var(--blue)">1. Degree Centrality</h3><p style="font-size:13px;color:var(--text2);margin-top:4px">Menghitung jumlah koneksi langsung setiap node</p><div class="complexity">O(V + E) — linier, sangat cepat</div></div><div class="algo-body"><p><strong>Cara kerja:</strong> Hitung berapa banyak edge masuk (in-degree) dan keluar (out-degree). Node dengan degree tertinggi = koneksi terbanyak.</p><canvas id="degreeViz" class="mini-viz" height="200" style="margin:16px 0"></canvas><div class="algo-analogy"><strong>Analogi:</strong> Di kampus, siapa yang punya teman paling banyak? Degree hitung jumlahnya saja — gak peduli temannya siapa. 20 teman = degree tertinggi, meskipun semua temannya anak biasa.</div><p style="margin-top:12px"><strong>Kelemahan:</strong> Tidak pertimbangkan kualitas. 100 koneksi ke akun kecil = nilainya sama dengan 100 koneksi ke influencer besar.</p></div></div>
+
+<div class="algo-card"><div class="algo-header" style="background:var(--accent-light)"><h3 style="color:var(--accent)">2. PageRank</h3><p style="font-size:13px;color:var(--text2);margin-top:4px">Mengukur pengaruh berdasarkan kualitas koneksi</p><div class="complexity">O(k × (V + E)), k = jumlah iterasi</div></div><div class="algo-body"><p><strong>Cara kerja:</strong> Algoritma yang sama dipakai Google untuk ranking website. Dikolaborasi oleh kreator besar → nilaimu tinggi. Dikolaborasi oleh akun biasa → nilaimu rendah. Pengaruh menyebar berlapis-lapis.</p><canvas id="pagerankViz" class="mini-viz" height="220" style="margin:16px 0"></canvas><div class="algo-analogy"><strong>Analogi:</strong> Bukan siapa yang punya teman terbanyak — tapi siapa yang temannya ketua OSIS, ketua BEM, asisten dosen. 5 teman berpengaruh > 50 teman biasa.</div><p style="margin-top:12px"><strong>k (iterasi):</strong> PageRank menghitung berulang-ulang sampai stabil. Biasanya 100 iterasi cukup.</p></div></div>
+
+<div class="algo-card"><div class="algo-header" style="background:var(--green-light)"><h3 style="color:var(--green)">3. Community Detection (Louvain)</h3><p style="font-size:13px;color:var(--text2);margin-top:4px">Menemukan kelompok yang terbentuk dalam jaringan</p><div class="complexity">O(V log V) — efisien untuk graf besar</div></div><div class="algo-body"><p><strong>Cara kerja:</strong> Node yang sering berinteraksi satu sama lain dikelompokkan ke komunitas yang sama.</p><ul><li>Awalnya setiap node = komunitas sendiri</li><li>Gabungkan node ke tetangganya</li><li>Ukur pakai nilai <strong>modularity</strong></li><li>Ulangi sampai modularity tidak naik lagi</li></ul><canvas id="communityViz" class="mini-viz" height="200" style="margin:16px 0"></canvas><div class="algo-analogy"><strong>Analogi:</strong> Di sekolah, tanpa disuruh kalian otomatis ngelompok — anak gaming bareng, anak musik bareng. Community Detection menemukan pola ini dari data.</div><p style="margin-top:12px"><strong>Modularity:</strong> Nilai 0–1. Mendekati 1 = komunitas rapat. Mendekati 0 = asal-asalan.</p></div></div>
+
+<div class="card"><h3>Perbandingan 3 algoritma</h3><div class="compare-row"><div class="compare-icon" style="background:var(--blue-light)">📊</div><div class="compare-content"><h4 style="color:var(--blue)">Degree Centrality</h4><p>Siapa punya koneksi terbanyak? • Simpel, cepat • Abaikan kualitas</p></div></div><div class="compare-row"><div class="compare-icon" style="background:var(--accent-light)">⚡</div><div class="compare-content"><h4 style="color:var(--accent)">PageRank</h4><p>Siapa paling berpengaruh? • Akurat, ukur kualitas • Lebih kompleks</p></div></div><div class="compare-row"><div class="compare-icon" style="background:var(--green-light)">👥</div><div class="compare-content"><h4 style="color:var(--green)">Community Detection</h4><p>Kelompok apa yang terbentuk? • Temukan pola tersembunyi • Hasil bisa bervariasi</p></div></div></div></section>
+
+<div class="divider"></div>
+
+<section id="studi-kasus" class="fade-in"><div class="section-label">04 / Studi Kasus Contoh</div><div class="section-title">Jaringan YouTube Gaming Indonesia</div><div class="section-desc">Contoh untuk memahami konsep. Studi kasus tugas sesungguhnya ditentukan bersama.</div>
+<div class="callout callout-amber"><strong>Catatan:</strong> Ini contoh untuk belajar. Data tugas kita yang sesungguhnya akan dibuat bersama saat kumpul.</div>
+<div class="graph-container"><canvas id="graphCanvas" height="400"></canvas><div class="graph-controls"><button class="graph-btn active" onclick="setMode('community')">Community</button><button class="graph-btn" onclick="setMode('pagerank')">PageRank</button><button class="graph-btn" onclick="setMode('degree')">Degree</button></div><div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;font-size:12px;color:var(--text2)"><span style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#4f46e5;display:inline-block"></span>Gaming</span><span style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#059669;display:inline-block"></span>Vlog / Hiburan</span><span style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#db2777;display:inline-block"></span>Kreator Kecil</span></div></div>
+<div class="grid-2" style="margin-top:14px"><div class="card"><h3>📊 Ranking PageRank</h3><table class="rank-table" id="pr-table"></table></div><div class="card"><h3>📊 Degree Centrality</h3><table class="rank-table" id="dc-table"></table></div></div>
+<div class="card" style="margin-top:14px"><h3>💡 Insight</h3><p>Perhatikan perbedaan ranking PageRank vs Degree. Node yang terhubung ke sesama kreator besar naik di PageRank meski degree-nya tidak tertinggi. Ini menunjukkan kenapa butuh <strong>lebih dari satu algoritma</strong>.</p></div>
+<div class="card" style="margin-top:14px"><h3>🌉 Hubungan tersembunyi</h3><p>Kreator kecil (Kreator X, Y) tidak punya koneksi langsung ke kreator besar. Tapi melalui <strong>Kreator Lokal</strong> yang pernah collab dengan kreator besar, mereka secara tidak langsung terhubung ke seluruh jaringan. Kreator Lokal = <strong>bridge (jembatan)</strong>.</p></div></section>
+
+<div class="divider"></div>
+
+<section id="pertanyaan" class="fade-in"><div class="section-label">05 / Analisis Wajib</div><div class="section-title">7 pertanyaan yang harus dijawab di laporan</div><div class="section-desc">Semua pertanyaan dijawab berdasarkan data dan analisis graf kita.</div>
+<div class="q-card"><div class="q-num">1</div><div class="q-content"><h4>Jenis graf apa yang digunakan?</h4><p>Directed Graph (Digraph) — hubungan kolaborasi punya arah.</p></div></div>
+<div class="q-card"><div class="q-num">2</div><div class="q-content"><h4>Berapa kardinalitas vertex dan edge?</h4><p>Menyusul setelah data final dikumpulkan bersama.</p></div></div>
+<div class="q-card"><div class="q-num">3</div><div class="q-content"><h4>Apakah graf connected?</h4><p>Akan dianalisis dari hasil kode.</p></div></div>
+<div class="q-card"><div class="q-num">4</div><div class="q-content"><h4>Apakah terdapat cycle?</h4><p>Ya — ada mutual kolaborasi antar kreator.</p></div></div>
+<div class="q-card"><div class="q-num">5</div><div class="q-content"><h4>Algoritma apa yang paling optimal?</h4><p>PageRank — mempertimbangkan kualitas, bukan hanya kuantitas.</p></div></div>
+<div class="q-card"><div class="q-num">6</div><div class="q-content"><h4>Bagaimana skalabilitas solusi?</h4><p>Baik — PageRank O(k·(V+E)) dan Degree O(V+E) keduanya linier.</p></div></div>
+<div class="q-card"><div class="q-num">7</div><div class="q-content"><h4>Apa inovasi yang dapat dikembangkan?</h4><p>Prediksi kolaborasi berikutnya, deteksi komunitas baru, identifikasi akun bot.</p></div></div></section>
+
+<div class="divider"></div>
+
+<section id="output" class="fade-in"><div class="section-label">06 / Output</div><div class="section-title">Yang harus dikumpulkan</div><div class="section-desc">4 deliverable dalam 3 hari.</div>
+<div class="card"><h3><span class="tag tag-blue">Wajib</span> 1. Laporan Lengkap</h3><ul><li><strong>BAB 1:</strong> Pendahuluan — latar belakang, rumusan masalah, tujuan</li><li><strong>BAB 2:</strong> Dasar Teori — definisi graf, PageRank, Degree, Louvain</li><li><strong>BAB 3:</strong> Pemodelan Graf — dataset, definisi node & edge</li><li><strong>BAB 4:</strong> Analisis — hasil algoritma, jawab 7 pertanyaan, kompleksitas</li><li><strong>BAB 5:</strong> Kesimpulan — influencer utama, rekomendasi, inovasi</li></ul></div>
+<div class="card"><h3><span class="tag tag-blue">Wajib</span> 2. Visualisasi Graf</h3><p>Minimal 1 visualisasi. Bisa pakai Python NetworkX, Gephi, Neo4j, atau Draw.io.</p></div>
+<div class="card"><h3><span class="tag tag-blue">Wajib</span> 3. Presentasi</h3><p>Durasi 10–15 menit.</p></div>
+<div class="card"><h3><span class="tag tag-green">Bonus</span> 4. Implementasi</h3><p>Program Python yang sudah kita punya bisa jadi bonus.</p></div></section>
+
+<div class="divider"></div>
+
+<section id="rencana" class="fade-in"><div class="section-label">07 / Rencana Kerja</div><div class="section-title">Timeline 3 hari</div>
+<div class="timeline" style="margin-bottom:32px"><div class="tl-item"><div class="tl-dot active"><div class="tl-dot-inner"></div></div><div class="tl-content"><h4>Hari 1 — Malam ini (DC)</h4><p>Samakan pemahaman, kumpulkan data, bagi jobdesk, mulai BAB 1 & 2. Target: 50%.</p></div></div><div class="tl-item"><div class="tl-dot pending"><div class="tl-dot-inner"></div></div><div class="tl-content"><h4>Hari 2 — Pertemuan offline</h4><p>Coding Python, visualisasi, BAB 3 & 4, mulai slide.</p></div></div><div class="tl-item"><div class="tl-dot pending"><div class="tl-dot-inner"></div></div><div class="tl-content"><h4>Hari 3 — Finishing</h4><p>Slide selesai, BAB 5, rehearsal, cek semua.</p></div></div></div>
+
+<div class="card" style="border:2px solid var(--amber)"><h3>🎯 Checklist DC malam ini</h3><p style="margin-bottom:16px;font-size:13px;color:var(--text2)">Klik untuk mencentang:</p>
+<div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Semua paham konsep graf, PageRank, Degree, Community Detection</span></div>
+<div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Data node sudah final</span></div>
+<div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Data edge sudah final</span></div>
+<div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Definisi edge disepakati</span></div>
+<div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Jobdesk dibagi</span></div>
+<div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Draft BAB 1 mulai ditulis</span></div>
+<div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">Draft BAB 2 mulai ditulis</span></div></div>
+
+<div class="section-title" style="margin-top:32px;margin-bottom:16px">Opsi Jobdesk</div>
+<div class="grid-2"><div class="job-card job-a"><h3><span class="tag tag-blue">A</span> Data & Coding</h3><div class="job-desc">Kumpulkan data, bangun graf Python, jalankan algoritma</div><ul><li>Cek Instagram untuk verifikasi</li><li>Masukkan data ke kode Python</li><li>Jalankan PageRank, Degree, Community</li><li>Hasilkan visualisasi graf</li></ul></div><div class="job-card job-b"><h3><span class="tag tag-green">B</span> Laporan Teori</h3><div class="job-desc">BAB 1 Pendahuluan dan BAB 2 Dasar Teori</div><ul><li>Latar belakang masalah</li><li>Rumusan masalah dan tujuan</li><li>Teori graf, directed graph</li><li>Penjelasan tiap algoritma</li></ul></div><div class="job-card job-c"><h3><span class="tag tag-amber">C</span> Laporan Analisis</h3><div class="job-desc">BAB 3, BAB 4, BAB 5</div><ul><li>Definisi node, edge, dataset</li><li>Interpretasi hasil algoritma</li><li>Jawab 7 pertanyaan wajib</li><li>Kesimpulan dan rekomendasi</li></ul></div><div class="job-card job-d"><h3><span class="tag tag-pink">D</span> Presentasi</h3><div class="job-desc">Slide dan koordinasi</div><ul><li>Buat slide 10-15 menit</li><li>Masukkan visualisasi</li><li>Koordinasi semua output</li><li>Rehearsal presentasi</li></ul></div></div></section>
+
+<footer>Kelompok 2 — Social Network Influence Detection — 2026</footer>
+</div>
+
+<script>
+const F='Plus Jakarta Sans';
+function drawArrow(ctx,x1,y1,x2,y2,r,color,w){const angle=Math.atan2(y2-y1,x2-x1);const tx=x2-Math.cos(angle)*r,ty=y2-Math.sin(angle)*r;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(tx,ty);ctx.strokeStyle=color;ctx.lineWidth=w||1.5;ctx.stroke();ctx.beginPath();ctx.moveTo(tx,ty);ctx.lineTo(tx-8*Math.cos(angle-0.35),ty-8*Math.sin(angle-0.35));ctx.lineTo(tx-8*Math.cos(angle+0.35),ty-8*Math.sin(angle+0.35));ctx.closePath();ctx.fillStyle=color;ctx.fill()}
+function drawNode(ctx,x,y,r,color,label,tc){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();ctx.strokeStyle='rgba(0,0,0,0.08)';ctx.lineWidth=1;ctx.stroke();ctx.fillStyle=tc||'#fff';ctx.font=`600 ${Math.max(10,Math.min(13,r/2))}px "${F}",sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(label,x,y)}
+
+// Node & Edge viz
+(function(){const c=document.getElementById('nodeEdgeViz');const ctx=c.getContext('2d');c.width=680;c.height=160;
+drawArrow(ctx,172,80,308,80,28,'#94a3b8',2);drawArrow(ctx,372,80,508,80,28,'#94a3b8',2);drawArrow(ctx,540,48,340,50,28,'#cbd5e1',1.5);
+drawNode(ctx,140,80,28,'#4f46e5','Akun A');drawNode(ctx,340,80,28,'#059669','Akun B');drawNode(ctx,540,80,28,'#db2777','Akun C');
+ctx.fillStyle='#64748b';ctx.font=`500 11px "${F}"`;ctx.textAlign='center';ctx.fillText('collab →',240,68);ctx.fillText('collab →',440,68);ctx.fillText('← collab balik',440,42)})();
+
+// Cycle viz
+(function(){const c=document.getElementById('cycleViz');const ctx=c.getContext('2d');c.width=680;c.height=180;
+drawArrow(ctx,316,56,222,124,28,'#6366f1',2);drawArrow(ctx,232,140,448,140,28,'#6366f1',2);drawArrow(ctx,462,124,362,56,28,'#6366f1',2);
+drawNode(ctx,340,40,28,'#4f46e5','Windah');drawNode(ctx,200,140,28,'#4f46e5','MiauAug');drawNode(ctx,480,140,28,'#4f46e5','Jess NL');
+ctx.fillStyle='#4f46e5';ctx.font=`700 12px "${F}"`;ctx.textAlign='center';ctx.fillText('CYCLE — pengaruh berputar terus!',340,178)})();
+
+// Degree viz
+(function(){const c=document.getElementById('degreeViz');const ctx=c.getContext('2d');c.width=680;c.height=200;
+const center={x:340,y:100};const around=[{x:140,y:60},{x:200,y:160},{x:340,y:180},{x:480,y:160},{x:540,y:60}];
+around.forEach(n=>{drawArrow(ctx,n.x,n.y,center.x,center.y,32,'#bfdbfe',1.5)});
+around.forEach((n,i)=>drawNode(ctx,n.x,n.y,20,'#93c5fd',String.fromCharCode(66+i),'#1e3a5f'));
+drawNode(ctx,340,100,32,'#2563eb','Node A');
+ctx.fillStyle='#2563eb';ctx.font=`700 13px "${F}"`;ctx.textAlign='center';ctx.fillText('In-degree = 5  (paling banyak koneksi masuk)',340,22)})();
+
+// PageRank viz
+(function(){const c=document.getElementById('pagerankViz');const ctx=c.getContext('2d');c.width=680;c.height=220;
+ctx.fillStyle='#f3f1ec';ctx.fillRect(0,0,680,220);
+const left=[{x:80,y:50},{x:80,y:110},{x:80,y:170}];
+left.forEach(n=>{drawArrow(ctx,94,n.y,236,110,24,'#d1d5db',1.2)});
+drawArrow(ctx,440,50,556,110,28,'#818cf8',2);drawArrow(ctx,440,170,556,110,28,'#818cf8',2);
+left.forEach(n=>drawNode(ctx,n.x,n.y,14,'#cbd5e1','','#64748b'));
+drawNode(ctx,260,110,24,'#f59e0b','Kreator A');
+drawNode(ctx,420,50,20,'#4f46e5','Windah');drawNode(ctx,420,170,20,'#4f46e5','Jess NL');
+drawNode(ctx,580,110,28,'#dc2626','Kreator B');
+ctx.font=`600 12px "${F}"`;ctx.textAlign='center';
+ctx.fillStyle='#f59e0b';ctx.fillText('Degree tinggi',260,150);ctx.fillText('PageRank RENDAH',260,165);
+ctx.fillStyle='#dc2626';ctx.fillText('Degree rendah',580,150);ctx.fillText('PageRank TINGGI!',580,165);
+ctx.fillStyle='#64748b';ctx.font=`500 11px "${F}"`;
+ctx.fillText('3 akun kecil',80,200);ctx.fillText('2 kreator besar',500,200)})();
+
+// Community viz
+(function(){const c=document.getElementById('communityViz');const ctx=c.getContext('2d');c.width=680;c.height=200;
+ctx.beginPath();ctx.ellipse(180,100,130,80,0,0,Math.PI*2);ctx.fillStyle='rgba(79,70,229,0.06)';ctx.fill();ctx.strokeStyle='rgba(79,70,229,0.2)';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);ctx.stroke();ctx.setLineDash([]);
+ctx.beginPath();ctx.ellipse(500,100,130,80,0,0,Math.PI*2);ctx.fillStyle='rgba(5,150,105,0.06)';ctx.fill();ctx.strokeStyle='rgba(5,150,105,0.2)';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);ctx.stroke();ctx.setLineDash([]);
+const gA=[{x:140,y:70},{x:220,y:70},{x:150,y:130},{x:220,y:130}];
+const gB=[{x:460,y:70},{x:540,y:70},{x:460,y:130},{x:540,y:130}];
+[[0,1],[0,2],[1,2],[1,3],[2,3]].forEach(([a,b])=>{ctx.beginPath();ctx.moveTo(gA[a].x,gA[a].y);ctx.lineTo(gA[b].x,gA[b].y);ctx.strokeStyle='rgba(79,70,229,0.25)';ctx.lineWidth=1.5;ctx.stroke()});
+[[0,1],[0,2],[1,3],[2,3]].forEach(([a,b])=>{ctx.beginPath();ctx.moveTo(gB[a].x,gB[a].y);ctx.lineTo(gB[b].x,gB[b].y);ctx.strokeStyle='rgba(5,150,105,0.25)';ctx.lineWidth=1.5;ctx.stroke()});
+ctx.beginPath();ctx.moveTo(220,130);ctx.lineTo(460,70);ctx.strokeStyle='rgba(220,38,38,0.3)';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([]);
+['A','B','C','D'].forEach((l,i)=>drawNode(ctx,gA[i].x,gA[i].y,18,'#4f46e5',l));
+['E','F','G','H'].forEach((l,i)=>drawNode(ctx,gB[i].x,gB[i].y,18,'#059669',l));
+ctx.font=`700 13px "${F}"`;ctx.textAlign='center';ctx.fillStyle='#4f46e5';ctx.fillText('Komunitas Gaming',180,185);ctx.fillStyle='#059669';ctx.fillText('Komunitas Vlog',500,185);ctx.fillStyle='#dc2626';ctx.font=`500 11px "${F}"`;ctx.fillText('edge antar komunitas',340,85)})();
+
+// Main graph
+const nodes=[{id:0,label:'Windah',x:340,y:60,comm:0,followers:25.0},{id:1,label:'MiauAug',x:180,y:120,comm:0,followers:12.5},{id:2,label:'JessNL',x:500,y:120,comm:0,followers:18.0},{id:3,label:'Frost',x:250,y:200,comm:0,followers:8.0},{id:4,label:'BangAlex',x:120,y:260,comm:1,followers:6.2},{id:5,label:'TanboyCun',x:480,y:220,comm:1,followers:9.8},{id:6,label:'KrtrLokal',x:340,y:300,comm:2,followers:0.8},{id:7,label:'KrtrX',x:240,y:360,comm:2,followers:0.3},{id:8,label:'KrtrY',x:440,y:360,comm:2,followers:0.2}];
+const edges=[[0,1],[1,0],[0,2],[2,0],[0,3],[1,3],[3,1],[2,5],[5,2],[4,1],[4,5],[0,5],[1,2],[6,0],[6,4],[6,5],[7,6],[8,6],[7,8]];
+const commColors=['#4f46e5','#059669','#db2777'];const commLight=['#eef2ff','#ecfdf5','#fdf2f8'];
+
+function pageRank(ns,es,d=0.85,it=100){const n=ns.length;let pr={};ns.forEach(nd=>pr[nd.id]=1/n);const od={};ns.forEach(nd=>od[nd.id]=0);es.forEach(([a])=>od[a]=(od[a]||0)+1);for(let i=0;i<it;i++){let np={};ns.forEach(nd=>np[nd.id]=(1-d)/n);es.forEach(([a,b])=>{np[b]+=d*pr[a]/(od[a]||1)});pr=np}return pr}
+function degreeCent(ns,es){const deg={};ns.forEach(nd=>deg[nd.id]=0);es.forEach(([a,b])=>{deg[a]++;deg[b]++});const dc={};ns.forEach(nd=>dc[nd.id]=deg[nd.id]/(ns.length-1));return dc}
+const pr=pageRank(nodes,edges);const dc=degreeCent(nodes,edges);
+const prMax=Math.max(...Object.values(pr));const dcMax=Math.max(...Object.values(dc));
+
+let mode='community';
+const canvas=document.getElementById('graphCanvas');const ctx=canvas.getContext('2d');canvas.width=680;canvas.height=400;
+function nodeColor(nd){if(mode==='community')return commColors[nd.comm];if(mode==='pagerank'){const t=pr[nd.id]/prMax;return`hsl(${250-t*20},${55+t*30}%,${70-t*35}%)`}const t=dc[nd.id]/dcMax;return`hsl(${160-t*10},${50+t*30}%,${60-t*30}%)`}
+function nodeR(nd){return 18+(nd.followers/25)*16}
+function draw(){ctx.clearRect(0,0,680,400);
+if(mode==='community'){[[0,1,2,3],[4,5],[6,7,8]].forEach((g,i)=>{let cx=0,cy=0;g.forEach(id=>{cx+=nodes[id].x;cy+=nodes[id].y});cx/=g.length;cy/=g.length;ctx.beginPath();ctx.ellipse(cx,cy,140,100,0,0,Math.PI*2);ctx.fillStyle=commLight[i];ctx.fill();ctx.strokeStyle=commColors[i]+'33';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);ctx.stroke();ctx.setLineDash([])})}
+edges.forEach(([a,b])=>{const pa=nodes[a],pb=nodes[b],r=nodeR(nodes[b]);const same=pa.comm===pb.comm;if(same){drawArrow(ctx,pa.x,pa.y,pb.x,pb.y,r,'rgba(0,0,0,0.12)',1)}else{ctx.setLineDash([4,4]);drawArrow(ctx,pa.x,pa.y,pb.x,pb.y,r,'rgba(220,38,38,0.25)',1);ctx.setLineDash([])}});
+nodes.forEach(nd=>{drawNode(ctx,nd.x,nd.y,nodeR(nd),nodeColor(nd),nd.label)})}
+function setMode(m){mode=m;document.querySelectorAll('.graph-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');draw()}
+draw();
+
+const prS=[...nodes].sort((a,b)=>pr[b.id]-pr[a.id]);const dcS=[...nodes].sort((a,b)=>dc[b.id]-dc[a.id]);
+function buildTable(el,sorted,vf,mx,c1,c2){let h='<thead><tr><th>#</th><th>Node</th><th>Score</th><th style="width:100px"></th></tr></thead><tbody>';sorted.forEach((nd,i)=>{const v=vf(nd);const p=(v/mx*100).toFixed(0);h+=`<tr><td class="rank-num">${i+1}</td><td style="font-weight:600">${nd.label}</td><td style="font-family:JetBrains Mono;font-size:12px">${(v*100).toFixed(2)}%</td><td><div class="rank-bar"><div class="rank-bar-fill" style="width:${p}%;background:linear-gradient(90deg,${c1},${c2})"></div></div></td></tr>`});el.innerHTML=h+'</tbody>'}
+buildTable(document.getElementById('pr-table'),prS,nd=>pr[nd.id],prMax,'#4f46e5','#db2777');
+buildTable(document.getElementById('dc-table'),dcS,nd=>dc[nd.id],dcMax,'#059669','#0d9488');
+
+function toggleCheck(el){el.querySelector('.check-box').classList.toggle('checked');el.querySelector('.check-label').classList.toggle('done')}
+const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:0.1});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
