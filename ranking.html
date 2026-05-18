@@ -78,6 +78,7 @@
     <div class="filter-row">
       <div class="rank-tabs">
         <button data-tab="pagerank" class="active">PageRank</button>
+        <button data-tab="pagerank_w">Weighted PR</button>
         <button data-tab="degree">Degree</button>
         <button data-tab="betweenness">Betweenness</button>
       </div>
@@ -159,11 +160,13 @@
 
   const METRIC_LABEL = {
     pagerank: 'PageRank',
+    pagerank_w: 'Weighted PageRank',
     degree: 'Degree Centrality',
     betweenness: 'Betweenness',
   };
   const METRIC_EXPLAIN = {
     pagerank: '<strong>PageRank</strong> — Skor pengaruh berlapis. Node mendapat skor tinggi jika terhubung ke node-node yang juga berpengaruh, bukan hanya banyak koneksi. Damping factor 0.85.',
+    pagerank_w: '<strong>Weighted PageRank</strong> — PageRank yang mempertimbangkan dua faktor: (1) <em>Log-normalized followers</em> sebagai bobot edge — link ke kreator besar bernilai lebih tinggi, tapi tidak ekstrem; (2) <em>Community dampening</em> — koneksi antar kreator lokal Bengkulu diperkuat (×1.5), koneksi internasional di-dampen (×0.6) agar tidak mendominasi analisis komunitas Indonesia.',
     degree: '<strong>Degree Centrality</strong> — Jumlah koneksi langsung dibagi (N−1). Mengukur volume kolaborasi: siapa yang paling banyak bekerja sama.',
     betweenness: '<strong>Betweenness Centrality</strong> — Seberapa sering sebuah node berada di shortest path antara pasangan node lain. Tinggi berarti node ini adalah jembatan kritis.',
   };

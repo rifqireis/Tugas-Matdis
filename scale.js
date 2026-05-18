@@ -1,4 +1,4 @@
-/* Skala global halaman & graf. Ubah PAGE_SCALE untuk mengatur ulang. */
+git pull origin main/* Skala global halaman & graf. Ubah PAGE_SCALE untuk mengatur ulang. */
 const PAGE_SCALE = 1.25;
 
 function applyScale() {
