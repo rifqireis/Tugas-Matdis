@@ -1,18 +1,17 @@
 /* ==========================================================
-   Shared dataset: 58 nodes, 88 edges (directed)
+   Shared dataset: 28 nodes, 66 edges (directed)
    Indonesian creator collaboration graph — Bengkulu local + national.
-   Communities: nasional, lokal (Bengkulu), organisasi
+   Communities: nasional, lokal (Bengkulu)
    ========================================================== */
 
 // Community keys must match CSS vars --com-*
 const COMMUNITIES = {
   nasional:      { label: 'Kreator Nasional',     color: '#c15f3c' },  // terracotta
   lokal:         { label: 'Lokal Bengkulu',       color: '#6e8a4f' },  // sage
-  organisasi:    { label: 'Organisasi / Media',   color: '#b58940' },  // ochre
 };
 
 const NODES = [
-  // === KOMUNITAS: nasional ===
+  // === KOMUNITAS: nasional (14 nodes) ===
   { id: 'willie27_',               name: 'Willie Salim',             com: 'nasional',   followers: 16600000 },
   { id: 'vilmei',                  name: 'Vilmei',                   com: 'nasional',   followers: 14200000 },
   { id: 'ibnuwardani',             name: 'Ibnu Wardani',             com: 'nasional',   followers: 6800000  },
@@ -24,57 +23,25 @@ const NODES = [
   { id: 'raffinagita1717',         name: 'Raffi Nagita',             com: 'nasional',   followers: 75200000 },
   { id: 'riaricis1795',            name: 'Ria Ricis',                com: 'nasional',   followers: 36700000 },
   { id: 'windahbasudara',          name: 'Windah Basudara',          com: 'nasional',   followers: 4100000  },
-  { id: 'raditya_dika',            name: 'Raditya Dika',             com: 'nasional',   followers: 21700000 },
-  { id: 'fuji_an',                 name: 'Fuji An',                  com: 'nasional',   followers: 20500000 },
-  { id: 'thariqhalilintar',        name: 'Thariq Halilintar',        com: 'nasional',   followers: 8000000  },
   { id: 'siscakohl',               name: 'Sisca Kohl',               com: 'nasional',   followers: 3000000  },
-  { id: 'jessicajane99',           name: 'Jessica Jane',             com: 'nasional',   followers: 6000000  },
-  { id: 'frostdiamondd',           name: 'Frost Diamond',            com: 'nasional',   followers: 2000000  },
   { id: 'mastercorbuzier',         name: 'Deddy Corbuzier',          com: 'nasional',   followers: 12800000 },
-  { id: 'boywilliam17',            name: 'Boy William',              com: 'nasional',   followers: 5500000  },
-  { id: 'jeromepolin',             name: 'Jerome Polin',             com: 'nasional',   followers: 9500000  },
-  { id: 'ekooju',                  name: 'Oura (ekooju)',            com: 'nasional',   followers: 2500000  },
-  { id: 'ariefmuhammad',           name: 'Arief Muhammad',           com: 'nasional',   followers: 5600000  },
-  { id: 'alshadahmad',             name: 'Alshad Ahmad',             com: 'nasional',   followers: 3600000  },
-  { id: 'celloszxz',               name: 'Cellosz',                  com: 'nasional',   followers: 1800000  },
-  { id: 'teukuryantr',             name: 'Teuku Ryan',               com: 'nasional',   followers: 2900000  },
-  { id: 'fadlyfsl_',               name: 'Fadly Faisal',             com: 'nasional',   followers: 6900000  },
-  { id: 'lalitahutami',            name: 'Lalita Hutami',            com: 'nasional',   followers: 2000000  },
-  { id: 'keanuagl',                name: 'Keanu AGL',                com: 'nasional',   followers: 5700000  },
-  { id: 'clarissaputri',           name: 'Clarissa Putri',           com: 'nasional',   followers: 1300000  },
-  { id: 'pakmuh',                  name: 'Pak Muh',                  com: 'nasional',   followers: 1000000  },
-  { id: 'bonge_citayam',           name: 'Bonge Citayam',            com: 'nasional',   followers: 100000   },
-  { id: 'rianfahardhi',            name: 'Rian Fahardhi',            com: 'nasional',   followers: 595000   },
-  { id: 'drrichardlee',            name: 'dr. Richard Lee',          com: 'nasional',   followers: 2200000  },
+  { id: 'fuji_an',                 name: 'Fuji An',                  com: 'nasional',   followers: 20500000 },
 
-  // === KOMUNITAS: lokal (Bengkulu) ===
+  // === KOMUNITAS: lokal (Bengkulu, 14 nodes) ===
   { id: 'mariorioio__',            name: 'Mario',                    com: 'lokal',      followers: 1239     },
   { id: 'peuybatik',               name: 'Peuy Batik',               com: 'lokal',      followers: 1288     },
   { id: 'keylaphaulina',           name: 'Keyla Phaulina',           com: 'lokal',      followers: 2384     },
-  { id: 'dini_kyl',                name: 'Dini KYL',                 com: 'lokal',      followers: 172      },
   { id: 'atalaptraa',              name: 'Atalap Traa',              com: 'lokal',      followers: 3444     },
-  { id: 'rackell_77',              name: 'Rackell 77',               com: 'lokal',      followers: 344      },
   { id: 'alifahdzatilsalsabila',   name: 'Alifah Dzatil',            com: 'lokal',      followers: 3924     },
-  { id: 'lutfikurniadi_',          name: 'Lutfi Kurniadi',           com: 'lokal',      followers: 1894     },
   { id: 'nandi_asqora',            name: 'Nandi Asqora',             com: 'lokal',      followers: 3422     },
-  { id: 'fakhrialwn',              name: 'Fakhri Alwn',              com: 'lokal',      followers: 300      },
-  { id: 'ikesiregar_2',            name: 'Ike Siregar',              com: 'lokal',      followers: 787      },
-  { id: 'riskadlf',                name: 'Riska DLF',                com: 'lokal',      followers: 1459     },
   { id: 'aldomeidian',             name: 'Aldo Meidian',             com: 'lokal',      followers: 8775     },
-  { id: 'arelta_rski28',           name: 'Arelta Rski',              com: 'lokal',      followers: 860      },
   { id: 'oktmhrnii',               name: 'Oktmhrnii',                com: 'lokal',      followers: 3685     },
-  { id: 'erza_efrilian',           name: 'Erza Efrilian',            com: 'lokal',      followers: 1350     },
-  { id: 'viocahayadi_s',           name: 'Vio Cahayadi',             com: 'lokal',      followers: 1195     },
   { id: 'ezillamarchellah',        name: 'Ezilla Marchellah',        com: 'lokal',      followers: 3881     },
-  { id: 'aldeesaputraa_',          name: 'Aldee Saputra',            com: 'lokal',      followers: 1013     },
   { id: 'laylaarisyah',            name: 'Layla Arisyah',            com: 'lokal',      followers: 3788     },
   { id: 'slw.azky',                name: 'Slw Azky',                 com: 'lokal',      followers: 1866     },
-  { id: 'dionn_yonn20',            name: 'Dion Yonn',                com: 'lokal',      followers: 1393     },
-  { id: 'galeh_004',               name: 'Galeh 004',                com: 'lokal',      followers: 1468     },
   { id: 'akbarsumbar',             name: 'Akbar Sumbar',             com: 'lokal',      followers: 9926     },
-
-  // === KOMUNITAS: organisasi ===
-  { id: 'ikatandutahivaidsprovbengkulu', name: 'Ikatan Duta HIV AIDS BKL', com: 'organisasi', followers: 11200 },
+  { id: 'galeh_004',               name: 'Galeh 004',                com: 'lokal',      followers: 1468     },
+  { id: 'ikatandutahivaidsprovbengkulu', name: 'Ikatan Duta HIV AIDS BKL', com: 'lokal', followers: 11200 },
 ];
 
 const EDGES = [
@@ -85,11 +52,8 @@ const EDGES = [
   { source: 'willie27_',    target: 'fadiljaidi' },
   { source: 'willie27_',    target: 'baimwong' },
   // Vilmei
-  { source: 'vilmei',       target: 'bonge_citayam' },
-  { source: 'vilmei',       target: 'rianfahardhi' },
   { source: 'vilmei',       target: 'fuji_an' },
   { source: 'vilmei',       target: 'windahbasudara' },
-  { source: 'drrichardlee', target: 'vilmei' },
   { source: 'attahalilintar', target: 'vilmei' },
   { source: 'aurelie.hermansyah', target: 'vilmei' },
   { source: 'baimwong',     target: 'vilmei' },
@@ -100,63 +64,39 @@ const EDGES = [
   { source: 'vilmei',       target: 'fadiljaidi' },
   { source: 'fadiljaidi',   target: 'vilmei' },
   // Ibnu Wardani
-  { source: 'ibnuwardani',  target: 'lalitahutami' },
-  { source: 'lalitahutami', target: 'ibnuwardani' },
   { source: 'ibnuwardani',  target: 'willie27_' },
   { source: 'ibnuwardani',  target: 'vilmei' },
-  { source: 'ibnuwardani',  target: 'teukuryantr' },
   { source: 'ibnuwardani',  target: 'fuji_an' },
-  { source: 'ibnuwardani',  target: 'fadlyfsl_' },
   { source: 'ibnuwardani',  target: 'baimwong' },
   { source: 'ibnuwardani',  target: 'siscakohl' },
-  { source: 'ibnuwardani',  target: 'ariefmuhammad' },
   { source: 'ibnuwardani',  target: 'fadiljaidi' },
-  { source: 'ibnuwardani',  target: 'alshadahmad' },
-  { source: 'ibnuwardani',  target: 'celloszxz' },
   { source: 'riaricis1795', target: 'ibnuwardani' },
   { source: 'attahalilintar', target: 'ibnuwardani' },
-  { source: 'thariqhalilintar', target: 'ibnuwardani' },
   { source: 'jessnolimit',  target: 'ibnuwardani' },
   // Jess No Limit
-  { source: 'jessnolimit',  target: 'raditya_dika' },
   { source: 'jessnolimit',  target: 'windahbasudara' },
-  { source: 'jessnolimit',  target: 'frostdiamondd' },
   { source: 'mastercorbuzier', target: 'jessnolimit' },
   { source: 'attahalilintar', target: 'jessnolimit' },
-  { source: 'boywilliam17', target: 'jessnolimit' },
   { source: 'jessnolimit',  target: 'siscakohl' },
   { source: 'siscakohl',    target: 'jessnolimit' },
-  { source: 'jessnolimit',  target: 'jessicajane99' },
-  { source: 'jessicajane99', target: 'jessnolimit' },
-  { source: 'jessnolimit',  target: 'ekooju' },
-  { source: 'ekooju',       target: 'jessnolimit' },
   // Baim Wong
   { source: 'baimwong',     target: 'raffinagita1717' },
   { source: 'baimwong',     target: 'attahalilintar' },
-  { source: 'baimwong',     target: 'thariqhalilintar' },
   { source: 'baimwong',     target: 'aurelie.hermansyah' },
   { source: 'baimwong',     target: 'willie27_' },
   { source: 'mastercorbuzier', target: 'baimwong' },
   // Fadil Jaidi
-  { source: 'fadiljaidi',   target: 'pakmuh' },
   { source: 'fadiljaidi',   target: 'raffinagita1717' },
   { source: 'fadiljaidi',   target: 'mastercorbuzier' },
   { source: 'fadiljaidi',   target: 'attahalilintar' },
   { source: 'fadiljaidi',   target: 'aurelie.hermansyah' },
   { source: 'fadiljaidi',   target: 'baimwong' },
-  { source: 'fadiljaidi',   target: 'keanuagl' },
-  { source: 'fadiljaidi',   target: 'clarissaputri' },
-  { source: 'jeromepolin',  target: 'fadiljaidi' },
-  // Mario (Lokal Bengkulu)
+  // Mario (Lokal Bengkulu hub)
   { source: 'mariorioio__', target: 'keylaphaulina' },
-  { source: 'mariorioio__', target: 'dini_kyl' },
   { source: 'mariorioio__', target: 'atalaptraa' },
-  { source: 'mariorioio__', target: 'rackell_77' },
   { source: 'mariorioio__', target: 'peuybatik' },
   { source: 'mariorioio__', target: 'willie27_' },
   { source: 'ikatandutahivaidsprovbengkulu', target: 'mariorioio__' },
-  { source: 'dutakreator.id', target: 'mariorioio__' },  // source tidak terdaftar — di-skip
-  // ~Setengah kreator lokal menunjuk ke Mario (simulasi: Mario sebagai hub lokal)
   { source: 'keylaphaulina',        target: 'mariorioio__' },
   { source: 'atalaptraa',           target: 'mariorioio__' },
   { source: 'alifahdzatilsalsabila',target: 'mariorioio__' },
@@ -168,28 +108,18 @@ const EDGES = [
   { source: 'akbarsumbar',          target: 'mariorioio__' },
   { source: 'galeh_004',            target: 'mariorioio__' },
   { source: 'slw.azky',             target: 'mariorioio__' },
-  // Ikatan Duta HIV AIDS
-  { source: 'ikatandutahivaidsprovbengkulu', target: 'fakhrialwn' },
-  { source: 'ikatandutahivaidsprovbengkulu', target: 'ikesiregar_2' },
-  { source: 'ikatandutahivaidsprovbengkulu', target: 'riskadlf' },
+  // Ikatan Duta HIV AIDS (lokal community)
   { source: 'ikatandutahivaidsprovbengkulu', target: 'aldomeidian' },
-  { source: 'ikatandutahivaidsprovbengkulu', target: 'arelta_rski28' },
   { source: 'ikatandutahivaidsprovbengkulu', target: 'akbarsumbar' },
   { source: 'ikatandutahivaidsprovbengkulu', target: 'oktmhrnii' },
-  { source: 'ikatandutahivaidsprovbengkulu', target: 'erza_efrilian' },
-  { source: 'ikatandutahivaidsprovbengkulu', target: 'viocahayadi_s' },
   { source: 'ikatandutahivaidsprovbengkulu', target: 'ezillamarchellah' },
-  { source: 'ikatandutahivaidsprovbengkulu', target: 'aldeesaputraa_' },
   { source: 'ikatandutahivaidsprovbengkulu', target: 'laylaarisyah' },
   { source: 'ikatandutahivaidsprovbengkulu', target: 'slw.azky' },
-  { source: 'ikatandutahivaidsprovbengkulu', target: 'dionn_yonn20' },
   { source: 'galeh_004',    target: 'ikatandutahivaidsprovbengkulu' },
   // Peuy Batik
   { source: 'alifahdzatilsalsabila', target: 'peuybatik' },
   { source: 'nandi_asqora', target: 'peuybatik' },
-  { source: 'peuybatik',    target: 'lutfikurniadi_' },
-  { source: 'peuybatik',    target: 'mariorioio__' },   // peuy → mario, rank mengalir ke willie
-  { source: 'lutfikurniadi_', target: 'mariorioio__' }, // lutfi → mario (bukan balik ke peuy)
+  { source: 'peuybatik',    target: 'mariorioio__' },
 ];
 
 // ---------- Algorithms ----------
@@ -238,7 +168,7 @@ function pageRank(d = 0.85, iters = 60) {
 /**
  * Weighted PageRank berbasis zona komunitas (tanpa followers).
  * Bobot edge hanya dari community factor — mencerminkan kekuatan
- * pengaruh antar zona yang diamati (nasional, lokal, organisasi).
+ * pengaruh antar zona yang diamati (nasional, lokal).
  *
  * bobot_edge(A→B) = communityFactor(A.com, B.com)
  *

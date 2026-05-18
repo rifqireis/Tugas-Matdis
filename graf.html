@@ -93,7 +93,16 @@
   }
   .graf-meta span strong { color: var(--text); font-weight: 500; }
 
-  .node-label {
+  .graf-shell:fullscreen,
+  .graf-shell:-webkit-full-screen {
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+  }
+  .graf-shell:fullscreen .graf-toolbar,
+  .graf-shell:-webkit-full-screen .graf-toolbar {
+    top: 14px; left: 14px;
+  }
     font-family: 'DM Sans', sans-serif;
     font-size: 9.5px; font-weight: 500;
     fill: var(--text); pointer-events: none;
@@ -141,7 +150,7 @@
     <div class="grid-12" style="align-items: end;">
       <div class="s8">
         <div class="eyebrow" style="margin-bottom: 14px;">02 — Visualisasi</div>
-        <h1 class="h1">Graf kolaborasi 58 kreator, satu tarikan napas.</h1>
+        <h1 class="h1">Graf kolaborasi 28 kreator, satu tarikan napas.</h1>
       </div>
       <div class="s4">
         <p class="lede-sm">
@@ -164,6 +173,8 @@
           <button id="toggle-zones">Zona</button>
           <button id="toggle-label-mode">@ID</button>
           <button id="reset-view">Reset</button>
+          <div class="sep"></div>
+          <button id="fullscreen-btn" title="Layar penuh">⛶</button>
         </div>
 
         <svg id="graf-svg" viewBox="0 0 900 600" preserveAspectRatio="xMidYMid meet"></svg>
@@ -193,7 +204,8 @@
     <p style="font-size: 12px; color: var(--text3); margin-top: 12px;">
       <span class="kbd">drag</span> untuk geser node ·
       <span class="kbd">scroll</span> untuk zoom ·
-      <span class="kbd">klik</span> komunitas untuk filter
+      <span class="kbd">klik</span> komunitas untuk filter ·
+      <span class="kbd">⛶</span> layar penuh (navigasi via touchpad)
     </p>
   </section>
 

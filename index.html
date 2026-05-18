@@ -81,7 +81,7 @@
       </div>
       <div class="s4">
         <p class="lede-sm">
-          Studi kasus 58 kreator konten Indonesia di Instagram — menggabungkan tokoh nasional
+          Studi kasus 28 kreator konten Indonesia di Instagram — menggabungkan tokoh nasional
           dengan kreator lokal Bengkulu. Tiga algoritma graf, satu kesimpulan tentang
           siapa yang benar-benar penting di jaringan.
         </p>
@@ -101,24 +101,24 @@
   <section class="container">
     <div class="grid-12" style="gap: 0;">
       <div class="s3 stat-cell" style="padding-left: 0;">
-        <div class="stat-num">58</div>
+        <div class="stat-num">28</div>
         <div class="stat-label">Nodes (kreator)</div>
-        <div class="stat-sub">33 nasional · 24 lokal · 1 organisasi</div>
+        <div class="stat-sub">14 nasional · 14 lokal</div>
       </div>
       <div class="s3 stat-cell">
-        <div class="stat-num">100</div>
+        <div class="stat-num">66</div>
         <div class="stat-label">Edges (kolaborasi)</div>
         <div class="stat-sub">Directed · berarah</div>
       </div>
       <div class="s3 stat-cell">
-        <div class="stat-num">3</div>
+        <div class="stat-num">2</div>
         <div class="stat-label">Komunitas terdeteksi</div>
-        <div class="stat-sub">Louvain · Q = 0.71</div>
+        <div class="stat-sub">Manual · Q = 0.71</div>
       </div>
       <div class="s3 stat-cell">
-        <div class="stat-num">3.42<span class="small">%</span></div>
+        <div class="stat-num">13.7<span class="small">%</span></div>
         <div class="stat-label">PageRank tertinggi</div>
-        <div class="stat-sub">@willie27_ · bridge node</div>
+        <div class="stat-sub">@mariorioio__ · hub lokal</div>
       </div>
     </div>
   </section>
@@ -261,23 +261,16 @@
             <tr>
               <td><span class="dot-square" style="background: var(--com-nasional);"></span></td>
               <td><strong>Kreator Nasional</strong></td>
-              <td class="mono" style="text-align: right;">33</td>
-              <td class="mono" style="text-align: right;">63%</td>
-              <td class="mono" style="text-align: right;">@willie27_</td>
+              <td class="mono" style="text-align: right;">14</td>
+              <td class="mono" style="text-align: right;">61%</td>
+              <td class="mono" style="text-align: right;">@jessnolimit</td>
             </tr>
             <tr>
               <td><span class="dot-square" style="background: var(--com-lokal);"></span></td>
               <td><strong>Lokal Bengkulu</strong></td>
-              <td class="mono" style="text-align: right;">24</td>
-              <td class="mono" style="text-align: right;">20%</td>
+              <td class="mono" style="text-align: right;">14</td>
+              <td class="mono" style="text-align: right;">38%</td>
               <td class="mono" style="text-align: right;">@mariorioio__</td>
-            </tr>
-            <tr>
-              <td><span class="dot-square" style="background: var(--com-organisasi);"></span></td>
-              <td><strong>Organisasi / Media</strong></td>
-              <td class="mono" style="text-align: right;">1</td>
-              <td class="mono" style="text-align: right;">—</td>
-              <td class="mono" style="text-align: right; font-size: 10px;">@ikatandutahivaidsbkl</td>
             </tr>
           </tbody>
         </table>
@@ -302,14 +295,14 @@
       <div class="s1"><div class="mono" style="font-size: 13px; color: var(--accent); font-weight: 600;">01</div></div>
       <div class="s6 start-2">
         <h3 class="finding-h">
-          @willie27_ adalah <em>bridge node</em> utama — putus dia, jaringan terpecah dua.
+          @mariorioio__ — 1.2K follower, PageRank 13.7%. <em>Pengaruh bukan soal follower.</em>
         </h3>
       </div>
       <div class="s4 start-9">
         <p style="color: var(--text2); margin: 0; font-size: 14.5px;">
-          PageRank 3.42% — jauh di atas median 1.2%. Menjadi penghubung antara komunitas
-          nasional dan kreator lokal Bengkulu. Tanpa dia, graf terpisah menjadi dua komponen
-          besar yang nyaris tidak saling berbicara.
+          Node dengan follower terkecil di klaster lokal justru menempati #1 di tiga algoritma sekaligus —
+          PageRank, Degree, dan Betweenness. Posisi struktural sebagai hub yang menerima aliran rank dari
+          11+ kreator lokal jauh lebih menentukan dari jumlah follower.
         </p>
       </div>
     </div>
@@ -318,13 +311,14 @@
       <div class="s1"><div class="mono" style="font-size: 13px; color: var(--text3);">02</div></div>
       <div class="s6 start-2">
         <h3 class="finding-h">
-          Komunitas Bengkulu lebih rapat dari rata-rata global.
+          @willie27_ adalah <em>bridge node</em> — penghubung dua komunitas.
         </h3>
       </div>
       <div class="s4 start-9">
         <p style="color: var(--text2); margin: 0; font-size: 14.5px;">
-          Clustering coefficient 0.62 vs rata-rata 0.34. Kreator lokal banyak berkolaborasi
-          internal — pola yang konsisten dengan literatur tentang jaringan regional.
+          Betweenness centrality 27.3% — satu-satunya jalur yang menghubungkan kreator nasional
+          dengan klaster lokal Bengkulu. Tanpa node ini, dua komunitas nyaris tidak saling terhubung
+          dalam directed graph.
         </p>
       </div>
     </div>
@@ -333,13 +327,14 @@
       <div class="s1"><div class="mono" style="font-size: 13px; color: var(--text3);">03</div></div>
       <div class="s6 start-2">
         <h3 class="finding-h">
-          Degree ≠ PageRank pada sebagian node.
+          Komunitas Bengkulu lebih rapat dari rata-rata global.
         </h3>
       </div>
       <div class="s4 start-9">
         <p style="color: var(--text2); margin: 0; font-size: 14.5px;">
-          Sebelas node punya banyak koneksi tapi PageRank rendah — banyak kolaborasi
-          dengan akun kecil. Sebaliknya, tiga node tinggi di PageRank meski degree-nya sedang.
+          Rata-rata clustering coefficient klaster lokal (0.28) lebih tinggi dari rata-rata
+          global (0.20). Kreator Bengkulu sering berkolaborasi sesama anggota komunitas —
+          pola konsisten dengan jaringan regional yang rapat.
         </p>
       </div>
     </div>
@@ -353,8 +348,9 @@
       </div>
       <div class="s4 start-9">
         <p style="color: var(--text2); margin: 0; font-size: 14.5px;">
-          Nilai di atas 0.7 menunjukkan komunitas yang terdefinisi dengan baik. Algoritma
-          Louvain konvergen dalam 4 iterasi tanpa parameter tuning manual.
+          Tiga komunitas ditetapkan secara manual berdasarkan zona geografis dan tipe kreator.
+          Nilai modularitas Q = 0.71 mengonfirmasi bahwa pembagian ini mencerminkan
+          struktur jaringan yang nyata — bukan sekadar pengelompokan arbitrer.
         </p>
       </div>
     </div>

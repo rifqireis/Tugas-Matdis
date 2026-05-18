@@ -8,7 +8,6 @@
 const COMMUNITIES = {
   nasional:   { label: 'Kreator Nasional'   },
   lokal:      { label: 'Lokal Bengkulu'     },
-  organisasi: { label: 'Organisasi / Media' },
 };
 
 const NODES = [
@@ -23,53 +22,23 @@ const NODES = [
   { id: 'raffinagita1717',         name: 'Raffi Nagita',             com: 'nasional',   followers: 75200000 },
   { id: 'riaricis1795',            name: 'Ria Ricis',                com: 'nasional',   followers: 36700000 },
   { id: 'windahbasudara',          name: 'Windah Basudara',          com: 'nasional',   followers: 4100000  },
-  { id: 'raditya_dika',            name: 'Raditya Dika',             com: 'nasional',   followers: 21700000 },
-  { id: 'fuji_an',                 name: 'Fuji An',                  com: 'nasional',   followers: 20500000 },
-  { id: 'thariqhalilintar',        name: 'Thariq Halilintar',        com: 'nasional',   followers: 8000000  },
   { id: 'siscakohl',               name: 'Sisca Kohl',               com: 'nasional',   followers: 3000000  },
-  { id: 'jessicajane99',           name: 'Jessica Jane',             com: 'nasional',   followers: 6000000  },
-  { id: 'frostdiamondd',           name: 'Frost Diamond',            com: 'nasional',   followers: 2000000  },
   { id: 'mastercorbuzier',         name: 'Deddy Corbuzier',          com: 'nasional',   followers: 12800000 },
-  { id: 'boywilliam17',            name: 'Boy William',              com: 'nasional',   followers: 5500000  },
-  { id: 'jeromepolin',             name: 'Jerome Polin',             com: 'nasional',   followers: 9500000  },
-  { id: 'ekooju',                  name: 'Oura (ekooju)',            com: 'nasional',   followers: 2500000  },
-  { id: 'ariefmuhammad',           name: 'Arief Muhammad',           com: 'nasional',   followers: 5600000  },
-  { id: 'alshadahmad',             name: 'Alshad Ahmad',             com: 'nasional',   followers: 3600000  },
-  { id: 'celloszxz',               name: 'Cellosz',                  com: 'nasional',   followers: 1800000  },
-  { id: 'teukuryantr',             name: 'Teuku Ryan',               com: 'nasional',   followers: 2900000  },
-  { id: 'fadlyfsl_',               name: 'Fadly Faisal',             com: 'nasional',   followers: 6900000  },
-  { id: 'lalitahutami',            name: 'Lalita Hutami',            com: 'nasional',   followers: 2000000  },
-  { id: 'keanuagl',                name: 'Keanu AGL',                com: 'nasional',   followers: 5700000  },
-  { id: 'clarissaputri',           name: 'Clarissa Putri',           com: 'nasional',   followers: 1300000  },
-  { id: 'pakmuh',                  name: 'Pak Muh',                  com: 'nasional',   followers: 1000000  },
-  { id: 'bonge_citayam',           name: 'Bonge Citayam',            com: 'nasional',   followers: 100000   },
-  { id: 'rianfahardhi',            name: 'Rian Fahardhi',            com: 'nasional',   followers: 595000   },
-  { id: 'drrichardlee',            name: 'dr. Richard Lee',          com: 'nasional',   followers: 2200000  },
+  { id: 'fuji_an',                 name: 'Fuji An',                  com: 'nasional',   followers: 20500000 },
   { id: 'mariorioio__',            name: 'Mario',                    com: 'lokal',      followers: 1239     },
   { id: 'peuybatik',               name: 'Peuy Batik',               com: 'lokal',      followers: 1288     },
   { id: 'keylaphaulina',           name: 'Keyla Phaulina',           com: 'lokal',      followers: 2384     },
-  { id: 'dini_kyl',                name: 'Dini KYL',                 com: 'lokal',      followers: 172      },
   { id: 'atalaptraa',              name: 'Atalap Traa',              com: 'lokal',      followers: 3444     },
-  { id: 'rackell_77',              name: 'Rackell 77',               com: 'lokal',      followers: 344      },
   { id: 'alifahdzatilsalsabila',   name: 'Alifah Dzatil',            com: 'lokal',      followers: 3924     },
-  { id: 'lutfikurniadi_',          name: 'Lutfi Kurniadi',           com: 'lokal',      followers: 1894     },
   { id: 'nandi_asqora',            name: 'Nandi Asqora',             com: 'lokal',      followers: 3422     },
-  { id: 'fakhrialwn',              name: 'Fakhri Alwn',              com: 'lokal',      followers: 300      },
-  { id: 'ikesiregar_2',            name: 'Ike Siregar',              com: 'lokal',      followers: 787      },
-  { id: 'riskadlf',                name: 'Riska DLF',                com: 'lokal',      followers: 1459     },
   { id: 'aldomeidian',             name: 'Aldo Meidian',             com: 'lokal',      followers: 8775     },
-  { id: 'arelta_rski28',           name: 'Arelta Rski',              com: 'lokal',      followers: 860      },
   { id: 'oktmhrnii',               name: 'Oktmhrnii',                com: 'lokal',      followers: 3685     },
-  { id: 'erza_efrilian',           name: 'Erza Efrilian',            com: 'lokal',      followers: 1350     },
-  { id: 'viocahayadi_s',           name: 'Vio Cahayadi',             com: 'lokal',      followers: 1195     },
   { id: 'ezillamarchellah',        name: 'Ezilla Marchellah',        com: 'lokal',      followers: 3881     },
-  { id: 'aldeesaputraa_',          name: 'Aldee Saputra',            com: 'lokal',      followers: 1013     },
   { id: 'laylaarisyah',            name: 'Layla Arisyah',            com: 'lokal',      followers: 3788     },
   { id: 'slw.azky',                name: 'Slw Azky',                 com: 'lokal',      followers: 1866     },
-  { id: 'dionn_yonn20',            name: 'Dion Yonn',                com: 'lokal',      followers: 1393     },
-  { id: 'galeh_004',               name: 'Galeh 004',                com: 'lokal',      followers: 1468     },
   { id: 'akbarsumbar',             name: 'Akbar Sumbar',             com: 'lokal',      followers: 9926     },
-  { id: 'ikatandutahivaidsprovbengkulu', name: 'Ikatan Duta HIV AIDS BKL', com: 'organisasi', followers: 11200 },
+  { id: 'galeh_004',               name: 'Galeh 004',                com: 'lokal',      followers: 1468     },
+  { id: 'ikatandutahivaidsprovbengkulu', name: 'Ikatan Duta HIV AIDS BKL', com: 'lokal', followers: 11200 },
 ];
 
 const EDGES_RAW = [
@@ -78,11 +47,8 @@ const EDGES_RAW = [
   { source: 'willie27_',    target: 'jessnolimit' },
   { source: 'willie27_',    target: 'fadiljaidi' },
   { source: 'willie27_',    target: 'baimwong' },
-  { source: 'vilmei',       target: 'bonge_citayam' },
-  { source: 'vilmei',       target: 'rianfahardhi' },
   { source: 'vilmei',       target: 'fuji_an' },
   { source: 'vilmei',       target: 'windahbasudara' },
-  { source: 'drrichardlee', target: 'vilmei' },
   { source: 'attahalilintar', target: 'vilmei' },
   { source: 'aurelie.hermansyah', target: 'vilmei' },
   { source: 'baimwong',     target: 'vilmei' },
@@ -92,54 +58,32 @@ const EDGES_RAW = [
   { source: 'riaricis1795', target: 'vilmei' },
   { source: 'vilmei',       target: 'fadiljaidi' },
   { source: 'fadiljaidi',   target: 'vilmei' },
-  { source: 'ibnuwardani',  target: 'lalitahutami' },
-  { source: 'lalitahutami', target: 'ibnuwardani' },
   { source: 'ibnuwardani',  target: 'willie27_' },
   { source: 'ibnuwardani',  target: 'vilmei' },
-  { source: 'ibnuwardani',  target: 'teukuryantr' },
   { source: 'ibnuwardani',  target: 'fuji_an' },
-  { source: 'ibnuwardani',  target: 'fadlyfsl_' },
   { source: 'ibnuwardani',  target: 'baimwong' },
   { source: 'ibnuwardani',  target: 'siscakohl' },
-  { source: 'ibnuwardani',  target: 'ariefmuhammad' },
   { source: 'ibnuwardani',  target: 'fadiljaidi' },
-  { source: 'ibnuwardani',  target: 'alshadahmad' },
-  { source: 'ibnuwardani',  target: 'celloszxz' },
   { source: 'riaricis1795', target: 'ibnuwardani' },
   { source: 'attahalilintar', target: 'ibnuwardani' },
-  { source: 'thariqhalilintar', target: 'ibnuwardani' },
   { source: 'jessnolimit',  target: 'ibnuwardani' },
-  { source: 'jessnolimit',  target: 'raditya_dika' },
   { source: 'jessnolimit',  target: 'windahbasudara' },
-  { source: 'jessnolimit',  target: 'frostdiamondd' },
   { source: 'mastercorbuzier', target: 'jessnolimit' },
   { source: 'attahalilintar', target: 'jessnolimit' },
-  { source: 'boywilliam17', target: 'jessnolimit' },
   { source: 'jessnolimit',  target: 'siscakohl' },
   { source: 'siscakohl',    target: 'jessnolimit' },
-  { source: 'jessnolimit',  target: 'jessicajane99' },
-  { source: 'jessicajane99', target: 'jessnolimit' },
-  { source: 'jessnolimit',  target: 'ekooju' },
-  { source: 'ekooju',       target: 'jessnolimit' },
   { source: 'baimwong',     target: 'raffinagita1717' },
   { source: 'baimwong',     target: 'attahalilintar' },
-  { source: 'baimwong',     target: 'thariqhalilintar' },
   { source: 'baimwong',     target: 'aurelie.hermansyah' },
   { source: 'baimwong',     target: 'willie27_' },
   { source: 'mastercorbuzier', target: 'baimwong' },
-  { source: 'fadiljaidi',   target: 'pakmuh' },
   { source: 'fadiljaidi',   target: 'raffinagita1717' },
   { source: 'fadiljaidi',   target: 'mastercorbuzier' },
   { source: 'fadiljaidi',   target: 'attahalilintar' },
   { source: 'fadiljaidi',   target: 'aurelie.hermansyah' },
   { source: 'fadiljaidi',   target: 'baimwong' },
-  { source: 'fadiljaidi',   target: 'keanuagl' },
-  { source: 'fadiljaidi',   target: 'clarissaputri' },
-  { source: 'jeromepolin',  target: 'fadiljaidi' },
   { source: 'mariorioio__', target: 'keylaphaulina' },
-  { source: 'mariorioio__', target: 'dini_kyl' },
   { source: 'mariorioio__', target: 'atalaptraa' },
-  { source: 'mariorioio__', target: 'rackell_77' },
   { source: 'mariorioio__', target: 'peuybatik' },
   { source: 'mariorioio__', target: 'willie27_' },
   { source: 'ikatandutahivaidsprovbengkulu', target: 'mariorioio__' },
@@ -154,26 +98,16 @@ const EDGES_RAW = [
   { source: 'akbarsumbar',          target: 'mariorioio__' },
   { source: 'galeh_004',            target: 'mariorioio__' },
   { source: 'slw.azky',             target: 'mariorioio__' },
-  { source: 'ikatandutahivaidsprovbengkulu', target: 'fakhrialwn' },
-  { source: 'ikatandutahivaidsprovbengkulu', target: 'ikesiregar_2' },
-  { source: 'ikatandutahivaidsprovbengkulu', target: 'riskadlf' },
   { source: 'ikatandutahivaidsprovbengkulu', target: 'aldomeidian' },
-  { source: 'ikatandutahivaidsprovbengkulu', target: 'arelta_rski28' },
   { source: 'ikatandutahivaidsprovbengkulu', target: 'akbarsumbar' },
   { source: 'ikatandutahivaidsprovbengkulu', target: 'oktmhrnii' },
-  { source: 'ikatandutahivaidsprovbengkulu', target: 'erza_efrilian' },
-  { source: 'ikatandutahivaidsprovbengkulu', target: 'viocahayadi_s' },
   { source: 'ikatandutahivaidsprovbengkulu', target: 'ezillamarchellah' },
-  { source: 'ikatandutahivaidsprovbengkulu', target: 'aldeesaputraa_' },
   { source: 'ikatandutahivaidsprovbengkulu', target: 'laylaarisyah' },
   { source: 'ikatandutahivaidsprovbengkulu', target: 'slw.azky' },
-  { source: 'ikatandutahivaidsprovbengkulu', target: 'dionn_yonn20' },
   { source: 'galeh_004',    target: 'ikatandutahivaidsprovbengkulu' },
   { source: 'alifahdzatilsalsabila', target: 'peuybatik' },
   { source: 'nandi_asqora', target: 'peuybatik' },
-  { source: 'peuybatik',    target: 'lutfikurniadi_' },
   { source: 'peuybatik',    target: 'mariorioio__' },
-  { source: 'lutfikurniadi_', target: 'mariorioio__' },
 ];
 
 // ── Filter invalid edges ─────────────────────────────────────
@@ -414,13 +348,13 @@ console.log(`  Average degree       : ${avgDeg.toFixed(3)}`);
 console.log(`  Max degree           : ${maxDeg}`);
 console.log(`  Avg clustering coeff : ${avgCC.toFixed(4)}`);
 
-// ── SECTION 2: PAGERANK TOP 15 ───────────────────────────────
+// ── SECTION 2: PAGERANK TOP 10 ───────────────────────────────
 
 function printRankingTable(title, scoreObj, scoreLabel) {
   header(title);
   const sorted = Object.entries(scoreObj)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 15)
+    .slice(0, 10)
     .map(([id, score], i) => {
       const n = NODES.find(x => x.id === id);
       return { rank: i + 1, id, name: n.name, com: COMMUNITIES[n.com].label, score, deg: totalDeg(id), followers: n.followers };
@@ -446,10 +380,10 @@ function printRankingTable(title, scoreObj, scoreLabel) {
   });
 }
 
-printRankingTable('2. PAGERANK TOP 15', pr, 'PR %');
-printRankingTable('3. WEIGHTED PAGERANK TOP 15', prw, 'WPR %');
-printRankingTable('4. DEGREE CENTRALITY TOP 15', deg, 'Deg Score');
-printRankingTable('5. BETWEENNESS CENTRALITY TOP 15', bc, 'BC %');
+printRankingTable('2. PAGERANK TOP 10', pr, 'PR %');
+printRankingTable('3. WEIGHTED PAGERANK TOP 10', prw, 'WPR %');
+printRankingTable('4. DEGREE CENTRALITY TOP 10', deg, 'Deg Score');
+printRankingTable('5. BETWEENNESS CENTRALITY TOP 10', bc, 'BC %');
 
 // ── SECTION 6: COMMUNITY STATISTICS ─────────────────────────
 
@@ -478,11 +412,11 @@ Object.entries(COMMUNITIES).forEach(([comKey, comMeta]) => {
 
 // ── SECTION 7: DEGREE vs PAGERANK DIVERGENCE ─────────────────
 
-header('7. DEGREE RANK vs PAGERANK RANK — divergence > 5');
+header('7. DEGREE RANK vs PAGERANK RANK — divergence > 3');
 
 const divergent = NODES
   .map(n => ({ id: n.id, name: n.name, prR: prRank[n.id], degR: degRank[n.id], diff: Math.abs(prRank[n.id] - degRank[n.id]) }))
-  .filter(r => r.diff > 5)
+  .filter(r => r.diff > 3)
   .sort((a, b) => b.diff - a.diff);
 
 const dHdr = [pad('Username', 28), pad('Display Name', 22), pad('PR Rank', 10, true), pad('Deg Rank', 10, true), pad('|Diff|', 8, true)].join('  ');
@@ -494,16 +428,16 @@ divergent.forEach(r => {
 
 // ── SECTION 8: TOP 10 IN ALL THREE ALGORITHMS ────────────────
 
-header('8. NODES IN TOP 10 OF ALL THREE ALGORITHMS (PR + Degree + Betweenness)');
+header('8. NODES IN TOP 8 OF ALL THREE ALGORITHMS (PR + Degree + Betweenness)');
 
-const top10PR  = new Set(Object.entries(pr).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([id])=>id));
-const top10Deg = new Set(Object.entries(deg).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([id])=>id));
-const top10BC  = new Set(Object.entries(bc).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([id])=>id));
+const top8PR  = new Set(Object.entries(pr).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([id])=>id));
+const top8Deg = new Set(Object.entries(deg).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([id])=>id));
+const top8BC  = new Set(Object.entries(bc).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([id])=>id));
 
-const allThree = NODES.filter(n => top10PR.has(n.id) && top10Deg.has(n.id) && top10BC.has(n.id));
+const allThree = NODES.filter(n => top8PR.has(n.id) && top8Deg.has(n.id) && top8BC.has(n.id));
 
 if (allThree.length === 0) {
-  console.log('  (no node appears in top 10 of all three simultaneously)');
+  console.log('  (no node appears in top 8 of all three simultaneously)');
 } else {
   const hdr3 = [pad('Username', 28), pad('Name', 22), pad('PR %', 12, true), pad('Deg Score', 12, true), pad('BC %', 12, true)].join('  ');
   console.log(hdr3);
@@ -554,6 +488,36 @@ sorted.forEach((n, i) => {
     pad(pct(prw[n.id]), 9, true),
   ].join(' '));
 });
+
+// ── SECTION 10: CROSS-COMMUNITY EDGES ───────────────────────
+
+header('10. CROSS-COMMUNITY EDGES (bridge links)');
+
+const nodeById2 = {};
+NODES.forEach(n => nodeById2[n.id] = n);
+
+const crossEdges = EDGES.filter(e => nodeById2[e.source].com !== nodeById2[e.target].com);
+
+console.log(`  Total cross-community edges: ${crossEdges.length} / ${EDGES.length} (${(crossEdges.length/EDGES.length*100).toFixed(1)}%)`);
+console.log('');
+
+const ceHdr = [pad('Source', 28), pad('Src Com', 18), pad('Target', 28), pad('Tgt Com', 18)].join('  ');
+console.log(ceHdr);
+console.log(HR2);
+crossEdges.forEach(e => {
+  const s = nodeById2[e.source], t = nodeById2[e.target];
+  console.log([
+    pad('@' + s.id, 28),
+    pad(COMMUNITIES[s.com].label, 18),
+    pad('@' + t.id, 28),
+    pad(COMMUNITIES[t.com].label, 18),
+  ].join('  '));
+});
+
+// identify bridge nodes (appear in cross edges)
+const bridgeIds = new Set([...crossEdges.map(e => e.source), ...crossEdges.map(e => e.target)]);
+console.log('');
+console.log(`  Bridge nodes (${bridgeIds.size}): ${[...bridgeIds].map(id => '@' + id).join(', ')}`);
 
 console.log('\n' + HR1);
 console.log('  END OF REPORT');

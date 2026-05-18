@@ -85,14 +85,14 @@
   const defsEl = document.createElementNS(ns, 'defs');
   const markerEl = document.createElementNS(ns, 'marker');
   markerEl.setAttribute('id', 'arrowhead');
-  markerEl.setAttribute('markerWidth', '10');
-  markerEl.setAttribute('markerHeight', '7');
-  markerEl.setAttribute('refX', '10');   // tip of the arrow at attachment point
-  markerEl.setAttribute('refY', '3.5');
+  markerEl.setAttribute('markerWidth', '6');
+  markerEl.setAttribute('markerHeight', '4');
+  markerEl.setAttribute('refX', '6');
+  markerEl.setAttribute('refY', '2');
   markerEl.setAttribute('orient', 'auto');
   markerEl.setAttribute('markerUnits', 'userSpaceOnUse');
   const arrowPoly = document.createElementNS(ns, 'polygon');
-  arrowPoly.setAttribute('points', '0 0, 10 3.5, 0 7');
+  arrowPoly.setAttribute('points', '0 0, 6 2, 0 4');
   arrowPoly.setAttribute('fill', '#777');
   markerEl.appendChild(arrowPoly);
   defsEl.appendChild(markerEl);
@@ -322,8 +322,8 @@
       // Shorten endpoint to just outside target node so arrowhead is always visible
       const r = nodeRadii[b.id] || 6;
       el.setAttribute('x1', a.x); el.setAttribute('y1', a.y);
-      el.setAttribute('x2', b.x - (dx/dist) * (r + 3));
-      el.setAttribute('y2', b.y - (dy/dist) * (r + 3));
+      el.setAttribute('x2', b.x - (dx/dist) * (r + 1.5));
+      el.setAttribute('y2', b.y - (dy/dist) * (r + 1.5));
     });
   }
 
@@ -455,14 +455,25 @@
   }
 
   svg.addEventListener('wheel', ev => {
-    ev.preventDefault();
-    const pt = svgPt(ev);
-    const f = ev.deltaY < 0 ? 1.12 : 1/1.12;
-    const newZoom = Math.max(0.4, Math.min(3.5, state.zoom * f));
-    state.pan.x = pt.x - (pt.x - state.pan.x) * (newZoom / state.zoom);
-    state.pan.y = pt.y - (pt.y - state.pan.y) * (newZoom / state.zoom);
-    state.zoom = newZoom;
-    applyTransform();
+    if (document.fullscreenElement) {
+      // Fullscreen mode: Ctrl+wheel / pinch passes through to browser zoom;
+      // plain wheel (two-finger scroll) pans the graph.
+      if (ev.ctrlKey) return;
+      ev.preventDefault();
+      state.pan.x -= ev.deltaX;
+      state.pan.y -= ev.deltaY;
+      applyTransform();
+    } else {
+      // Normal mode: wheel zooms the graph
+      ev.preventDefault();
+      const pt = svgPt(ev);
+      const f = ev.deltaY < 0 ? 1.12 : 1/1.12;
+      const newZoom = Math.max(0.4, Math.min(3.5, state.zoom * f));
+      state.pan.x = pt.x - (pt.x - state.pan.x) * (newZoom / state.zoom);
+      state.pan.y = pt.y - (pt.y - state.pan.y) * (newZoom / state.zoom);
+      state.zoom = newZoom;
+      applyTransform();
+    }
   }, { passive: false });
 
   let panning = false, panStart;
@@ -485,6 +496,31 @@
       x: (ev.clientX - r.left) / r.width * VB_W,
       y: (ev.clientY - r.top) / r.height * VB_H,
     };
+  }
+
+  // ----- Fullscreen -----
+  const fsBtn = document.getElementById('fullscreen-btn');
+  if (fsBtn) {
+    const shell = document.querySelector('.graf-shell');
+    fsBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        (shell.requestFullscreen || shell.webkitRequestFullscreen).call(shell);
+      } else {
+        (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      }
+    });
+    document.addEventListener('fullscreenchange', () => {
+      const isFS = !!document.fullscreenElement;
+      fsBtn.textContent = isFS ? '✕' : '⛶';
+      fsBtn.title = isFS ? 'Keluar layar penuh' : 'Layar penuh';
+      fsBtn.classList.toggle('active', isFS);
+    });
+    document.addEventListener('webkitfullscreenchange', () => {
+      const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      fsBtn.textContent = isFS ? '✕' : '⛶';
+      fsBtn.title = isFS ? 'Keluar layar penuh' : 'Layar penuh';
+      fsBtn.classList.toggle('active', isFS);
+    });
   }
 
   // ----- Legend -----
