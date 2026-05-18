@@ -154,12 +154,12 @@
         <p style="font-size: 11px; color: var(--text3); margin: 4px 0 14px; font-family: 'IBM Plex Mono', monospace;">pisah dengan koma</p>
 
         <label class="input-label">Edges</label>
-        <textarea id="edges-input" class="input-field" style="min-height: 110px;" placeholder="A-B&#10;A-C">A-B
-A-C
-A-D
-A-E
-B-C</textarea>
-        <p style="font-size: 11px; color: var(--text3); margin: 4px 0 18px; font-family: 'IBM Plex Mono', monospace;">satu per baris, format A-B</p>
+        <textarea id="edges-input" class="input-field" style="min-height: 110px;" placeholder="A->B&#10;A->C">A->B
+A->C
+A->D
+A->E
+B->C</textarea>
+        <p style="font-size: 11px; color: var(--text3); margin: 4px 0 18px; font-family: 'IBM Plex Mono', monospace;">satu per baris &nbsp;·&nbsp; <strong>A-&gt;B</strong> (A ke B) &nbsp;·&nbsp; <strong>A&lt;-B</strong> (B ke A) &nbsp;·&nbsp; <strong>A&lt;-&gt;B</strong> (bolak-balik)</p>
 
         <div class="row" style="gap: 8px;">
           <button id="run-btn" class="btn-primary" style="flex: 1; justify-content: center;">Jalankan →</button>
@@ -188,7 +188,7 @@ B-C</textarea>
 
           <div class="algo-pick">
             <button data-algo="pagerank" class="active">PageRank</button>
-            <button data-algo="degree">Degree</button>
+            <button data-algo="degree">In-Degree</button>
             <button data-algo="betweenness">Betweenness</button>
           </div>
 
@@ -246,11 +246,11 @@ B-C</textarea>
       <div class="s4">
         <div class="mono" style="font-size: 12px; color: var(--text3); margin-bottom: 10px;">03</div>
         <h3 style="font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 22px; letter-spacing: -0.01em; line-height: 1.2; margin-bottom: 10px;">
-          Mainkan edge-nya.
+          Arah edge menentukan segalanya.
         </h3>
         <p style="font-size: 14px; color: var(--text2); margin: 0;">
-          Tambah/hapus edge dan jalankan ulang. Perhatikan bagaimana PageRank lebih sensitif
-          terhadap koneksi ke hub vs Degree yang flat.
+          Coba preset <em>Star</em> — Hub punya banyak edge keluar (<code>Hub-&gt;A</code>), tapi PageRank-nya
+          justru rendah karena tidak ada yang menunjuk ke Hub. Ubah ke <code>Hub&lt;-&gt;A</code> dan lihat perbedaannya.
         </p>
       </div>
     </div>
@@ -269,16 +269,47 @@ B-C</textarea>
 (function () {
 
   const PRESETS = {
-    star:   { nodes: 'Hub, A, B, C, D', edges: 'Hub-A\nHub-B\nHub-C\nHub-D' },
-    cycle:  { nodes: 'A, B, C, D, E, F', edges: 'A-B\nB-C\nC-D\nD-E\nE-F\nF-A' },
-    bridge: { nodes: 'A1, A2, A3, BR, B1, B2, B3, B4', edges: 'A1-A2\nA1-A3\nA2-A3\nA3-BR\nBR-B1\nB1-B2\nB1-B3\nB2-B3\nB3-B4' },
-    willie: { nodes: 'Willie, Jess, Baim, Mario, RiskaBkl, DimasBkl, Tokopedia', edges: 'Willie-Jess\nWillie-Baim\nWillie-Mario\nWillie-RiskaBkl\nWillie-DimasBkl\nWillie-Tokopedia\nJess-Mario\nBaim-Tokopedia\nRiskaBkl-DimasBkl' },
+    star:   { nodes: 'Hub, A, B, C, D', edges: 'Hub->A\nHub->B\nHub->C\nHub->D' },
+    cycle:  { nodes: 'A, B, C, D, E, F', edges: 'A->B\nB->C\nC->D\nD->E\nE->F\nF->A' },
+    bridge: { nodes: 'A1, A2, A3, BR, B1, B2, B3, B4', edges: 'A1<->A2\nA1<->A3\nA2<->A3\nA3->BR\nBR->B1\nB1<->B2\nB1<->B3\nB2<->B3\nB3->B4' },
+    willie: { nodes: 'Willie, Jess, Baim, Mario, Riska, Dimas, Tokopedia', edges: 'Willie->Jess\nWillie->Baim\nMario->Willie\nWillie->Riska\nWillie->Dimas\nWillie->Tokopedia\nJess->Mario\nBaim->Tokopedia\nRiska<->Dimas' },
   };
 
-  const state = { nodes: [], edges: [], algo: 'pagerank', scores: null };
+  const state = { nodes: [], edges: [], algo: 'pagerank', scores: null, layout: null };
   const svg = document.getElementById('sim-svg');
   const ns = 'http://www.w3.org/2000/svg';
   const VB = { w: 700, h: 440 };
+
+  // ── Parse one edge line, returns { source, target, bidir } or null ──
+  function parseEdgeLine(raw, nodeSet) {
+    const t = raw.trim();
+    if (!t) return null;
+    let src, tgt, bidir;
+    // Check <-> before -> and <- to avoid ambiguity
+    if (t.includes('<->')) {
+      const p = t.split('<->').map(s => s.trim());
+      if (p.length !== 2 || !p[0] || !p[1]) throw new Error(`Format tidak valid: "${t}" — gunakan A<->B`);
+      [src, tgt] = p; bidir = true;
+    } else if (t.includes('->')) {
+      const p = t.split('->').map(s => s.trim());
+      if (p.length !== 2 || !p[0] || !p[1]) throw new Error(`Format tidak valid: "${t}" — gunakan A->B`);
+      [src, tgt] = p; bidir = false;
+    } else if (t.includes('<-')) {
+      const p = t.split('<-').map(s => s.trim());
+      if (p.length !== 2 || !p[0] || !p[1]) throw new Error(`Format tidak valid: "${t}" — gunakan A<-B`);
+      [tgt, src] = p; bidir = false; // A<-B → stored as B→A
+    } else if (t.includes('-')) {
+      const p = t.split('-').map(s => s.trim());
+      if (p.length !== 2 || !p[0] || !p[1]) throw new Error(`Format tidak valid: "${t}" — gunakan A->B`);
+      [src, tgt] = p; bidir = true; // plain dash treated as bidirectional
+    } else {
+      throw new Error(`Format tidak valid: "${t}" — gunakan A->B, A<-B, atau A<->B`);
+    }
+    if (!nodeSet.has(src)) throw new Error(`Node "${src}" tidak ditemukan di daftar nodes`);
+    if (!nodeSet.has(tgt)) throw new Error(`Node "${tgt}" tidak ditemukan di daftar nodes`);
+    if (src === tgt) return null;
+    return { source: src, target: tgt, bidir };
+  }
 
   function parseInput() {
     const nodesRaw = document.getElementById('nodes-input').value;
@@ -289,16 +320,16 @@ B-C</textarea>
     if (nodes.length < 2) throw new Error('Butuh minimal 2 node.');
     if (nodes.length > 40) throw new Error('Maksimal 40 node untuk sandbox.');
     const edges = [];
+    const edgeKeys = new Set();
     edgesRaw.split('\n').forEach((line, i) => {
-      const t = line.trim(); if (!t) return;
-      const m = t.split(/\s*[-→]\s*/);
-      if (m.length !== 2) throw new Error(`Edge baris ${i+1} tidak valid (format: A-B)`);
-      const [a, b] = m;
-      if (!nodeSet.has(a)) throw new Error(`Node "${a}" tidak ada di daftar nodes`);
-      if (!nodeSet.has(b)) throw new Error(`Node "${b}" tidak ada di daftar nodes`);
-      if (a === b) return;
-      const key = [a, b].sort().join('|');
-      if (!edges.some(e => [e.source, e.target].sort().join('|') === key)) edges.push({ source: a, target: b });
+      let e;
+      try { e = parseEdgeLine(line, nodeSet); } catch (err) { throw new Error(`Baris ${i + 1}: ${err.message}`); }
+      if (!e) return;
+      // Dedup: bidirectional A<->B same as B<->A; directed A->B ≠ B->A
+      const key = e.bidir ? [e.source, e.target].sort().join('|') + ':bidir' : `${e.source}|${e.target}`;
+      if (edgeKeys.has(key)) return;
+      edgeKeys.add(key);
+      edges.push(e);
     });
     return { nodes, edges };
   }
@@ -307,30 +338,31 @@ B-C</textarea>
     const cx = VB.w / 2, cy = VB.h / 2;
     const nodes = nodeIds.map((id, i) => {
       const a = (i / nodeIds.length) * Math.PI * 2;
-      return { id, x: cx + Math.cos(a) * 120, y: cy + Math.sin(a) * 120, vx: 0, vy: 0 };
+      return { id, x: cx + Math.cos(a) * 130, y: cy + Math.sin(a) * 130, vx: 0, vy: 0 };
     });
-    const idx = {}; nodes.forEach((n,i) => idx[n.id] = i);
+    const idx = {}; nodes.forEach((n, i) => idx[n.id] = i);
+    // Layout springs are undirected (positioning only, not algo)
     const eidx = edges.map(e => ({ source: idx[e.source], target: idx[e.target] }));
     const k = nodeIds.length < 8 ? 95 : (nodeIds.length < 16 ? 75 : 55);
     for (let iter = 0; iter < 220; iter++) {
       nodes.forEach(n => { n.fx = 0; n.fy = 0; });
       for (let i = 0; i < nodes.length; i++) {
-        for (let j = i+1; j < nodes.length; j++) {
+        for (let j = i + 1; j < nodes.length; j++) {
           const a = nodes[i], b = nodes[j];
-          let dx = a.x - b.x, dy = a.y - b.y;
-          const d2 = dx*dx + dy*dy + 0.01;
-          const f = 1800 / d2; const d = Math.sqrt(d2);
-          a.fx += (dx/d) * f; a.fy += (dy/d) * f;
-          b.fx -= (dx/d) * f; b.fy -= (dy/d) * f;
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const d2 = dx * dx + dy * dy + 0.01;
+          const f = 1800 / d2, d = Math.sqrt(d2);
+          a.fx += (dx / d) * f; a.fy += (dy / d) * f;
+          b.fx -= (dx / d) * f; b.fy -= (dy / d) * f;
         }
       }
       eidx.forEach(e => {
         const a = nodes[e.source], b = nodes[e.target];
         const dx = b.x - a.x, dy = b.y - a.y;
-        const d = Math.sqrt(dx*dx + dy*dy) + 0.01;
+        const d = Math.sqrt(dx * dx + dy * dy) + 0.01;
         const f = (d - k) * 0.08;
-        a.fx += (dx/d) * f; a.fy += (dy/d) * f;
-        b.fx -= (dx/d) * f; b.fy -= (dy/d) * f;
+        a.fx += (dx / d) * f; a.fy += (dy / d) * f;
+        b.fx -= (dx / d) * f; b.fy -= (dy / d) * f;
       });
       nodes.forEach(n => {
         n.fx += (cx - n.x) * 0.008; n.fy += (cy - n.y) * 0.008;
@@ -343,25 +375,37 @@ B-C</textarea>
     return { nodes, idx, eidx };
   }
 
+  // ── Directed adjacency: outgoing edges only ──
   function buildAdj(nodeIds, edges) {
     const adj = {}; nodeIds.forEach(id => adj[id] = []);
-    edges.forEach(e => { adj[e.source].push(e.target); adj[e.target].push(e.source); });
+    edges.forEach(e => {
+      adj[e.source].push(e.target);
+      if (e.bidir) adj[e.target].push(e.source);
+    });
     return adj;
   }
+
+  // In-degree centrality (consistent with data.js)
   function degree(nodeIds, edges) {
-    const adj = buildAdj(nodeIds, edges);
+    const inDeg = {}; nodeIds.forEach(id => inDeg[id] = 0);
+    edges.forEach(e => {
+      inDeg[e.target]++;
+      if (e.bidir) inDeg[e.source]++;
+    });
     const max = Math.max(1, nodeIds.length - 1);
-    const out = {}; nodeIds.forEach(id => out[id] = adj[id].length / max);
+    const out = {}; nodeIds.forEach(id => out[id] = inDeg[id] / max);
     return out;
   }
+
+  // Directed PageRank: rank flows along outgoing edges
   function pagerank(nodeIds, edges, d = 0.85, maxIter = 80, tol = 1e-7) {
     const adj = buildAdj(nodeIds, edges);
     const N = nodeIds.length;
-    let pr = {}; nodeIds.forEach(id => pr[id] = 1/N);
+    let pr = {}; nodeIds.forEach(id => pr[id] = 1 / N);
     let iters = 0;
     for (let k = 0; k < maxIter; k++) {
       iters++;
-      const next = {}; nodeIds.forEach(id => next[id] = (1-d)/N);
+      const next = {}; nodeIds.forEach(id => next[id] = (1 - d) / N);
       nodeIds.forEach(id => {
         const nbs = adj[id]; if (nbs.length === 0) return;
         const share = (d * pr[id]) / nbs.length;
@@ -372,6 +416,8 @@ B-C</textarea>
     }
     return { scores: pr, iters };
   }
+
+  // Directed betweenness (Brandes algorithm, directed)
   function betweenness(nodeIds, edges) {
     const adj = buildAdj(nodeIds, edges);
     const bc = {}; nodeIds.forEach(id => bc[id] = 0);
@@ -389,45 +435,85 @@ B-C</textarea>
       const delta = {}; nodeIds.forEach(id => delta[id] = 0);
       while (S.length) {
         const w = S.pop();
-        P[w].forEach(v => delta[v] += (sigma[v]/sigma[w]) * (1 + delta[w]));
+        P[w].forEach(v => delta[v] += (sigma[v] / sigma[w]) * (1 + delta[w]));
         if (w !== s) bc[w] += delta[w];
       }
     });
-    const norm = Math.max(1, (nodeIds.length-1)*(nodeIds.length-2));
-    nodeIds.forEach(id => bc[id] = bc[id] / norm);
+    const norm = Math.max(1, (nodeIds.length - 1) * (nodeIds.length - 2));
+    nodeIds.forEach(id => bc[id] /= norm);
     return bc;
+  }
+
+  // ── Add SVG arrowhead markers to defs ──
+  function addDefs() {
+    const defs = document.createElementNS(ns, 'defs');
+    function makeMarker(id, orient) {
+      const m = document.createElementNS(ns, 'marker');
+      m.setAttribute('id', id);
+      m.setAttribute('viewBox', '0 -4 8 8');
+      m.setAttribute('refX', '7');
+      m.setAttribute('refY', '0');
+      m.setAttribute('markerWidth', '5');
+      m.setAttribute('markerHeight', '5');
+      m.setAttribute('orient', orient);
+      const p = document.createElementNS(ns, 'path');
+      p.setAttribute('d', 'M0,-3.5L8,0L0,3.5Z');
+      p.setAttribute('fill', '#9a9288');
+      m.appendChild(p);
+      return m;
+    }
+    defs.appendChild(makeMarker('arr-end', 'auto'));
+    defs.appendChild(makeMarker('arr-start', 'auto-start-reverse'));
+    svg.appendChild(defs);
   }
 
   function render(layout, scores) {
     svg.innerHTML = '';
-    const max = Math.max(...Object.values(scores));
-    const min = Math.min(...Object.values(scores));
+    addDefs();
+    const vals = Object.values(scores);
+    const max = Math.max(...vals), min = Math.min(...vals);
 
+    // Precompute node radii from scores
+    const radii = {};
+    layout.nodes.forEach(n => {
+      const t = max === min ? 0.5 : (scores[n.id] - min) / (max - min);
+      radii[n.id] = 10 + t * 20;
+    });
+
+    const ARR = 9; // arrow head clearance (px)
     const gE = document.createElementNS(ns, 'g');
     state.edges.forEach(e => {
-      const a = layout.nodes[layout.idx[e.source]], b = layout.nodes[layout.idx[e.target]];
+      const pA = layout.nodes[layout.idx[e.source]];
+      const pB = layout.nodes[layout.idx[e.target]];
+      const rA = radii[e.source], rB = radii[e.target];
+      const dx = pB.x - pA.x, dy = pB.y - pA.y;
+      const d = Math.sqrt(dx * dx + dy * dy) || 1;
+      // Offset line endpoints to sit outside node circles
+      const x1 = pA.x + (dx / d) * (rA + (e.bidir ? ARR : 2));
+      const y1 = pA.y + (dy / d) * (rA + (e.bidir ? ARR : 2));
+      const x2 = pB.x - (dx / d) * (rB + ARR);
+      const y2 = pB.y - (dy / d) * (rB + ARR);
+
       const line = document.createElementNS(ns, 'line');
       line.classList.add('sim-edge');
-      line.setAttribute('x1', a.x); line.setAttribute('y1', a.y);
-      line.setAttribute('x2', b.x); line.setAttribute('y2', b.y);
+      line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+      line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+      line.setAttribute('marker-end', 'url(#arr-end)');
+      if (e.bidir) line.setAttribute('marker-start', 'url(#arr-start)');
       gE.appendChild(line);
     });
     svg.appendChild(gE);
 
     const gN = document.createElementNS(ns, 'g');
-    // Color interpolation: lighter accent for low, full accent for high
     layout.nodes.forEach(n => {
       const s = scores[n.id];
       const t = max === min ? 0.5 : (s - min) / (max - min);
-      const r = 10 + t * 20;
+      const r = radii[n.id];
       const g = document.createElementNS(ns, 'g');
       g.classList.add('sim-node');
       g.setAttribute('transform', `translate(${n.x},${n.y})`);
 
-      // Accent tint scale
-      const accent = { L1: '#e8c8b6', L2: '#d99070', L3: '#c15f3c', L4: '#a04d2f' };
-      const color = t < 0.25 ? accent.L1 : t < 0.55 ? accent.L2 : t < 0.85 ? accent.L3 : accent.L4;
-
+      const color = t < 0.25 ? '#e8c8b6' : t < 0.55 ? '#d99070' : t < 0.85 ? '#c15f3c' : '#a04d2f';
       const c = document.createElementNS(ns, 'circle');
       c.setAttribute('r', r); c.setAttribute('fill', color);
       g.appendChild(c);
@@ -461,20 +547,20 @@ B-C</textarea>
   }
 
   function formatScore(s, algo) {
-    if (algo === 'pagerank') return (s*100).toFixed(1) + '%';
-    if (algo === 'degree')   return (s*100).toFixed(0) + '%';
-    return (s*100).toFixed(1) + '%';
+    if (algo === 'pagerank') return (s * 100).toFixed(1) + '%';
+    if (algo === 'degree')   return (s * 100).toFixed(0) + '%';
+    return (s * 100).toFixed(1) + '%';
   }
 
   function renderResults(scores) {
-    const sorted = Object.entries(scores).sort((a,b) => b[1] - a[1]);
+    const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
     const max = sorted[0]?.[1] || 0;
     const tbody = document.getElementById('result-tbody');
     tbody.innerHTML = sorted.map(([id, s], i) => {
-      const w = max === 0 ? 0 : (s/max) * 100;
+      const w = max === 0 ? 0 : (s / max) * 100;
       return `
         <tr class="${i === 0 ? 'top' : ''}">
-          <td class="mono">${String(i+1).padStart(2,'0')}</td>
+          <td class="mono">${String(i + 1).padStart(2, '0')}</td>
           <td>${id}</td>
           <td class="mono">${formatScore(s, state.algo)}</td>
           <td><div class="bar"><div class="bar-fill" style="width:${w}%;"></div></div></td>
@@ -482,9 +568,23 @@ B-C</textarea>
     }).join('');
 
     const top = sorted[0];
-    const insight = document.getElementById('result-insight');
-    const algoNames = { pagerank: 'PageRank', degree: 'Degree', betweenness: 'Betweenness' };
-    insight.innerHTML = `Pemenang menurut <strong>${algoNames[state.algo]}</strong>: <span class="mono"><strong>${top[0]}</strong></span> dengan skor <span class="mono">${formatScore(top[1], state.algo)}</span>.`;
+    const algoNames = { pagerank: 'PageRank', degree: 'In-Degree', betweenness: 'Betweenness' };
+    document.getElementById('result-insight').innerHTML =
+      `Pemenang menurut <strong>${algoNames[state.algo]}</strong>: <span class="mono"><strong>${top[0]}</strong></span> dengan skor <span class="mono">${formatScore(top[1], state.algo)}</span>.`;
+  }
+
+  function runAlgo(nodes, edges) {
+    if (state.algo === 'pagerank') {
+      const res = pagerank(nodes, edges);
+      document.getElementById('iter-info').textContent = `directed · konvergen · iterasi ${res.iters}`;
+      return res.scores;
+    } else if (state.algo === 'degree') {
+      document.getElementById('iter-info').textContent = 'in-degree centrality';
+      return degree(nodes, edges);
+    } else {
+      document.getElementById('iter-info').textContent = 'directed betweenness';
+      return betweenness(nodes, edges);
+    }
   }
 
   function run() {
@@ -493,19 +593,11 @@ B-C</textarea>
       document.getElementById('err-msg').style.display = 'none';
       state.edges = edges; state.nodes = nodes;
       const layout = layoutNodes(nodes, edges);
-      let scoresObj, iters = '—';
-      if (state.algo === 'pagerank') {
-        const res = pagerank(nodes, edges);
-        scoresObj = res.scores; iters = `konvergen · iterasi ${res.iters}`;
-      } else if (state.algo === 'degree') {
-        scoresObj = degree(nodes, edges);
-      } else {
-        scoresObj = betweenness(nodes, edges);
-      }
-      state.scores = scoresObj; state.layout = layout;
+      state.layout = layout;
+      const scoresObj = runAlgo(nodes, edges);
+      state.scores = scoresObj;
       document.getElementById('n-count').textContent = nodes.length;
       document.getElementById('e-count').textContent = edges.length;
-      document.getElementById('iter-info').textContent = iters;
       render(layout, scoresObj);
       renderResults(scoresObj);
     } catch (e) {
@@ -542,17 +634,8 @@ B-C</textarea>
       btn.classList.add('active');
       state.algo = btn.dataset.algo;
       if (state.nodes.length && state.layout) {
-        let scoresObj, iters = '—';
-        if (state.algo === 'pagerank') {
-          const res = pagerank(state.nodes, state.edges);
-          scoresObj = res.scores; iters = `konvergen · iterasi ${res.iters}`;
-        } else if (state.algo === 'degree') {
-          scoresObj = degree(state.nodes, state.edges);
-        } else {
-          scoresObj = betweenness(state.nodes, state.edges);
-        }
+        const scoresObj = runAlgo(state.nodes, state.edges);
         state.scores = scoresObj;
-        document.getElementById('iter-info').textContent = iters;
         render(state.layout, scoresObj);
         renderResults(scoresObj);
       }

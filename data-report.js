@@ -1,18 +1,17 @@
-/* ==========================================================
-   Shared dataset: 58 nodes, 88 edges (directed)
-   Indonesian creator collaboration graph — Bengkulu local + national.
-   Communities: nasional, lokal (Bengkulu), organisasi
-   ========================================================== */
+'use strict';
+// ============================================================
+// data-report.js — run with: node data-report.js
+// ============================================================
 
-// Community keys must match CSS vars --com-*
+// ── DATA ────────────────────────────────────────────────────
+
 const COMMUNITIES = {
-  nasional:      { label: 'Kreator Nasional',     color: '#c15f3c' },  // terracotta
-  lokal:         { label: 'Lokal Bengkulu',       color: '#6e8a4f' },  // sage
-  organisasi:    { label: 'Organisasi / Media',   color: '#b58940' },  // ochre
+  nasional:   { label: 'Kreator Nasional'   },
+  lokal:      { label: 'Lokal Bengkulu'     },
+  organisasi: { label: 'Organisasi / Media' },
 };
 
 const NODES = [
-  // === KOMUNITAS: nasional ===
   { id: 'willie27_',               name: 'Willie Salim',             com: 'nasional',   followers: 16600000 },
   { id: 'vilmei',                  name: 'Vilmei',                   com: 'nasional',   followers: 14200000 },
   { id: 'ibnuwardani',             name: 'Ibnu Wardani',             com: 'nasional',   followers: 6800000  },
@@ -46,8 +45,6 @@ const NODES = [
   { id: 'bonge_citayam',           name: 'Bonge Citayam',            com: 'nasional',   followers: 100000   },
   { id: 'rianfahardhi',            name: 'Rian Fahardhi',            com: 'nasional',   followers: 595000   },
   { id: 'drrichardlee',            name: 'dr. Richard Lee',          com: 'nasional',   followers: 2200000  },
-
-  // === KOMUNITAS: lokal (Bengkulu) ===
   { id: 'mariorioio__',            name: 'Mario',                    com: 'lokal',      followers: 1239     },
   { id: 'peuybatik',               name: 'Peuy Batik',               com: 'lokal',      followers: 1288     },
   { id: 'keylaphaulina',           name: 'Keyla Phaulina',           com: 'lokal',      followers: 2384     },
@@ -72,19 +69,15 @@ const NODES = [
   { id: 'dionn_yonn20',            name: 'Dion Yonn',                com: 'lokal',      followers: 1393     },
   { id: 'galeh_004',               name: 'Galeh 004',                com: 'lokal',      followers: 1468     },
   { id: 'akbarsumbar',             name: 'Akbar Sumbar',             com: 'lokal',      followers: 9926     },
-
-  // === KOMUNITAS: organisasi ===
   { id: 'ikatandutahivaidsprovbengkulu', name: 'Ikatan Duta HIV AIDS BKL', com: 'organisasi', followers: 11200 },
 ];
 
-const EDGES = [
-  // Willie Salim
+const EDGES_RAW = [
   { source: 'willie27_',    target: 'vilmei' },
   { source: 'willie27_',    target: 'ibnuwardani' },
   { source: 'willie27_',    target: 'jessnolimit' },
   { source: 'willie27_',    target: 'fadiljaidi' },
   { source: 'willie27_',    target: 'baimwong' },
-  // Vilmei
   { source: 'vilmei',       target: 'bonge_citayam' },
   { source: 'vilmei',       target: 'rianfahardhi' },
   { source: 'vilmei',       target: 'fuji_an' },
@@ -99,7 +92,6 @@ const EDGES = [
   { source: 'riaricis1795', target: 'vilmei' },
   { source: 'vilmei',       target: 'fadiljaidi' },
   { source: 'fadiljaidi',   target: 'vilmei' },
-  // Ibnu Wardani
   { source: 'ibnuwardani',  target: 'lalitahutami' },
   { source: 'lalitahutami', target: 'ibnuwardani' },
   { source: 'ibnuwardani',  target: 'willie27_' },
@@ -117,7 +109,6 @@ const EDGES = [
   { source: 'attahalilintar', target: 'ibnuwardani' },
   { source: 'thariqhalilintar', target: 'ibnuwardani' },
   { source: 'jessnolimit',  target: 'ibnuwardani' },
-  // Jess No Limit
   { source: 'jessnolimit',  target: 'raditya_dika' },
   { source: 'jessnolimit',  target: 'windahbasudara' },
   { source: 'jessnolimit',  target: 'frostdiamondd' },
@@ -130,14 +121,12 @@ const EDGES = [
   { source: 'jessicajane99', target: 'jessnolimit' },
   { source: 'jessnolimit',  target: 'ekooju' },
   { source: 'ekooju',       target: 'jessnolimit' },
-  // Baim Wong
   { source: 'baimwong',     target: 'raffinagita1717' },
   { source: 'baimwong',     target: 'attahalilintar' },
   { source: 'baimwong',     target: 'thariqhalilintar' },
   { source: 'baimwong',     target: 'aurelie.hermansyah' },
   { source: 'baimwong',     target: 'willie27_' },
   { source: 'mastercorbuzier', target: 'baimwong' },
-  // Fadil Jaidi
   { source: 'fadiljaidi',   target: 'pakmuh' },
   { source: 'fadiljaidi',   target: 'raffinagita1717' },
   { source: 'fadiljaidi',   target: 'mastercorbuzier' },
@@ -147,7 +136,6 @@ const EDGES = [
   { source: 'fadiljaidi',   target: 'keanuagl' },
   { source: 'fadiljaidi',   target: 'clarissaputri' },
   { source: 'jeromepolin',  target: 'fadiljaidi' },
-  // Mario (Lokal Bengkulu)
   { source: 'mariorioio__', target: 'keylaphaulina' },
   { source: 'mariorioio__', target: 'dini_kyl' },
   { source: 'mariorioio__', target: 'atalaptraa' },
@@ -155,8 +143,6 @@ const EDGES = [
   { source: 'mariorioio__', target: 'peuybatik' },
   { source: 'mariorioio__', target: 'willie27_' },
   { source: 'ikatandutahivaidsprovbengkulu', target: 'mariorioio__' },
-  { source: 'dutakreator.id', target: 'mariorioio__' },  // source tidak terdaftar — di-skip
-  // ~Setengah kreator lokal menunjuk ke Mario (simulasi: Mario sebagai hub lokal)
   { source: 'keylaphaulina',        target: 'mariorioio__' },
   { source: 'atalaptraa',           target: 'mariorioio__' },
   { source: 'alifahdzatilsalsabila',target: 'mariorioio__' },
@@ -168,7 +154,6 @@ const EDGES = [
   { source: 'akbarsumbar',          target: 'mariorioio__' },
   { source: 'galeh_004',            target: 'mariorioio__' },
   { source: 'slw.azky',             target: 'mariorioio__' },
-  // Ikatan Duta HIV AIDS
   { source: 'ikatandutahivaidsprovbengkulu', target: 'fakhrialwn' },
   { source: 'ikatandutahivaidsprovbengkulu', target: 'ikesiregar_2' },
   { source: 'ikatandutahivaidsprovbengkulu', target: 'riskadlf' },
@@ -184,33 +169,30 @@ const EDGES = [
   { source: 'ikatandutahivaidsprovbengkulu', target: 'slw.azky' },
   { source: 'ikatandutahivaidsprovbengkulu', target: 'dionn_yonn20' },
   { source: 'galeh_004',    target: 'ikatandutahivaidsprovbengkulu' },
-  // Peuy Batik
   { source: 'alifahdzatilsalsabila', target: 'peuybatik' },
   { source: 'nandi_asqora', target: 'peuybatik' },
   { source: 'peuybatik',    target: 'lutfikurniadi_' },
-  { source: 'peuybatik',    target: 'mariorioio__' },   // peuy → mario, rank mengalir ke willie
-  { source: 'lutfikurniadi_', target: 'mariorioio__' }, // lutfi → mario (bukan balik ke peuy)
+  { source: 'peuybatik',    target: 'mariorioio__' },
+  { source: 'lutfikurniadi_', target: 'mariorioio__' },
 ];
 
-// ---------- Algorithms ----------
-function adjacency() {
+// ── Filter invalid edges ─────────────────────────────────────
+const nodeSet = new Set(NODES.map(n => n.id));
+const EDGES = EDGES_RAW.filter(e => nodeSet.has(e.source) && nodeSet.has(e.target));
+
+// ── ALGORITHMS ──────────────────────────────────────────────
+
+function buildAdj() {
   const adj = {};
   NODES.forEach(n => adj[n.id] = []);
-  EDGES.forEach(e => {
-    if (!adj[e.source] || !adj[e.target]) return;  // skip edge dgn node tak dikenal
-    adj[e.source].push(e.target);  // directed: hanya arah keluar
-  });
+  EDGES.forEach(e => adj[e.source].push(e.target));
   return adj;
 }
 
 function degreeCentrality() {
-  // In-degree: jumlah edge masuk ke node — mengukur seberapa banyak yang menunjuk ke node ini
   const inDeg = {};
   NODES.forEach(n => inDeg[n.id] = 0);
-  EDGES.forEach(e => {
-    if (!inDeg.hasOwnProperty(e.source) || !inDeg.hasOwnProperty(e.target)) return;
-    inDeg[e.target]++;
-  });
+  EDGES.forEach(e => { inDeg[e.target]++; });
   const max = NODES.length - 1;
   const out = {};
   NODES.forEach(n => { out[n.id] = inDeg[n.id] / max; });
@@ -218,12 +200,13 @@ function degreeCentrality() {
 }
 
 function pageRank(d = 0.85, iters = 60) {
-  const adj = adjacency();  // directed outgoing
+  const adj = buildAdj();
   const N = NODES.length;
-  let pr = {}; NODES.forEach(n => pr[n.id] = 1/N);
+  let pr = {};
+  NODES.forEach(n => pr[n.id] = 1 / N);
   for (let k = 0; k < iters; k++) {
     const next = {};
-    NODES.forEach(n => next[n.id] = (1-d)/N);
+    NODES.forEach(n => next[n.id] = (1 - d) / N);
     NODES.forEach(n => {
       const neighbors = adj[n.id];
       if (neighbors.length === 0) return;
@@ -235,40 +218,23 @@ function pageRank(d = 0.85, iters = 60) {
   return pr;
 }
 
-/**
- * Weighted PageRank berbasis zona komunitas (tanpa followers).
- * Bobot edge hanya dari community factor — mencerminkan kekuatan
- * pengaruh antar zona yang diamati (nasional, lokal, organisasi).
- *
- * bobot_edge(A→B) = communityFactor(A.com, B.com)
- *
- * Community factor:
- *   - lokal → lokal      : ×1.5  (perkuat ikatan dalam komunitas lokal)
- *   - * → lokal          : ×1.3  (koneksi masuk ke lokal sedikit dinaikkan)
- *   - lokal → nasional   : ×0.9  (lokal ke nasional sedikit diredam)
- *   - selainnya          : ×1.0  (netral)
- */
 function weightedPageRank(d = 0.85, iters = 80) {
   const nodeById = {};
   NODES.forEach(n => nodeById[n.id] = n);
 
-  function communityFactor(sourceCom, targetCom) {
-    if (sourceCom === 'lokal' && targetCom === 'lokal') return 1.5;
-    if (targetCom === 'lokal') return 1.3;
-    if (sourceCom === 'lokal' && targetCom === 'nasional') return 0.9;
+  function communityFactor(sc, tc) {
+    if (sc === 'lokal' && tc === 'lokal') return 1.5;
+    if (tc === 'lokal') return 1.3;
+    if (sc === 'lokal' && tc === 'nasional') return 0.9;
     return 1.0;
   }
 
   const adj = {};
   NODES.forEach(n => adj[n.id] = []);
-
   EDGES.forEach(e => {
-    const src = e.source, tgt = e.target;
-    if (!nodeById[src] || !nodeById[tgt]) return;
-    const w = communityFactor(nodeById[src].com, nodeById[tgt].com);
-    adj[src].push({ target: tgt, weight: w });
+    const w = communityFactor(nodeById[e.source].com, nodeById[e.target].com);
+    adj[e.source].push({ target: e.target, weight: w });
   });
-
   NODES.forEach(n => {
     const links = adj[n.id];
     const total = links.reduce((s, l) => s + l.weight, 0);
@@ -278,7 +244,6 @@ function weightedPageRank(d = 0.85, iters = 80) {
   const N = NODES.length;
   let pr = {};
   NODES.forEach(n => pr[n.id] = 1 / N);
-
   for (let k = 0; k < iters; k++) {
     const next = {};
     NODES.forEach(n => next[n.id] = (1 - d) / N);
@@ -289,13 +254,11 @@ function weightedPageRank(d = 0.85, iters = 80) {
     });
     pr = next;
   }
-
   return pr;
 }
 
 function betweennessCentrality() {
-  // Brandes' algorithm, directed
-  const adj = adjacency();
+  const adj = buildAdj();
   const bc = {};
   NODES.forEach(n => bc[n.id] = 0);
   NODES.forEach(s => {
@@ -314,31 +277,284 @@ function betweennessCentrality() {
     const delta = {}; NODES.forEach(n => delta[n.id] = 0);
     while (S.length) {
       const w = S.pop();
-      P[w].forEach(v => { delta[v] += (sigma[v]/sigma[w]) * (1 + delta[w]); });
+      P[w].forEach(v => { delta[v] += (sigma[v] / sigma[w]) * (1 + delta[w]); });
       if (w !== s.id) bc[w] += delta[w];
     }
   });
-  // Normalize (directed: divide by (N-1)(N-2))
   const norm = (NODES.length - 1) * (NODES.length - 2);
-  NODES.forEach(n => bc[n.id] = bc[n.id] / norm);
+  NODES.forEach(n => bc[n.id] /= norm);
   return bc;
 }
 
-// Cache results
-const SCORES = {
-  degree:      degreeCentrality(),
-  pagerank:    pageRank(),
-  pagerank_w:  weightedPageRank(),
-  betweenness: betweennessCentrality(),
-};
+// ── PRECOMPUTE METRICS ───────────────────────────────────────
 
-// Helper: top N by score
-function topBy(scoreMap, n = 10) {
-  return Object.entries(scoreMap)
-    .map(([id, s]) => ({ ...NODES.find(x => x.id === id), score: s }))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, n);
+const adj = buildAdj();
+const inDegMap = {};
+const outDegMap = {};
+NODES.forEach(n => { inDegMap[n.id] = 0; outDegMap[n.id] = 0; });
+EDGES.forEach(e => { inDegMap[e.target]++; outDegMap[e.source]++; });
+
+const pr   = pageRank();
+const prw  = weightedPageRank();
+const deg  = degreeCentrality();
+const bc   = betweennessCentrality();
+
+// Total degree (in + out, undirected view)
+function totalDeg(id) { return inDegMap[id] + outDegMap[id]; }
+
+// Clustering coefficient (directed: triangles / k*(k-1))
+function clusteringCoeff(id) {
+  const neighbors = new Set([...adj[id], ...EDGES.filter(e => e.target === id).map(e => e.source)]);
+  const nb = [...neighbors];
+  const k = nb.length;
+  if (k < 2) return 0;
+  let triangles = 0;
+  for (let i = 0; i < nb.length; i++) {
+    for (let j = 0; j < nb.length; j++) {
+      if (i === j) continue;
+      if (adj[nb[i]] && adj[nb[i]].includes(nb[j])) triangles++;
+    }
+  }
+  return triangles / (k * (k - 1));
 }
 
-// Expose
-window.GRAPH = { NODES, EDGES, COMMUNITIES, SCORES, topBy, adjacency };
+const cc = {};
+NODES.forEach(n => cc[n.id] = clusteringCoeff(n.id));
+
+// ── CONNECTIVITY (BFS undirected) ────────────────────────────
+
+function connectedComponents() {
+  const undirAdj = {};
+  NODES.forEach(n => undirAdj[n.id] = new Set());
+  EDGES.forEach(e => { undirAdj[e.source].add(e.target); undirAdj[e.target].add(e.source); });
+  const visited = new Set();
+  const components = [];
+  NODES.forEach(n => {
+    if (visited.has(n.id)) return;
+    const comp = [];
+    const queue = [n.id];
+    visited.add(n.id);
+    while (queue.length) {
+      const v = queue.shift();
+      comp.push(v);
+      undirAdj[v].forEach(nb => {
+        if (!visited.has(nb)) { visited.add(nb); queue.push(nb); }
+      });
+    }
+    components.push(comp);
+  });
+  return components;
+}
+
+const components = connectedComponents();
+
+// ── HELPERS ──────────────────────────────────────────────────
+
+function fmtFollowers(f) {
+  if (f >= 1e6) return (f / 1e6).toFixed(1) + 'M';
+  if (f >= 1e3) return (f / 1e3).toFixed(1) + 'K';
+  return String(f);
+}
+
+function pad(s, n, right = false) {
+  s = String(s);
+  if (right) return s.padStart(n);
+  return s.padEnd(n);
+}
+
+function pct(v) { return (v * 100).toFixed(4) + '%'; }
+
+function rankMap(scoreObj, desc = true) {
+  return Object.entries(scoreObj)
+    .sort((a, b) => desc ? b[1] - a[1] : a[1] - b[1])
+    .reduce((m, [id], i) => { m[id] = i + 1; return m; }, {});
+}
+
+const prRank  = rankMap(pr);
+const prwRank = rankMap(prw);
+const degRank = rankMap(deg);
+const bcRank  = rankMap(bc);
+
+// ── PRINT HELPERS ────────────────────────────────────────────
+
+const HR1 = '═'.repeat(110);
+const HR2 = '─'.repeat(110);
+
+function header(title) {
+  console.log('\n' + HR1);
+  console.log('  ' + title);
+  console.log(HR1);
+}
+
+function subheader(title) {
+  console.log('\n' + HR2);
+  console.log('  ' + title);
+  console.log(HR2);
+}
+
+// ── SECTION 1: GRAPH SUMMARY ─────────────────────────────────
+
+header('1. GRAPH SUMMARY');
+
+const N = NODES.length;
+const E = EDGES.length;
+const avgDeg = (2 * E) / N;
+const maxDeg = Math.max(...NODES.map(n => totalDeg(n.id)));
+const avgCC  = NODES.reduce((s, n) => s + cc[n.id], 0) / N;
+
+console.log(`  Total nodes          : ${N}`);
+console.log(`  Total edges (valid)  : ${E}`);
+console.log(`  Communities          : ${Object.keys(COMMUNITIES).length}`);
+console.log(`  Connected (undirected): ${components.length === 1 ? 'Yes' : 'No'}`);
+console.log(`  Connected components : ${components.length}`);
+if (components.length > 1) {
+  components.forEach((c, i) => console.log(`    Component ${i + 1}: ${c.length} nodes — [${c.slice(0, 5).join(', ')}${c.length > 5 ? '...' : ''}]`));
+}
+console.log(`  Average degree       : ${avgDeg.toFixed(3)}`);
+console.log(`  Max degree           : ${maxDeg}`);
+console.log(`  Avg clustering coeff : ${avgCC.toFixed(4)}`);
+
+// ── SECTION 2: PAGERANK TOP 15 ───────────────────────────────
+
+function printRankingTable(title, scoreObj, scoreLabel) {
+  header(title);
+  const sorted = Object.entries(scoreObj)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 15)
+    .map(([id, score], i) => {
+      const n = NODES.find(x => x.id === id);
+      return { rank: i + 1, id, name: n.name, com: COMMUNITIES[n.com].label, score, deg: totalDeg(id), followers: n.followers };
+    });
+
+  const hdr = [
+    pad('Rank', 5), pad('Username', 28), pad('Display Name', 22),
+    pad('Community', 20), pad(scoreLabel, 12, true), pad('Degree', 8, true), pad('Followers', 12, true)
+  ].join('  ');
+  console.log(hdr);
+  console.log(HR2);
+
+  sorted.forEach(r => {
+    console.log([
+      pad(r.rank, 5),
+      pad('@' + r.id, 28),
+      pad(r.name, 22),
+      pad(r.com, 20),
+      pad(pct(r.score), 12, true),
+      pad(r.deg, 8, true),
+      pad(fmtFollowers(r.followers), 12, true),
+    ].join('  '));
+  });
+}
+
+printRankingTable('2. PAGERANK TOP 15', pr, 'PR %');
+printRankingTable('3. WEIGHTED PAGERANK TOP 15', prw, 'WPR %');
+printRankingTable('4. DEGREE CENTRALITY TOP 15', deg, 'Deg Score');
+printRankingTable('5. BETWEENNESS CENTRALITY TOP 15', bc, 'BC %');
+
+// ── SECTION 6: COMMUNITY STATISTICS ─────────────────────────
+
+header('6. COMMUNITY STATISTICS');
+
+Object.entries(COMMUNITIES).forEach(([comKey, comMeta]) => {
+  const members = NODES.filter(n => n.com === comKey);
+  const memberIds = new Set(members.map(n => n.id));
+
+  const internalEdges = EDGES.filter(e => memberIds.has(e.source) && memberIds.has(e.target));
+  const internalPct   = (internalEdges.length / E * 100).toFixed(1);
+  const avgPR  = members.reduce((s, n) => s + pr[n.id], 0) / members.length;
+  const avgDeg2 = members.reduce((s, n) => s + totalDeg(n.id), 0) / members.length;
+  const avgCC2  = members.reduce((s, n) => s + cc[n.id], 0) / members.length;
+
+  const hubNode = members.sort((a, b) => pr[b.id] - pr[a.id])[0];
+
+  subheader(`${comMeta.label} (${comKey})`);
+  console.log(`  Members              : ${members.length}`);
+  console.log(`  Internal edges       : ${internalEdges.length} (${internalPct}% of all edges)`);
+  console.log(`  Avg PageRank         : ${pct(avgPR)}`);
+  console.log(`  Avg degree           : ${avgDeg2.toFixed(2)}`);
+  console.log(`  Avg clustering coeff : ${avgCC2.toFixed(4)}`);
+  console.log(`  Top hub (PR)         : @${hubNode.id} — ${pct(pr[hubNode.id])}`);
+});
+
+// ── SECTION 7: DEGREE vs PAGERANK DIVERGENCE ─────────────────
+
+header('7. DEGREE RANK vs PAGERANK RANK — divergence > 5');
+
+const divergent = NODES
+  .map(n => ({ id: n.id, name: n.name, prR: prRank[n.id], degR: degRank[n.id], diff: Math.abs(prRank[n.id] - degRank[n.id]) }))
+  .filter(r => r.diff > 5)
+  .sort((a, b) => b.diff - a.diff);
+
+const dHdr = [pad('Username', 28), pad('Display Name', 22), pad('PR Rank', 10, true), pad('Deg Rank', 10, true), pad('|Diff|', 8, true)].join('  ');
+console.log(dHdr);
+console.log(HR2);
+divergent.forEach(r => {
+  console.log([pad('@' + r.id, 28), pad(r.name, 22), pad(r.prR, 10, true), pad(r.degR, 10, true), pad(r.diff, 8, true)].join('  '));
+});
+
+// ── SECTION 8: TOP 10 IN ALL THREE ALGORITHMS ────────────────
+
+header('8. NODES IN TOP 10 OF ALL THREE ALGORITHMS (PR + Degree + Betweenness)');
+
+const top10PR  = new Set(Object.entries(pr).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([id])=>id));
+const top10Deg = new Set(Object.entries(deg).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([id])=>id));
+const top10BC  = new Set(Object.entries(bc).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([id])=>id));
+
+const allThree = NODES.filter(n => top10PR.has(n.id) && top10Deg.has(n.id) && top10BC.has(n.id));
+
+if (allThree.length === 0) {
+  console.log('  (no node appears in top 10 of all three simultaneously)');
+} else {
+  const hdr3 = [pad('Username', 28), pad('Name', 22), pad('PR %', 12, true), pad('Deg Score', 12, true), pad('BC %', 12, true)].join('  ');
+  console.log(hdr3);
+  console.log(HR2);
+  allThree.forEach(n => {
+    console.log([pad('@' + n.id, 28), pad(n.name, 22), pad(pct(pr[n.id]), 12, true), pad(pct(deg[n.id]), 12, true), pad(pct(bc[n.id]), 12, true)].join('  '));
+  });
+}
+
+// ── SECTION 9: COMPLETE NODE TABLE ───────────────────────────
+
+header('9. COMPLETE NODE TABLE — sorted by PageRank');
+
+const fullHdr = [
+  pad('#', 3),
+  pad('Username', 26),
+  pad('Name', 20),
+  pad('Com', 11),
+  pad('Followers', 10, true),
+  pad('Deg', 4, true),
+  pad('In', 4, true),
+  pad('Out', 4, true),
+  pad('CC', 6, true),
+  pad('PR %', 9, true),
+  pad('Deg%', 9, true),
+  pad('BC %', 9, true),
+  pad('WPR %', 9, true),
+].join(' ');
+
+console.log(fullHdr);
+console.log(HR2);
+
+const sorted = [...NODES].sort((a, b) => pr[b.id] - pr[a.id]);
+sorted.forEach((n, i) => {
+  console.log([
+    pad(i + 1, 3),
+    pad('@' + n.id, 26),
+    pad(n.name, 20),
+    pad(n.com, 11),
+    pad(fmtFollowers(n.followers), 10, true),
+    pad(totalDeg(n.id), 4, true),
+    pad(inDegMap[n.id], 4, true),
+    pad(outDegMap[n.id], 4, true),
+    pad(cc[n.id].toFixed(2), 6, true),
+    pad(pct(pr[n.id]), 9, true),
+    pad(pct(deg[n.id]), 9, true),
+    pad(pct(bc[n.id]), 9, true),
+    pad(pct(prw[n.id]), 9, true),
+  ].join(' '));
+});
+
+console.log('\n' + HR1);
+console.log('  END OF REPORT');
+console.log(HR1 + '\n');

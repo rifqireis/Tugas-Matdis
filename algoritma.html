@@ -118,7 +118,7 @@
         <div class="eyebrow">Daftar Isi</div>
         <a href="#degree" class="active"><span class="n">01</span><span>Degree Centrality</span></a>
         <a href="#pagerank"><span class="n">02</span><span>PageRank</span></a>
-        <a href="#louvain"><span class="n">03</span><span>Louvain</span></a>
+        <a href="#weighted-pagerank"><span class="n">03</span><span>Weighted PageRank</span></a>
         <a href="#betweenness"><span class="n">04</span><span>Betweenness</span></a>
         <a href="#comparison"><span class="n">05</span><span>Komparasi</span></a>
       </div>
@@ -143,7 +143,7 @@
               <div class="eyebrow" style="margin-bottom: 10px;">Definisi formal</div>
               <div class="formula">C<sub>D</sub>(v) = deg(v) / (N − 1)</div>
               <p style="font-size:13.5px; color:var(--text2); margin: 14px 0 0;">
-                Untuk graf 65 node, pembagi-nya 64. Node yang terhubung dengan semua orang akan
+              Untuk graf 58 node, pembagi-nya 57. Node yang terhubung dengan semua orang akan
                 mendapat skor 1.0.
               </p>
             </div>
@@ -213,8 +213,8 @@
             </div>
             <div class="s4" style="padding: 18px 20px; border-right: 1px solid var(--border);">
               <div class="eyebrow" style="margin-bottom: 6px;">Iterasi</div>
-              <div style="font-family: 'Instrument Serif', serif; font-size: 28px; color: var(--text);">≈ 50</div>
-              <div style="font-size: 12px; color: var(--text3); margin-top: 4px;">sampai konvergen</div>
+              <div style="font-family: 'Instrument Serif', serif; font-size: 28px; color: var(--text);">60</div>
+              <div style="font-size: 12px; color: var(--text3); margin-top: 4px;">iterasi (fixed)</div>
             </div>
             <div class="s4" style="padding: 18px 20px;">
               <div class="eyebrow" style="margin-bottom: 6px;">Tol</div>
@@ -229,7 +229,7 @@
               <div class="step-num">01</div>
               <div class="step-body">
                 <strong>Inisialisasi</strong>
-                <p>Setiap node v diberi PR awal = 1/N. Untuk graf 65 node, PR awal ≈ 0.0154 untuk semua.</p>
+                <p>Setiap node v diberi PR awal = 1/N. Untuk graf 58 node, PR awal ≈ 0.0172 untuk semua.</p>
               </div>
             </div>
             <div class="step-row">
@@ -250,7 +250,7 @@
               <div class="step-num">04</div>
               <div class="step-body">
                 <strong>Iterasi sampai konvergen</strong>
-                <p>Ulangi langkah 2–3 sampai perubahan PR antar iterasi sangat kecil. Pada dataset kami, konvergen di iterasi ke-47.</p>
+                <p>Ulangi langkah 2–3 sampai perubahan PR antar iterasi sangat kecil. Pada implementasi kami, berjalan 60 iterasi fixed — cukup untuk dataset 58 node.</p>
               </div>
             </div>
           </div>
@@ -278,50 +278,119 @@
           </div>
         </article>
 
-        <!-- ========== LOUVAIN ========== -->
-        <article id="louvain" class="section-block">
+        <!-- ========== WEIGHTED PAGERANK ========== -->
+        <article id="weighted-pagerank" class="section-block">
           <div class="row" style="gap:10px; margin-bottom: 14px;">
-            <span class="mono" style="color: var(--text3); font-size: 12px;">03 — Klastering</span>
-            <span class="tag tag-mono">O(E · log V)</span>
+            <span class="mono" style="color: var(--accent); font-size: 12px; font-weight: 500;">03 — Iteratif + bobot zona</span>
+            <span class="tag tag-mono tag-accent">O(k · (V+E))</span>
           </div>
-          <h2 class="h2" style="margin-bottom: 14px;">Louvain Community Detection</h2>
+          <h2 class="h2" style="margin-bottom: 14px;">Weighted PageRank</h2>
           <p class="lede-sm" style="margin-bottom: 24px;">
-            Algoritma greedy untuk memaksimalkan modularitas — metrik yang mengukur seberapa "rapat"
-            klaster dibanding ekspektasi acak. Diperkenalkan Blondel et al. (2008).
+            Ekstensi PageRank standar: setiap edge diberi bobot berdasarkan <em>community zone</em>
+            asal dan tujuan. Kreator lokal Bengkulu mendapat amplifikasi ×1.5 saat berkolaborasi
+            sesama lokal, sehingga pengaruh intra-komunitas tidak tenggelam di bawah dominasi
+            kreator nasional.
           </p>
 
-          <div class="eyebrow" style="margin-bottom: 10px;">Modularitas (Q)</div>
-          <div class="formula" style="margin-bottom: 22px;">
-            Q = (1 / 2m) · Σ<sub>i,j</sub> [ A<sub>ij</sub> − (k<sub>i</sub> · k<sub>j</sub>) / 2m ] · δ(c<sub>i</sub>, c<sub>j</sub>)
+          <div class="eyebrow" style="margin-bottom: 10px;">Formula</div>
+          <div class="formula" style="margin-bottom: 10px;">
+            PR<sub>w</sub>(v) = (1 − d) / N + d · Σ<sub>u ∈ in(v)</sub> [ PR<sub>w</sub>(u) · w<sub>norm</sub>(u, v) ]
           </div>
-          <p style="font-size:13.5px; color:var(--text2); margin: -12px 0 26px;">
-            Q berkisar dari −1 sampai 1. Q > 0.3 = struktur komunitas terdeteksi; Q > 0.7 = sangat jelas.
-            Dataset kami: <strong style="color: var(--text);">Q = 0.71</strong>.
-          </p>
+          <div class="formula" style="margin-bottom: 22px; font-size: 12.5px;">
+            w<sub>norm</sub>(u, v) = communityFactor(u.com, v.com) / Σ<sub>u→x</sub> communityFactor(u.com, x.com)
+          </div>
+
+          <div class="eyebrow" style="margin-bottom: 12px;">Community factor</div>
+          <div style="border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 22px;">
+            <table style="width:100%; border-collapse: collapse; font-size: 13px;">
+              <thead>
+                <tr style="background: var(--bg2);">
+                  <th style="padding: 10px 14px; text-align:left; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text3); font-weight:500;">Source → Target</th>
+                  <th style="padding: 10px 14px; text-align:right; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text3); font-weight:500;">Faktor</th>
+                  <th style="padding: 10px 14px; color:var(--text3); font-size:12px;">Alasan</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-top:1px solid var(--border);">
+                  <td style="padding:10px 14px;" class="mono">lokal → lokal</td>
+                  <td style="padding:10px 14px; text-align:right;" class="mono" style="color:var(--accent);">×1.5</td>
+                  <td style="padding:10px 14px; color:var(--text2); font-size:13px;">Perkuat ikatan intra-komunitas lokal</td>
+                </tr>
+                <tr style="border-top:1px solid var(--border);">
+                  <td style="padding:10px 14px;" class="mono">* → lokal</td>
+                  <td style="padding:10px 14px; text-align:right;" class="mono">×1.3</td>
+                  <td style="padding:10px 14px; color:var(--text2); font-size:13px;">Boost koneksi masuk ke komunitas lokal</td>
+                </tr>
+                <tr style="border-top:1px solid var(--border);">
+                  <td style="padding:10px 14px;" class="mono">lokal → nasional</td>
+                  <td style="padding:10px 14px; text-align:right;" class="mono">×0.9</td>
+                  <td style="padding:10px 14px; color:var(--text2); font-size:13px;">Sedikit redam aliran keluar dari lokal</td>
+                </tr>
+                <tr style="border-top:1px solid var(--border);">
+                  <td style="padding:10px 14px;" class="mono">selainnya</td>
+                  <td style="padding:10px 14px; text-align:right;" class="mono">×1.0</td>
+                  <td style="padding:10px 14px; color:var(--text2); font-size:13px;">Netral</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
           <div class="eyebrow" style="margin-bottom: 14px;">Langkah-langkah</div>
           <div style="border-top: 1px solid var(--rule);">
             <div class="step-row">
               <div class="step-num">01</div>
-              <div class="step-body"><strong>Inisialisasi</strong><p>Setiap node menjadi komunitasnya sendiri. Awal: 65 komunitas.</p></div>
+              <div class="step-body">
+                <strong>Hitung bobot tiap edge</strong>
+                <p>Untuk setiap edge (u→v), tentukan communityFactor(u.com, v.com). Hasilnya adalah bobot mentah.</p>
+              </div>
             </div>
             <div class="step-row">
               <div class="step-num">02</div>
-              <div class="step-body"><strong>Phase 1 — Local moving</strong><p>Untuk setiap node, hitung ΔQ jika dipindahkan ke komunitas tetangga. Pindahkan ke yang memberi ΔQ paling besar. Ulangi sampai tidak ada perpindahan yang menambah Q.</p></div>
+              <div class="step-body">
+                <strong>Normalisasi per-node</strong>
+                <p>Total bobot outgoing setiap node dinormalisasi ke 1.0, sehingga total distribusi rank tetap 100%.</p>
+              </div>
             </div>
             <div class="step-row">
               <div class="step-num">03</div>
-              <div class="step-body"><strong>Phase 2 — Aggregation</strong><p>Setiap komunitas yang terbentuk dikompres menjadi satu super-node. Edge antar komunitas menjadi edge bobot antar super-node.</p></div>
+              <div class="step-body">
+                <strong>Iterasi PageRank berbobot</strong>
+                <p>Sama seperti PageRank standar, tapi setiap distribusi rank menggunakan bobot ternormalisasi w<sub>norm</sub>(u,v).</p>
+              </div>
             </div>
             <div class="step-row">
               <div class="step-num">04</div>
-              <div class="step-body"><strong>Ulangi sampai Q tidak bertambah</strong><p>Phase 1 dan 2 diulang. Pada dataset kami, konvergen setelah 4 level dengan 6 komunitas final.</p></div>
+              <div class="step-body">
+                <strong>80 iterasi (lebih banyak dari standar)</strong>
+                <p>Bobot tidak simetris membuat konvergensi sedikit lebih lambat. Dataset kami stabil setelah 80 iterasi.</p>
+              </div>
             </div>
           </div>
 
-          <div class="callout" style="margin-top: 24px;">
-            <strong>Hasil — 6 komunitas</strong>: Kreator Nasional, Lokal Bengkulu, Internasional,
-            Organisasi/Media, Brand Endorsement, dan Politik/Tokoh Publik.
+          <div class="eyebrow" style="margin: 28px 0 10px;">Pseudocode</div>
+          <pre class="code"><span class="kw">function</span> <span class="fn">weightedPageRank</span>(G, d=<span class="num">0.85</span>, iters=<span class="num">80</span>):
+  <span class="cm">// Hitung bobot tiap edge</span>
+  <span class="kw">for</span> (u→v) <span class="kw">in</span> edges(G):
+    w[u][v] = communityFactor(u.com, v.com)
+
+  <span class="cm">// Normalisasi per-node</span>
+  <span class="kw">for</span> u <span class="kw">in</span> V(G):
+    total = Σ w[u][x] <span class="kw">for</span> x <span class="kw">in</span> out(u)
+    <span class="kw">if</span> total > <span class="num">0</span>: w[u][x] /= total
+
+  <span class="cm">// Iterasi PageRank</span>
+  N = |V(G)|; PR = { v: <span class="num">1</span>/N }
+  <span class="kw">for</span> k <span class="kw">in</span> <span class="num">1</span>..iters:
+    PR_new = { v: (<span class="num">1</span>-d)/N }
+    <span class="kw">for</span> (u→v) <span class="kw">in</span> edges(G):
+      PR_new[v] += d * PR[u] * w[u][v]
+    PR = PR_new
+  <span class="kw">return</span> PR</pre>
+
+          <div class="callout" style="margin-top: 20px;">
+            <strong>Efek pada dataset</strong> — Kreator lokal yang banyak berkolaborasi sesama lokal
+            mendapat PageRank lebih tinggi dibanding rata-rata. <span class="mono">@mariorioio__</span>
+            naik signifikan karena 11 kreator lokal menunjuknya — masing-masing dengan bobot lokal→lokal ×1.5.
           </div>
         </article>
 
@@ -348,7 +417,7 @@
 
           <div class="callout">
             <strong>Pada dataset</strong> — Node dengan betweenness tinggi adalah "jembatan" antar
-            komunitas. <span class="mono">@willie27_</span> dan <span class="mono">@kotabkl</span> punya
+            komunitas. <span class="mono">@willie27_</span> dan <span class="mono">@mariorioio__</span> punya
             betweenness terbesar. Putus mereka, dan komunikasi antar klaster terganggu.
           </div>
         </article>
@@ -381,16 +450,16 @@
                 <td>Global iteratif</td>
               </tr>
               <tr>
+                <td><strong>Weighted PR</strong></td>
+                <td>Siapa berpengaruh dalam konteks komunitasnya?</td>
+                <td class="mono">O(k · (V+E))</td>
+                <td>Global + bobot zona</td>
+              </tr>
+              <tr>
                 <td><strong>Betweenness</strong></td>
                 <td>Siapa jembatan komunikasi?</td>
                 <td class="mono">O(V · E)</td>
                 <td>Global, mahal</td>
-              </tr>
-              <tr>
-                <td><strong>Louvain</strong></td>
-                <td>Komunitas apa yang muncul?</td>
-                <td class="mono">O(E · log V)</td>
-                <td>Klastering hierarkis</td>
               </tr>
             </tbody>
           </table>
@@ -399,7 +468,7 @@
             <strong style="color: var(--text);">Referensi:</strong>
             Brandes, U. (2001). <em>A faster algorithm for betweenness centrality</em>.
             Page, L. &amp; Brin, S. (1998). <em>The anatomy of a large-scale hypertextual web search engine</em>.
-            Blondel, V. et al. (2008). <em>Fast unfolding of communities in large networks</em>.
+            Xing, W. &amp; Ghorbani, A. (2004). <em>Weighted PageRank algorithm</em>.
           </p>
         </article>
 

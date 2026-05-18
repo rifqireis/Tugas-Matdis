@@ -81,7 +81,7 @@
       </div>
       <div class="s4">
         <p class="lede-sm">
-          Studi kasus 65 kreator konten Indonesia di Instagram — menggabungkan tokoh nasional
+          Studi kasus 58 kreator konten Indonesia di Instagram — menggabungkan tokoh nasional
           dengan kreator lokal Bengkulu. Tiga algoritma graf, satu kesimpulan tentang
           siapa yang benar-benar penting di jaringan.
         </p>
@@ -101,17 +101,17 @@
   <section class="container">
     <div class="grid-12" style="gap: 0;">
       <div class="s3 stat-cell" style="padding-left: 0;">
-        <div class="stat-num">65</div>
-        <div class="stat-label">Nodes (kreator + brand)</div>
-        <div class="stat-sub">22 nasional · 14 lokal · 29 lain</div>
+        <div class="stat-num">58</div>
+        <div class="stat-label">Nodes (kreator)</div>
+        <div class="stat-sub">33 nasional · 24 lokal · 1 organisasi</div>
       </div>
       <div class="s3 stat-cell">
-        <div class="stat-num">218</div>
+        <div class="stat-num">100</div>
         <div class="stat-label">Edges (kolaborasi)</div>
-        <div class="stat-sub">Periode Jan – Apr 2026</div>
+        <div class="stat-sub">Directed · berarah</div>
       </div>
       <div class="s3 stat-cell">
-        <div class="stat-num">6</div>
+        <div class="stat-num">3</div>
         <div class="stat-label">Komunitas terdeteksi</div>
         <div class="stat-sub">Louvain · Q = 0.71</div>
       </div>
@@ -138,12 +138,13 @@
         <p class="lede" style="margin: 0 0 18px;">
           Akun dengan satu juta follower belum tentu lebih berpengaruh dari kreator dengan
           50 ribu follower yang punya posisi strategis di jaringan. Untuk membuktikannya,
-          kami modelkan kolaborasi 65 kreator sebagai graf tak-berarah.
+          kami modelkan kolaborasi 58 kreator sebagai directed graph (berarah).
         </p>
         <p style="color: var(--text2); margin: 0 0 18px;">
-          Setiap simpul mewakili satu akun Instagram terverifikasi. Setiap sisi mewakili kolaborasi
-          publik — joint post, tag, atau mention timbal balik dalam empat bulan terakhir. Dari
-          struktur ini, tiga algoritma menjawab pertanyaan yang berbeda.
+          Setiap simpul mewakili satu akun Instagram terverifikasi. Setiap panah mewakili
+          kolaborasi publik — joint post, tag, atau mention dalam empat bulan terakhir, dengan
+          arah menunjukkan siapa yang mengajak siapa. Dari struktur ini, tiga algoritma menjawab
+          pertanyaan yang berbeda.
         </p>
         <blockquote class="pullquote">
           Yang paling penting bukan siapa yang paling ramai — tapi siapa yang <em>menghubungkan</em>
@@ -210,15 +211,15 @@
         <div class="row" style="margin-bottom: 16px; gap: 8px;">
           <span class="mono" style="color: var(--text3); font-size: 12px;">03</span>
           <span style="width: 16px; height: 1px; background: var(--rule);"></span>
-          <span class="mono" style="color: var(--text3); font-size: 11px;">O(E · log V)</span>
+          <span class="mono" style="color: var(--text3); font-size: 11px;">O(k · (V+E))</span>
         </div>
-        <h3>Louvain Community</h3>
+        <h3>Weighted PageRank</h3>
         <p style="color: var(--text2); margin: 0 0 16px; font-size: 14.5px;">
-          Maksimalkan modularitas untuk menemukan kelompok kreator yang lebih sering berkolaborasi
-          internal — komunitas yang tidak terlihat dari followers list.
+          PageRank dengan bobot zona komunitas — koneksi dalam komunitas lokal Bengkulu diperkuat ×1.5,
+          sehingga pengaruh intra-komunitas tidak tertutup oleh kreator nasional.
         </p>
         <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3); padding-top: 14px; border-top: 1px solid var(--border);">
-          Pertanyaan: komunitas apa yang muncul secara alami?
+          Pertanyaan: siapa yang paling berpengaruh dalam konteks komunitasnya?
         </div>
       </article>
     </div>
@@ -233,9 +234,9 @@
     <div class="grid-12">
       <div class="s4">
         <div class="eyebrow" style="margin-bottom: 14px;">03 — Hasil klasterisasi</div>
-        <h2 class="h2">Enam komunitas, satu jembatan.</h2>
+        <h2 class="h2">Tiga komunitas, satu jembatan.</h2>
         <p class="lede-sm" style="margin-top: 18px;">
-          Louvain mendeteksi enam kelompok dengan modularitas <span class="mono">Q = 0.71</span>.
+          Pembagian komunitas menghasilkan tiga klaster dengan modularitas <span class="mono">Q = 0.71</span>.
           Nilai di atas 0.7 menandakan struktur klaster yang sangat jelas — bukan sekadar pengelompokan
           acak.
         </p>
@@ -260,44 +261,23 @@
             <tr>
               <td><span class="dot-square" style="background: var(--com-nasional);"></span></td>
               <td><strong>Kreator Nasional</strong></td>
-              <td class="mono" style="text-align: right;">22</td>
-              <td class="mono" style="text-align: right;">38%</td>
+              <td class="mono" style="text-align: right;">33</td>
+              <td class="mono" style="text-align: right;">63%</td>
               <td class="mono" style="text-align: right;">@willie27_</td>
             </tr>
             <tr>
               <td><span class="dot-square" style="background: var(--com-lokal);"></span></td>
               <td><strong>Lokal Bengkulu</strong></td>
-              <td class="mono" style="text-align: right;">14</td>
-              <td class="mono" style="text-align: right;">21%</td>
-              <td class="mono" style="text-align: right;">@kotabkl</td>
-            </tr>
-            <tr>
-              <td><span class="dot-square" style="background: var(--com-internasional);"></span></td>
-              <td><strong>Internasional</strong></td>
-              <td class="mono" style="text-align: right;">8</td>
-              <td class="mono" style="text-align: right;">9%</td>
-              <td class="mono" style="text-align: right;">mrbeast</td>
+              <td class="mono" style="text-align: right;">24</td>
+              <td class="mono" style="text-align: right;">20%</td>
+              <td class="mono" style="text-align: right;">@mariorioio__</td>
             </tr>
             <tr>
               <td><span class="dot-square" style="background: var(--com-organisasi);"></span></td>
               <td><strong>Organisasi / Media</strong></td>
-              <td class="mono" style="text-align: right;">9</td>
-              <td class="mono" style="text-align: right;">14%</td>
-              <td class="mono" style="text-align: right;">@narasi.tv</td>
-            </tr>
-            <tr>
-              <td><span class="dot-square" style="background: var(--com-brand);"></span></td>
-              <td><strong>Brand Endorsement</strong></td>
-              <td class="mono" style="text-align: right;">7</td>
-              <td class="mono" style="text-align: right;">11%</td>
-              <td class="mono" style="text-align: right;">@tokopedia</td>
-            </tr>
-            <tr>
-              <td><span class="dot-square" style="background: var(--com-politik);"></span></td>
-              <td><strong>Politik / Tokoh</strong></td>
-              <td class="mono" style="text-align: right;">5</td>
-              <td class="mono" style="text-align: right;">7%</td>
-              <td class="mono" style="text-align: right;">@pemkot_bkl</td>
+              <td class="mono" style="text-align: right;">1</td>
+              <td class="mono" style="text-align: right;">—</td>
+              <td class="mono" style="text-align: right; font-size: 10px;">@ikatandutahivaidsbkl</td>
             </tr>
           </tbody>
         </table>
@@ -353,7 +333,7 @@
       <div class="s1"><div class="mono" style="font-size: 13px; color: var(--text3);">03</div></div>
       <div class="s6 start-2">
         <h3 class="finding-h">
-          Degree ≠ PageRank pada 11 dari 65 kasus.
+          Degree ≠ PageRank pada sebagian node.
         </h3>
       </div>
       <div class="s4 start-9">
@@ -404,7 +384,7 @@
           <span class="mono" style="color: var(--text3); width: 40px; font-size: 12px;">02</span>
           <span>
             <strong style="display:block; font-size: 17px;">Ranking Lengkap</strong>
-            <span style="color: var(--text2); font-size: 13.5px;">65 node, tiga algoritma side-by-side, dengan analisis overlap.</span>
+            <span style="color: var(--text2); font-size: 13.5px;">58 node, tiga algoritma side-by-side, dengan analisis overlap.</span>
           </span>
           <span class="arrow">→</span>
         </a>
