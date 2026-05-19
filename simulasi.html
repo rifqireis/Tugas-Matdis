@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="scale.js"></script>
+<title>Simulasi — InfluenceGraph</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* ── Input ── */
+  .graph-textarea {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px; line-height: 1.8;
+    background: var(--bg2); color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px 18px; width: 100%; box-sizing: border-box;
+    resize: vertical; min-height: 180px;
+    outline: none; transition: border-color .15s;
+  }
+  .graph-textarea:focus { border-color: var(--accent); }
+
+  .fmt-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 11px; border-radius: 999px;
+    background: var(--bg2); border: 1px solid var(--border);
+    font-family: 'IBM Plex Mono', monospace; font-size: 11.5px;
+    color: var(--text2);
+  }
+  .fmt-badge .sym { color: var(--accent); font-weight: 700; }
+
+  /* ── SVG ── */
+  .sim-graph {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); display: block; width: 100%;
+  }
+
+  /* ── Tables ── */
+  .sim-table { width: 100%; border-collapse: collapse; }
+  .sim-table thead th {
+    padding: 9px 12px; text-align: left;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    color: var(--text3); font-weight: 500; text-transform: uppercase;
+    letter-spacing: .5px; border-bottom: 2px solid var(--border);
+    background: var(--bg2);
+  }
+  .sim-table tbody td {
+    padding: 9px 12px; border-bottom: 1px solid var(--border);
+    font-size: 12.5px; vertical-align: middle;
+  }
+  .sim-table tbody tr:last-child td { border-bottom: none; }
+  .sim-table tbody tr.row-hi td { background: rgba(193,95,60,.07); }
+
+  .v   { font-family: 'IBM Plex Mono', monospace; font-weight: 500; color: var(--text); }
+  .fm  { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--text2); line-height: 1.9; }
+  .cup { color: #5a8a3c; }
+  .cdn { color: var(--accent); }
+  .ceq { color: var(--text3); }
+
+  /* ── Controls ── */
+  .sim-ctrl { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 14px; }
+  .sim-st   { font-size: 11.5px; color: var(--text3); font-family: 'IBM Plex Mono', monospace;
+              margin-top: 8px; min-height: 16px; }
+
+  /* ── Sim card ── */
+  .sim-card { background: var(--bg); border: 1px solid var(--border);
+              border-radius: var(--radius-sm); overflow: hidden; }
+
+  /* ── Edge list ── */
+  .el-item {
+    display: flex; gap: 10px; align-items: center;
+    padding: 7px 14px; border-bottom: 1px solid var(--border);
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+    color: var(--text2); transition: background .12s, color .12s;
+  }
+  .el-item:last-child { border-bottom: none; }
+  .el-item .ei  { color: var(--text3); font-size: 11px; min-width: 24px; }
+  .el-item.done { color: var(--text3); }
+  .el-item.act  { background: rgba(193,95,60,.09); color: var(--accent); font-weight: 600; }
+
+  /* ── Convergence bar ── */
+  .conv-wrap {
+    margin-top: 12px; padding: 11px 14px; background: var(--bg2);
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+  }
+  .conv-label { display: flex; justify-content: space-between; color: var(--text3); margin-bottom: 6px; }
+  .conv-bg    { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .conv-fill  { height: 100%; background: var(--accent); border-radius: 2px;
+                transition: width .35s, background .35s; width: 0; }
+
+  /* ── Error / warn ── */
+  .err-msg  { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--accent); }
+  .warn-msg { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #c19a3c; }
+
+  /* ── Iter status bar ── */
+  .iter-bar {
+    display: flex; gap: 16px; align-items: baseline;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+    font-size: 12px; color: var(--text3);
+    font-family: 'IBM Plex Mono', monospace;
+    margin-bottom: 14px;
+  }
+  .iter-bar strong { color: var(--text); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="nav-logo-icon">⬡</span>
+      <span>InfluenceGraph</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Beranda</a>
+      <a href="graf.html">Graf</a>
+      <a href="ranking.html">Ranking</a>
+      <a href="algoritma.html">Algoritma</a>
+      <a href="simulasi.html" class="active">Simulasi</a>
+    </div>
+    <div class="nav-badge">Kelompok 2 · 2026</div>
+  </div>
+</nav>
+
+<main class="page">
+
+  <!-- ── Hero ── -->
+  <section class="container" style="padding-top:64px; padding-bottom:40px;">
+    <div class="grid-12" style="align-items:end;">
+      <div class="s8">
+        <div class="eyebrow" style="margin-bottom:14px;">05 — Simulasi Interaktif</div>
+        <h1 class="h1">Masukkan grafmu sendiri. Buktikan algoritmanya.</h1>
+      </div>
+      <div class="s4">
+        <p class="lede-sm">
+          Ketik edge graf dengan format sederhana, tekan Build —
+          lalu ikuti setiap langkah Degree Centrality dan PageRank
+          secara manual, tanpa kalkulator.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ── INPUT ── -->
+  <section class="container section">
+    <div class="grid-12">
+
+      <!-- textarea + build -->
+      <div class="s7">
+        <div class="eyebrow" style="margin-bottom:12px;">Input Graf</div>
+        <textarea id="graph-input" class="graph-textarea" spellcheck="false">A -> B
+A -> E
+B -> C
+C -> D
+D -> A
+D -> B
+E -> D</textarea>
+
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; margin-bottom:16px;">
+          <span class="fmt-badge"><span class="sym">→</span> A -&gt; B</span>
+          <span class="fmt-badge"><span class="sym">←</span> A &lt;- B</span>
+          <span class="fmt-badge"><span class="sym">↔</span> A &lt;-&gt; B</span>
+          <span class="fmt-badge" style="color:var(--text3);"># komentar</span>
+        </div>
+
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <button class="btn" id="build-btn" style="min-width:140px;">⬡ &nbsp;Build Graf</button>
+          <span style="font-size:12px; color:var(--text3); font-family:'IBM Plex Mono',monospace;">
+            atau <kbd class="kbd">Ctrl+Enter</kbd>
+          </span>
+        </div>
+        <div id="build-err" style="margin-top:10px; min-height:18px;"></div>
+      </div>
+
+      <!-- rules sidebar -->
+      <div class="s4 start-9">
+        <div style="padding:20px; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-sm); margin-top:24px;">
+          <div class="eyebrow" style="margin-bottom:12px;">Aturan Input</div>
+          <ul style="font-size:13px; color:var(--text2); line-height:2; padding-left:18px; margin:0;">
+            <li>Satu edge per baris</li>
+            <li>Nama node: <span class="mono">huruf</span>, <span class="mono">angka</span>, <span class="mono">_</span></li>
+            <li>Baris kosong &amp; <span class="mono"># komentar</span> dilewati</li>
+            <li>Duplikat &amp; self-loop diabaikan</li>
+            <li>Maks ~15 node untuk layout rapi</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── SIMULATION AREA (hidden until Build) ── -->
+  <div id="sim-area" style="display:none;">
+
+    <!-- info bar -->
+    <section class="container" style="padding-top:0; padding-bottom:28px;">
+      <div style="display:flex; gap:20px; align-items:center; padding:10px 0; border-top:1px solid var(--border); flex-wrap:wrap;">
+        <span class="mono" style="font-size:12px; color:var(--text3);">
+          <strong id="info-n" style="color:var(--text);">0</strong> simpul &nbsp;·&nbsp;
+          <strong id="info-e" style="color:var(--text);">0</strong> sisi berarah
+        </span>
+        <span id="info-warn" class="warn-msg" style="display:none;"></span>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         DEGREE CENTRALITY
+         ══════════════════════════════════════ -->
+    <section class="container section" id="sec-deg">
+      <div class="grid-12" style="gap:0;">
+
+        <!-- left: graph + controls -->
+        <div class="s4" style="padding-right:40px;">
+          <div class="eyebrow" style="margin-bottom:12px;">01 — Lokal</div>
+          <h2 class="h2" style="margin-bottom:12px;">Degree Centrality</h2>
+          <p style="font-size:13.5px; color:var(--text2); line-height:1.7; margin-bottom:16px;">
+            Hitung berapa sisi yang <em>masuk</em> ke setiap simpul (in-degree),
+            lalu normalisasi dengan N&minus;1.
+          </p>
+          <div class="formula" style="margin-bottom:6px; font-size:14px;">
+            C<sub>D</sub>(v) = in-deg(v) &divide; (N &minus; 1)
+          </div>
+          <p id="deg-n-note" class="mono" style="font-size:11.5px; color:var(--text3); margin-bottom:18px;"></p>
+
+          <svg id="deg-svg" viewBox="0 0 500 500" class="sim-graph"></svg>
+
+          <div class="sim-ctrl">
+            <button class="btn" id="deg-step">Sisi Berikutnya</button>
+            <button class="btn btn-ghost" id="deg-all">Hitung Semua</button>
+            <button class="btn btn-ghost" id="deg-reset">Reset</button>
+          </div>
+          <p id="deg-status" class="sim-st">Tekan "Sisi Berikutnya" untuk memulai.</p>
+        </div>
+
+        <!-- right: table + edge list -->
+        <div class="s7 start-6">
+          <div class="eyebrow" style="margin-bottom:10px;">Tabel In-degree</div>
+          <div class="sim-card" style="margin-bottom:22px;">
+            <table class="sim-table">
+              <thead>
+                <tr>
+                  <th>Node</th>
+                  <th>Ditunjuk oleh</th>
+                  <th style="text-align:right;">In-deg</th>
+                  <th style="text-align:right;">C<sub>D</sub>(v)</th>
+                </tr>
+              </thead>
+              <tbody id="deg-tbody"></tbody>
+            </table>
+          </div>
+
+          <div class="eyebrow" style="margin-bottom:8px;">Daftar Sisi</div>
+          <div class="sim-card" id="deg-elist" style="max-height:260px; overflow-y:auto;"></div>
+
+          <div class="callout" style="margin-top:20px;">
+            <strong>Cara membaca</strong> — Tiap klik menelusuri satu sisi.
+            Sisi aktif dihighlight di graf, baris tabel berkedip.
+            Kolom C<sub>D</sub>(v) muncul setelah semua sisi dihitung.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <hr class="rule">
+
+    <!-- ══════════════════════════════════════
+         PAGERANK
+         ══════════════════════════════════════ -->
+    <section class="container section" id="sec-pr">
+      <div class="grid-12" style="gap:0;">
+
+        <!-- left: graph + controls -->
+        <div class="s4" style="padding-right:40px;">
+          <div class="eyebrow" style="margin-bottom:12px;">02 — Global iteratif</div>
+          <h2 class="h2" style="margin-bottom:12px;">PageRank</h2>
+          <p style="font-size:13.5px; color:var(--text2); line-height:1.7; margin-bottom:16px;">
+            Pengaruh mengalir lewat sisi. Setiap iterasi, setiap simpul membagi
+            skor PR-nya merata ke semua tetangga keluar.
+          </p>
+          <div class="formula" style="margin-bottom:6px; font-size:14px;">
+            PR(u) = &Sigma;<sub>v &isin; in(u)</sub> PR(v) / L(v)
+          </div>
+          <p class="mono" style="font-size:11.5px; color:var(--text3); margin-bottom:18px;">
+            L(v) = out-degree(v) &nbsp;&bull;&nbsp;
+            PR<sub>0</sub>(v) = 1/N untuk semua v
+          </p>
+
+          <svg id="pr-svg" viewBox="0 0 500 500" class="sim-graph"></svg>
+
+          <div class="conv-wrap">
+            <div class="conv-label">
+              <span>&Delta; maks antar iterasi</span>
+              <span id="pr-delta">—</span>
+            </div>
+            <div class="conv-bg"><div class="conv-fill" id="pr-bar"></div></div>
+          </div>
+
+          <div class="sim-ctrl">
+            <button class="btn" id="pr-step">Satu Iterasi</button>
+            <button class="btn btn-ghost" id="pr-auto">Otomatis</button>
+            <button class="btn btn-ghost" id="pr-reset">Reset</button>
+          </div>
+          <p id="pr-status" class="sim-st">Tekan "Satu Iterasi" untuk memulai.</p>
+        </div>
+
+        <!-- right: formula table + history -->
+        <div class="s7 start-6">
+
+          <div class="iter-bar">
+            Iterasi ke-<strong id="pr-iter">0</strong>
+            <span>— PR<sub>0</sub> = 1/N = <strong id="pr-init">—</strong></span>
+          </div>
+
+          <div class="sim-card" style="margin-bottom:22px;">
+            <table class="sim-table">
+              <thead>
+                <tr>
+                  <th>Node</th>
+                  <th>PR(u) = &Sigma; PR(v) / L(v)</th>
+                  <th style="text-align:right;">PR Baru</th>
+                  <th style="text-align:right;">&Delta;</th>
+                </tr>
+              </thead>
+              <tbody id="pr-tbody"></tbody>
+            </table>
+          </div>
+
+          <div class="eyebrow" style="margin-bottom:8px;">Riwayat (5 iterasi terakhir)</div>
+          <div class="sim-card" style="overflow-x:auto;">
+            <table class="sim-table">
+              <thead><tr id="pr-hist-head"></tr></thead>
+              <tbody id="pr-hist-body"></tbody>
+            </table>
+          </div>
+
+          <div id="pr-callout" class="callout" style="margin-top:20px;">
+            <strong>Tanpa damping factor</strong> — PR(u) = &Sigma; PR(v)/L(v)
+            adalah rumus paling sederhana. Konvergen jika graf
+            <em>strongly connected</em> dan <em>aperiodic</em>.
+          </div>
+          <div id="pr-sink-warn" style="display:none; margin-top:10px;" class="callout"></div>
+
+        </div>
+      </div>
+    </section>
+
+  </div><!-- #sim-area -->
+
+</main>
+
+<footer>
+  <div class="container">
+    <div>Kelompok 2 — Teori Graf · IF2151 · 2026</div>
+    <div class="mono">PR(u) = &Sigma; PR(v)/L(v) &nbsp;&bull;&nbsp; Input graf bebas</div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ============================================================
+     CONSTANTS
+  ============================================================ */
+  const NS      = 'http://www.w3.org/2000/svg';
+  const NODE_R  = 20;          // default node radius (px in viewBox units)
+  const ARROW_M = NODE_R + 7;  // margin from node center to arrowhead tip
+  const CONV    = 0.00005;     // PR convergence threshold
+
+  const PALETTE = [
+    '#c15f3c','#6e8a4f','#d49a6a','#4f7a8a',
+    '#8a4f6a','#6a7a3c','#8a6a4f','#4f4f8a',
+    '#3c8a6a','#8a3c6a','#6a4f3c','#3c6a8a',
+  ];
+
+  /* ============================================================
+     STATE
+  ============================================================ */
+  let G   = null;   // current graph data
+  let DS  = null;   // degree sim state
+  let PS  = null;   // pagerank sim state
+  let PAT = null;   // pagerank auto timer
+
+  /* ============================================================
+     PARSE
+  ============================================================ */
+  function parse(text) {
+    const edgeSet  = new Set();
+    const edges    = [];
+    const nodeSeen = new Set();
+    const nodeList = [];
+
+    function touch(n) { if (!nodeSeen.has(n)) { nodeSeen.add(n); nodeList.push(n); } }
+    function addEdge(s, t) {
+      const k = s + '\u2192' + t;
+      if (edgeSet.has(k)) return;
+      edgeSet.add(k);
+      edges.push({ source: s, target: t });
+    }
+
+    for (const raw of text.split('\n')) {
+      const line = raw.trim();
+      if (!line || line.startsWith('#')) continue;
+      let m;
+
+      // A <-> B  (bidirectional — try first so <-> wins over ->/<-)
+      m = line.match(/^(\w+)\s*<->\s*(\w+)$/);
+      if (m) {
+        const [a, b] = [m[1], m[2]];
+        if (a !== b) { touch(a); touch(b); addEdge(a, b); addEdge(b, a); }
+        continue;
+      }
+      // A -> B
+      m = line.match(/^(\w+)\s*->\s*(\w+)$/);
+      if (m) {
+        const [a, b] = [m[1], m[2]];
+        if (a !== b) { touch(a); touch(b); addEdge(a, b); }
+        continue;
+      }
+      // A <- B  (means B -> A)
+      m = line.match(/^(\w+)\s*<-\s*(\w+)$/);
+      if (m) {
+        const [a, b] = [m[1], m[2]];
+        if (a !== b) { touch(a); touch(b); addEdge(b, a); }
+        continue;
+      }
+    }
+    return { nodes: nodeList, edges };
+  }
+
+  /* ============================================================
+     BUILD GRAPH DATA
+  ============================================================ */
+  function buildG(nodes, edges) {
+    const N      = nodes.length;
+    const colors = Object.fromEntries(nodes.map((n, i) => [n, PALETTE[i % PALETTE.length]]));
+
+    // Circular layout
+    const cx = 250, cy = 250;
+    const r  = N <= 3 ? 95 : N <= 5 ? 135 : N <= 8 ? 160 : N <= 12 ? 180 : 195;
+    const pos = {};
+    nodes.forEach((n, i) => {
+      const a = -Math.PI / 2 + (i / N) * Math.PI * 2;
+      pos[n] = { x: +(cx + Math.cos(a) * r).toFixed(2),
+                 y: +(cy + Math.sin(a) * r).toFixed(2) };
+    });
+
+    // Adjacency
+    const outAdj = Object.fromEntries(nodes.map(n => [n, []]));
+    const inAdj  = Object.fromEntries(nodes.map(n => [n, []]));
+    const outDeg = Object.fromEntries(nodes.map(n => [n, 0]));
+    const inDeg  = Object.fromEntries(nodes.map(n => [n, 0]));
+    edges.forEach(e => {
+      outAdj[e.source].push(e.target);
+      inAdj[e.target].push(e.source);
+      outDeg[e.source]++;
+      inDeg[e.target]++;
+    });
+
+    return { nodes, edges, N, colors, pos, outAdj, inAdj, outDeg, inDeg };
+  }
+
+  /* ============================================================
+     SVG HELPERS
+  ============================================================ */
+  function svgEl(tag, attrs) {
+    const e = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    return e;
+  }
+
+  // Compute a quadratic bezier path from p to q, with optional
+  // perpendicular curve (for bidirectional pairs).
+  // Returns { d, cpx, cpy } where cp is the control point.
+  function bezierEdge(p, q, curve) {
+    const dx = q.x - p.x, dy = q.y - p.y;
+    const len = Math.sqrt(dx * dx + dy * dy) || 1;
+    const cpx = (p.x + q.x) / 2 + (-dy / len) * curve;
+    const cpy = (p.y + q.y) / 2 + ( dx / len) * curve;
+    // Direction of bezier tangent at end: q - cp
+    const tdx = q.x - cpx, tdy = q.y - cpy;
+    const td  = Math.sqrt(tdx * tdx + tdy * tdy) || 1;
+    const ex  = q.x - (tdx / td) * ARROW_M;
+    const ey  = q.y - (tdy / td) * ARROW_M;
+    return { d: `M ${p.x} ${p.y} Q ${cpx} ${cpy} ${ex} ${ey}`, cpx, cpy };
+  }
+
+  function buildSVG(svgEl_, sfx) {
+    // Clear
+    while (svgEl_.firstChild) svgEl_.removeChild(svgEl_.firstChild);
+
+    const arrN  = 'a'  + sfx;
+    const arrH  = 'ah' + sfx;
+
+    // Defs: two arrow markers (normal, highlighted)
+    const defs = svgEl('defs', {});
+    [{ id: arrN, fill: '#b8b09e' }, { id: arrH, fill: '#c15f3c' }].forEach(({ id, fill }) => {
+      const m = svgEl('marker', { id, markerWidth: '7', markerHeight: '5',
+                                   refX: '7', refY: '2.5', orient: 'auto',
+                                   markerUnits: 'userSpaceOnUse' });
+      m.appendChild(svgEl('polygon', { points: '0 0,7 2.5,0 5', fill }));
+      defs.appendChild(m);
+    });
+    svgEl_.appendChild(defs);
+
+    const edgeKeySet = new Set(G.edges.map(e => e.source + '\u2192' + e.target));
+
+    // Edge layer
+    const gE = svgEl('g', {});
+    const edgeEls = {};
+    G.edges.forEach((e, i) => {
+      const p = G.pos[e.source], q = G.pos[e.target];
+      const bidir = edgeKeySet.has(e.target + '\u2192' + e.source);
+      const { d } = bezierEdge(p, q, bidir ? 32 : 0);
+      const path = svgEl('path', {
+        id: 'e' + sfx + i, d, fill: 'none',
+        stroke: '#b8b09e', 'stroke-opacity': '0.75', 'stroke-width': '1.5',
+        'marker-end': `url(#${arrN})`,
+      });
+      gE.appendChild(path);
+      edgeEls[i] = path;
+    });
+    svgEl_.appendChild(gE);
+
+    // Node layer
+    const gN = svgEl('g', {});
+    const nodeEls = {};
+    G.nodes.forEach(n => {
+      const p = G.pos[n];
+      const g = svgEl('g', { id: 'n' + sfx + n });
+      const c = svgEl('circle', {
+        cx: p.x, cy: p.y, r: NODE_R,
+        fill: G.colors[n], stroke: 'var(--bg)', 'stroke-width': '2.5',
+      });
+      const fs = n.length > 3 ? '9' : n.length === 3 ? '10' : '12';
+      const t = svgEl('text', {
+        x: p.x, y: p.y + 4,
+        'text-anchor': 'middle', 'dominant-baseline': 'middle',
+        'font-family': 'IBM Plex Mono, monospace',
+        'font-size': fs, 'font-weight': '600',
+        fill: 'white', 'pointer-events': 'none',
+      });
+      t.textContent = n;
+      g.appendChild(c); g.appendChild(t);
+      gN.appendChild(g);
+      nodeEls[n] = { g, c, t };
+    });
+    svgEl_.appendChild(gN);
+
+    return { edgeEls, nodeEls, arrN, arrH };
+  }
+
+  /* ============================================================
+     DEGREE SIMULATION
+  ============================================================ */
+  function initDeg(els) {
+    DS = {
+      step  : -1,
+      inDeg : Object.fromEntries(G.nodes.map(n => [n, 0])),
+      seenIn: Object.fromEntries(G.nodes.map(n => [n, []])),
+      els,
+    };
+  }
+
+  function renderDegTable() {
+    const done = DS.step >= G.edges.length - 1;
+    document.getElementById('deg-tbody').innerHTML = G.nodes.map(n => {
+      const src   = DS.seenIn[n].length ? DS.seenIn[n].join(', ') : '—';
+      const cdVal = done ? (DS.inDeg[n] / (G.N - 1)).toFixed(4) : '—';
+      const cdClr = done && DS.inDeg[n] > 0 ? 'color:var(--accent)' : 'color:var(--text3)';
+      return `<tr id="dr${n}">
+        <td class="v" style="color:${G.colors[n]}">${n}</td>
+        <td class="fm">${src}</td>
+        <td class="v" style="text-align:right">${DS.inDeg[n]}</td>
+        <td class="v" style="text-align:right;${cdClr}">${cdVal}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderDegEdgeList() {
+    document.getElementById('deg-elist').innerHTML = G.edges.map((e, i) => {
+      const cls = i < DS.step ? 'done' : i === DS.step ? 'act' : '';
+      return `<div class="el-item ${cls}" id="ei${i}">
+        <span class="ei">${String(i + 1).padStart(2, '0')}</span>
+        <span>${e.source} &rarr; ${e.target}</span>
+      </div>`;
+    }).join('');
+    const act = document.getElementById(`ei${DS.step}`);
+    if (act) act.scrollIntoView({ block: 'nearest' });
+  }
+
+  function highlightDegEdge(idx) {
+    const { edgeEls, nodeEls, arrN, arrH } = DS.els;
+    G.edges.forEach((_, i) => {
+      const p = edgeEls[i];
+      if (!p) return;
+      if (i === idx) {
+        p.setAttribute('stroke', '#c15f3c');
+        p.setAttribute('stroke-opacity', '1');
+        p.setAttribute('stroke-width', '2.5');
+        p.setAttribute('marker-end', `url(#${arrH})`);
+      } else {
+        p.setAttribute('stroke', '#b8b09e');
+        p.setAttribute('stroke-opacity', '0.65');
+        p.setAttribute('stroke-width', '1.5');
+        p.setAttribute('marker-end', `url(#${arrN})`);
+      }
+    });
+    G.nodes.forEach(n => {
+      const { c } = nodeEls[n];
+      const isTarget = idx >= 0 && G.edges[idx] && G.edges[idx].target === n;
+      c.setAttribute('stroke', isTarget ? '#c15f3c' : 'var(--bg)');
+      c.setAttribute('stroke-width', isTarget ? '3.5' : '2.5');
+    });
+  }
+
+  function degStepFn(quiet) {
+    DS.step++;
+    if (DS.step >= G.edges.length) { DS.step = G.edges.length - 1; return; }
+    const e = G.edges[DS.step];
+    DS.inDeg[e.target]++;
+    if (!DS.seenIn[e.target].includes(e.source)) DS.seenIn[e.target].push(e.source);
+
+    if (!quiet) {
+      highlightDegEdge(DS.step);
+      renderDegTable();
+      renderDegEdgeList();
+      // flash row
+      setTimeout(() => {
+        const row = document.getElementById('dr' + e.target);
+        if (row) { row.classList.add('row-hi'); setTimeout(() => row.classList.remove('row-hi'), 550); }
+      }, 30);
+    }
+
+    const done = DS.step === G.edges.length - 1;
+    const status = document.getElementById('deg-status');
+    status.textContent = done
+      ? `✓ Selesai — semua ${G.edges.length} sisi dihitung.`
+      : `Sisi ${DS.step + 1}/${G.edges.length}: ${e.source} → ${e.target}  |  in-deg(${e.target}) = ${DS.inDeg[e.target]}`;
+    document.getElementById('deg-step').disabled = done;
+    document.getElementById('deg-all').disabled  = done;
+  }
+
+  function degAll() {
+    while (DS.step < G.edges.length - 1) degStepFn(true);
+    highlightDegEdge(DS.step);
+    renderDegTable();
+    renderDegEdgeList();
+    const e = G.edges[DS.step];
+    document.getElementById('deg-status').textContent = `✓ Selesai — semua ${G.edges.length} sisi dihitung.`;
+    document.getElementById('deg-step').disabled = true;
+    document.getElementById('deg-all').disabled  = true;
+  }
+
+  function degReset() {
+    DS.step   = -1;
+    DS.inDeg  = Object.fromEntries(G.nodes.map(n => [n, 0]));
+    DS.seenIn = Object.fromEntries(G.nodes.map(n => [n, []]));
+    highlightDegEdge(-1);
+    renderDegTable();
+    renderDegEdgeList();
+    document.getElementById('deg-status').textContent = 'Tekan "Sisi Berikutnya" untuk memulai.';
+    document.getElementById('deg-step').disabled = false;
+    document.getElementById('deg-all').disabled  = false;
+  }
+
+  /* ============================================================
+     PAGERANK SIMULATION
+  ============================================================ */
+  function initPR(els) {
+    const pr0 = Object.fromEntries(G.nodes.map(n => [n, 1 / G.N]));
+    PS = {
+      pr     : { ...pr0 },
+      iter   : 0,
+      history: [{ iter: 0, ...pr0 }],
+      els,
+    };
+  }
+
+  function prOneStep() {
+    const prev = { ...PS.pr };
+    const next = {};
+    let maxDelta = 0;
+    G.nodes.forEach(u => {
+      next[u] = G.inAdj[u].reduce((s, v) => s + prev[v] / G.outDeg[v], 0);
+      maxDelta = Math.max(maxDelta, Math.abs(next[u] - prev[u]));
+    });
+    PS.iter++;
+    PS.pr = next;
+    PS.history.push({ iter: PS.iter, ...next });
+
+    renderPRTable(prev);
+    renderPRHistory();
+    updatePRGraph();
+    updateDelta(maxDelta);
+    document.getElementById('pr-iter').textContent = PS.iter;
+
+    const converged = maxDelta < CONV;
+    document.getElementById('pr-status').textContent = converged
+      ? `✓ Konvergen pada iterasi ke-${PS.iter}  (Δ = ${maxDelta.toFixed(6)})`
+      : `Iterasi ke-${PS.iter} selesai.  Δ maks = ${maxDelta.toFixed(6)}`;
+    if (converged) stopAuto();
+    return maxDelta;
+  }
+
+  function renderPRTable(prev) {
+    document.getElementById('pr-tbody').innerHTML = G.nodes.map(u => {
+      const ins = G.inAdj[u];
+      let html, sum;
+      if (!ins.length) {
+        html = '<span style="color:var(--text3)">— (tidak ada sisi masuk)</span>';
+        sum  = 0;
+      } else {
+        const parts = ins.map(v => {
+          const share = prev[v] / G.outDeg[v];
+          return `PR(${v})/${G.outDeg[v]} = ${prev[v].toFixed(4)}/${G.outDeg[v]} = <b>${share.toFixed(4)}</b>`;
+        });
+        sum  = ins.reduce((s, v) => s + prev[v] / G.outDeg[v], 0);
+        html = parts.join('<br>');
+        if (ins.length > 1) html += `<br><span style="color:var(--text3)">──── Σ = ${sum.toFixed(4)}</span>`;
+      }
+      const d    = PS.pr[u] - prev[u];
+      const dStr = Math.abs(d) < 5e-6 ? '≈0' : (d > 0 ? '+' : '') + d.toFixed(4);
+      const dCls = Math.abs(d) < 5e-6 ? 'ceq' : d > 0 ? 'cup' : 'cdn';
+      return `<tr>
+        <td class="v" style="color:${G.colors[u]}">${u}</td>
+        <td class="fm">${html}</td>
+        <td class="v" style="text-align:right">${PS.pr[u].toFixed(4)}</td>
+        <td class="v ${dCls}" style="text-align:right;font-size:11.5px">${dStr}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderPRHistory() {
+    // header
+    document.getElementById('pr-hist-head').innerHTML =
+      `<th>Iter</th>` +
+      G.nodes.map(n => `<th style="text-align:right;color:${G.colors[n]}">${n}</th>`).join('') +
+      `<th style="text-align:right">&Sigma;</th>`;
+    // rows
+    const recent = PS.history.slice(-5);
+    document.getElementById('pr-hist-body').innerHTML = recent.map(r => {
+      const sum = G.nodes.reduce((s, n) => s + r[n], 0);
+      return `<tr ${r.iter === PS.iter ? 'class="row-hi"' : ''}>
+        <td class="v" style="font-size:12px">${r.iter}</td>
+        ${G.nodes.map(n => `<td class="v" style="text-align:right;font-size:11px">${r[n].toFixed(4)}</td>`).join('')}
+        <td style="text-align:right;font-size:11px;color:var(--text3);font-family:'IBM Plex Mono',monospace">${sum.toFixed(3)}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function updatePRGraph() {
+    const vals  = G.nodes.map(n => PS.pr[n]);
+    const minV  = Math.min(...vals), maxV = Math.max(...vals);
+    const range = maxV - minV || 1e-9;
+    G.nodes.forEach(n => {
+      const r  = 12 + ((PS.pr[n] - minV) / range) * 16;
+      const { c, t } = PS.els.nodeEls[n];
+      c.setAttribute('r', r.toFixed(1));
+      t.setAttribute('y', G.pos[n].y + 4);
+    });
+  }
+
+  function updateDelta(delta) {
+    const el  = document.getElementById('pr-delta');
+    const bar = document.getElementById('pr-bar');
+    el.textContent       = delta.toFixed(6);
+    bar.style.width      = Math.min(100, (delta / 0.3) * 100) + '%';
+    const done           = delta < CONV;
+    bar.style.background = done ? '#5a8a3c' : 'var(--accent)';
+    el.style.color       = done ? '#5a8a3c' : 'var(--text)';
+  }
+
+  function stopAuto() {
+    if (PAT) { clearInterval(PAT); PAT = null; }
+    document.getElementById('pr-auto').textContent   = 'Otomatis';
+    document.getElementById('pr-step').disabled      = false;
+  }
+
+  function prReset() {
+    stopAuto();
+    const pr0 = Object.fromEntries(G.nodes.map(n => [n, 1 / G.N]));
+    PS.pr      = { ...pr0 };
+    PS.iter    = 0;
+    PS.history = [{ iter: 0, ...pr0 }];
+    document.getElementById('pr-iter').textContent   = '0';
+    document.getElementById('pr-status').textContent = 'Tekan "Satu Iterasi" untuk memulai.';
+    document.getElementById('pr-delta').textContent  = '—';
+    document.getElementById('pr-delta').style.color  = '';
+    document.getElementById('pr-bar').style.width    = '0';
+    document.getElementById('pr-bar').style.background = 'var(--accent)';
+    document.getElementById('pr-tbody').innerHTML    = '';
+    // reset node sizes
+    G.nodes.forEach(n => {
+      const { c, t } = PS.els.nodeEls[n];
+      c.setAttribute('r', NODE_R);
+      t.setAttribute('y', G.pos[n].y + 4);
+    });
+    renderPRHistory();
+  }
+
+  /* ============================================================
+     BUILD (parse → graph data → SVGs → init sims)
+  ============================================================ */
+  function build() {
+    const text   = document.getElementById('graph-input').value;
+    const parsed = parse(text);
+    const errEl  = document.getElementById('build-err');
+
+    if (parsed.nodes.length < 2) {
+      errEl.innerHTML = '<span class="err-msg">Minimal 2 simpul diperlukan.</span>';
+      return;
+    }
+    if (!parsed.edges.length) {
+      errEl.innerHTML = '<span class="err-msg">Tidak ada sisi valid. Gunakan format: A -&gt; B</span>';
+      return;
+    }
+    errEl.innerHTML = '';
+
+    stopAuto();
+    G = buildG(parsed.nodes, parsed.edges);
+
+    // Info bar
+    document.getElementById('info-n').textContent = G.N;
+    document.getElementById('info-e').textContent = G.edges.length;
+
+    // Sink-node warning
+    const sinks  = G.nodes.filter(n => G.outDeg[n] === 0);
+    const warnEl = document.getElementById('info-warn');
+    const prWarn = document.getElementById('pr-sink-warn');
+    if (sinks.length) {
+      const msg = `⚠ Sink node (tidak ada sisi keluar): ${sinks.join(', ')} — nilai PR mungkin tidak konvergen ke Σ = 1`;
+      warnEl.textContent    = msg;
+      warnEl.style.display  = '';
+      prWarn.innerHTML      = `<strong>Perhatian:</strong> ${msg}`;
+      prWarn.style.display  = '';
+    } else {
+      warnEl.style.display  = 'none';
+      prWarn.style.display  = 'none';
+    }
+
+    // Formula notes
+    document.getElementById('deg-n-note').textContent =
+      `N = ${G.N}  →  pembagi = ${G.N - 1}`;
+    document.getElementById('pr-init').textContent =
+      (1 / G.N).toFixed(4);
+
+    // Build both SVGs
+    const degSvg = document.getElementById('deg-svg');
+    const prSvg  = document.getElementById('pr-svg');
+    const degEls = buildSVG(degSvg, 'deg');
+    const prEls  = buildSVG(prSvg,  'pr');
+
+    // Init simulations
+    initDeg(degEls);
+    initPR(prEls);
+    renderDegTable();
+    renderDegEdgeList();
+    renderPRHistory();
+    document.getElementById('deg-status').textContent = 'Tekan "Sisi Berikutnya" untuk memulai.';
+    document.getElementById('pr-status').textContent  = 'Tekan "Satu Iterasi" untuk memulai.';
+    document.getElementById('deg-step').disabled = false;
+    document.getElementById('deg-all').disabled  = false;
+    document.getElementById('pr-step').disabled  = false;
+
+    // Show & scroll
+    const area = document.getElementById('sim-area');
+    area.style.display = '';
+    area.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* ============================================================
+     EVENT LISTENERS
+  ============================================================ */
+  document.getElementById('build-btn').addEventListener('click', build);
+  document.getElementById('graph-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); build(); }
+  });
+
+  // Degree
+  document.getElementById('deg-step').addEventListener('click',  () => degStepFn(false));
+  document.getElementById('deg-all').addEventListener('click',   degAll);
+  document.getElementById('deg-reset').addEventListener('click', degReset);
+
+  // PageRank
+  document.getElementById('pr-step').addEventListener('click', () => { stopAuto(); prOneStep(); });
+  document.getElementById('pr-auto').addEventListener('click', function () {
+    if (PAT) { stopAuto(); return; }
+    this.textContent = 'Berhenti';
+    document.getElementById('pr-step').disabled = true;
+    PAT = setInterval(() => { if (prOneStep() < CONV) stopAuto(); }, 800);
+  });
+  document.getElementById('pr-reset').addEventListener('click', prReset);
+
+})();
+</script>
+
+</body>
+</html>

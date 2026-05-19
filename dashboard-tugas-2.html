@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kelompok 2 — Dashboard Final</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#faf9f6;--bg2:#ffffff;--bg3:#f3f1ec;--bg4:#ebe8e1;
+--text:#1a1a1a;--text2:#5a5a5a;--text3:#8a8a8a;
+--accent:#4f46e5;--accent2:#6366f1;--accent-light:#eef2ff;
+--green:#059669;--green-light:#ecfdf5;--green-dark:#064e3b;
+--red:#dc2626;--red-light:#fef2f2;
+--amber:#d97706;--amber-light:#fffbeb;--amber-dark:#78350f;
+--blue:#2563eb;--blue-light:#eff6ff;--blue-dark:#1e3a5f;
+--pink:#db2777;--pink-light:#fdf2f8;
+--teal:#0d9488;--teal-light:#f0fdfa;
+--border:#e5e2dc;--border2:#d5d0c8;
+--radius:14px;--radius-sm:10px;
+--shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.03);
+--shadow-lg:0 4px 24px rgba(0,0,0,0.06);
+--nasional:#c15f3c;--lokal:#6e8a4f;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.75}
+::selection{background:var(--accent);color:#fff}
+.container{max-width:920px;margin:0 auto;padding:0 24px}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(250,249,246,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+nav .container{display:flex;align-items:center;justify-content:space-between;height:56px}
+nav .logo{font-weight:800;font-size:14px;letter-spacing:0.5px;color:var(--accent)}
+nav .nav-links{display:flex;gap:20px}
+nav .nav-links a{font-size:13px;color:var(--text2);text-decoration:none;transition:color .2s;font-weight:500}
+nav .nav-links a:hover{color:var(--accent)}
+.hero{padding:120px 0 48px;text-align:center}
+.hero .badge{display:inline-block;padding:6px 18px;background:var(--accent-light);color:var(--accent);font-size:12px;font-weight:700;border-radius:20px;margin-bottom:20px}
+.hero h1{font-size:clamp(28px,5vw,42px);font-weight:800;line-height:1.2;margin-bottom:16px}
+.hero p{font-size:16px;color:var(--text2);max-width:600px;margin:0 auto}
+section{padding:56px 0}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;font-weight:600}
+.section-title{font-size:24px;font-weight:800;margin-bottom:8px}
+.section-desc{font-size:15px;color:var(--text2);margin-bottom:28px;max-width:640px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:14px;box-shadow:var(--shadow);transition:box-shadow .3s}
+.card:hover{box-shadow:var(--shadow-lg)}
+.card h3{font-size:16px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.card p,.card li{font-size:14px;color:var(--text2);line-height:1.8}
+.card ul{padding-left:20px}
+.card ul li{margin-bottom:4px}
+.tag{display:inline-block;padding:3px 12px;border-radius:8px;font-size:11px;font-weight:700}
+.tag-green{background:var(--green-light);color:var(--green)}
+.tag-amber{background:var(--amber-light);color:var(--amber)}
+.tag-blue{background:var(--blue-light);color:var(--blue)}
+.tag-pink{background:var(--pink-light);color:var(--pink)}
+.tag-red{background:var(--red-light);color:var(--red)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@media(max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.algo-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:16px}
+.algo-header{padding:20px 24px 16px;border-bottom:1px solid var(--border)}
+.algo-header h3{font-size:18px;font-weight:800;margin-bottom:2px}
+.algo-header .complexity{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--amber-dark);background:var(--amber-light);padding:4px 12px;border-radius:8px;display:inline-block;margin-top:8px}
+.algo-body{padding:20px 24px 24px}
+.algo-body p{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:12px}
+.algo-body ul{padding-left:20px;margin-bottom:12px}
+.algo-body li{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:2px}
+.algo-analogy{background:var(--accent-light);border-left:4px solid var(--accent);padding:14px 18px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:13px;color:var(--text);margin-top:14px;line-height:1.7}
+.graph-container{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px;box-shadow:var(--shadow)}
+.graph-controls{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.graph-btn{padding:7px 16px;font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text2);cursor:pointer;transition:all .2s}
+.graph-btn:hover{border-color:var(--accent);color:var(--accent)}
+.graph-btn.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+.rank-table{width:100%;border-collapse:collapse;font-size:13px}
+.rank-table th{text-align:left;padding:10px 12px;font-weight:700;color:var(--text3);border-bottom:2px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:1px}
+.rank-table td{padding:10px 12px;border-bottom:1px solid var(--border)}
+.rank-table tr:last-child td{border-bottom:none}
+.rank-table tr:hover{background:var(--accent-light)}
+.rank-num{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent)}
+.rank-bar{height:8px;border-radius:4px;background:var(--bg3)}
+.rank-bar-fill{height:100%;border-radius:4px}
+.q-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;box-shadow:var(--shadow)}
+.q-num{min-width:32px;height:32px;border-radius:10px;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;font-family:'JetBrains Mono',monospace}
+.q-content h4{font-size:14px;font-weight:700;margin-bottom:4px}
+.q-content p{font-size:13px;color:var(--text2)}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px;text-align:center;box-shadow:var(--shadow)}
+.stat-num{font-size:32px;font-weight:800;font-family:'JetBrains Mono',monospace}
+.stat-label{font-size:12px;color:var(--text2);margin-top:4px;font-weight:500}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:32px 0}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3);padding:2px 8px;border-radius:6px;color:var(--amber-dark);font-weight:500}
+footer{padding:40px 0;text-align:center;color:var(--text3);font-size:13px;border-top:1px solid var(--border)}
+.fade-in{opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s}.fade-in.visible{opacity:1;transform:translateY(0)}
+.callout{border-radius:var(--radius);padding:18px 22px;margin-bottom:16px;font-size:14px;line-height:1.8}
+.callout-blue{background:var(--blue-light);border-left:4px solid var(--blue);color:var(--blue-dark)}
+.callout-green{background:var(--green-light);border-left:4px solid var(--green);color:var(--green-dark)}
+.callout-amber{background:var(--amber-light);border-left:4px solid var(--amber);color:var(--amber-dark)}
+.compare-row{display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--border)}.compare-row:last-child{border-bottom:none}
+.compare-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.compare-content{flex:1}.compare-content h4{font-size:14px;font-weight:700;margin-bottom:2px}.compare-content p{font-size:13px;color:var(--text2)}
+canvas.mini-viz{width:100%;border-radius:var(--radius-sm);background:var(--bg3);display:block}
+.pseudo{background:#1e1e2e;color:#e2e8f0;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.9;border-radius:var(--radius-sm);padding:20px;overflow-x:auto;margin:16px 0}
+.pseudo .kw{color:#818cf8}.pseudo .fn{color:#86efac}.pseudo .cm{color:#64748b;font-style:italic}.pseudo .num{color:#fbbf24}
+.formula{font-family:'JetBrains Mono',monospace;font-size:14px;background:var(--accent-light);border-left:4px solid var(--accent);padding:14px 20px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;margin:12px 0;color:var(--text)}
+.finding-row{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.finding-row:last-child{border-bottom:none}
+.finding-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);min-width:32px;padding-top:2px}
+.comm-dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0}
+</style>
+</head>
+<body>
+<nav><div class="container"><div class="logo">KELOMPOK 2 — FINAL</div><div class="nav-links"><a href="#overview">Overview</a><a href="#graf">Graf</a><a href="#algoritma">Algoritma</a><a href="#pertanyaan">7 Pertanyaan</a><a href="#hasil">Hasil</a><a href="#temuan">Temuan</a></div></div></nav>
+
+<div class="container">
+<div class="hero">
+  <div class="badge">Dashboard Final — Kelompok 2 · IF2151 · 2026</div>
+  <h1>Social Network Influence Detection<br><span style="color:var(--accent)">Instagram Kreator Indonesia</span></h1>
+  <p>Analisis jaringan kolaborasi 28 kreator Instagram menggunakan Degree Centrality, PageRank, dan Community Detection. Data final, hasil final.</p>
+</div>
+
+<div class="grid-3 fade-in" style="margin-bottom:48px">
+  <div class="stat-card"><div class="stat-num" style="color:var(--accent)">28</div><div class="stat-label">Node (kreator)</div></div>
+  <div class="stat-card"><div class="stat-num" style="color:var(--green)">66</div><div class="stat-label">Edge (kolaborasi)</div></div>
+  <div class="stat-card"><div class="stat-num" style="color:var(--amber)">2</div><div class="stat-label">Komunitas</div></div>
+</div>
+<div class="grid-2 fade-in" style="margin-bottom:48px">
+  <div class="stat-card"><div class="stat-num" style="color:var(--nasional)">13.69%</div><div class="stat-label">PageRank tertinggi — @mariorioio__</div></div>
+  <div class="stat-card"><div class="stat-num" style="color:var(--lokal)">Q = 0.71</div><div class="stat-label">Modularity — komunitas sangat rapat</div></div>
+</div>
+
+<!-- 01 Overview -->
+<section id="overview" class="fade-in">
+  <div class="section-label">01 / Overview</div>
+  <div class="section-title">Konteks dan Motivasi</div>
+  <div class="section-desc">Followers adalah angka kasar. Yang penting adalah siapa yang berkolaborasi denganmu dan seberapa berpengaruh mereka.</div>
+
+  <div class="card">
+    <h3>Rumusan Masalah</h3>
+    <p>Diberikan jaringan kolaborasi kreator Instagram, tentukan: <strong>(1)</strong> siapa paling berpengaruh, <strong>(2)</strong> komunitas apa yang terbentuk, dan <strong>(3)</strong> bagaimana pengaruh menyebar antar komunitas.</p>
+  </div>
+
+  <div class="grid-3" style="margin-top:14px">
+    <div class="card" style="text-align:center">
+      <h3 style="justify-content:center;font-size:22px;margin-bottom:10px">📊</h3>
+      <p><strong>Degree Centrality</strong></p>
+      <p style="font-size:13px">Siapa punya kolaborasi terbanyak?</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <h3 style="justify-content:center;font-size:22px;margin-bottom:10px">⚡</h3>
+      <p><strong>PageRank</strong></p>
+      <p style="font-size:13px">Siapa paling berpengaruh secara kualitas?</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <h3 style="justify-content:center;font-size:22px;margin-bottom:10px">👥</h3>
+      <p><strong>Community Detection</strong></p>
+      <p style="font-size:13px">Klaster mana yang terbentuk?</p>
+    </div>
+  </div>
+
+  <div class="callout callout-blue" style="margin-top:14px">
+    <strong>Dataset:</strong> 28 kreator Instagram Indonesia — 14 kreator nasional (Raffi Ahmad, Deddy Corbuzier, Atta Halilintar, dll.) dan 14 kreator lokal Bengkulu. Total 66 kolaborasi berarah.
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 02 Graf -->
+<section id="graf" class="fade-in">
+  <div class="section-label">02 / Pemodelan Graf</div>
+  <div class="section-title">Bagaimana jaringan ini direpresentasikan?</div>
+  <div class="section-desc">Graf berarah G = (V, E) di mana V adalah himpunan kreator dan E adalah himpunan kolaborasi.</div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3><span class="tag tag-blue">V = 28</span> Himpunan Node</h3>
+      <p>Setiap node mewakili satu akun kreator Instagram. Node dibagi dua komunitas: <strong style="color:var(--nasional)">Nasional (14)</strong> dan <strong style="color:var(--lokal)">Lokal Bengkulu (14)</strong>.</p>
+    </div>
+    <div class="card">
+      <h3><span class="tag tag-pink">E = 66</span> Himpunan Edge</h3>
+      <p>Edge <code>A → B</code> berarti akun A pernah berkolaborasi mengajak akun B. Edge berarah — A mengajak B ≠ B mengajak A.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>Visualisasi node dan edge (data asli)</h3>
+    <canvas id="nodeEdgeViz" class="mini-viz" height="160"></canvas>
+    <p style="margin-top:10px;font-size:13px;color:var(--text3)">Lingkaran = node. Panah = edge berarah. <span style="color:var(--nasional)">● Nasional</span> · <span style="color:var(--lokal)">● Lokal Bengkulu</span> · Garis putus = edge antar komunitas (bridge).</p>
+  </div>
+
+  <div class="card">
+    <h3><span class="tag tag-amber">Directed Graph</span> Kenapa berarah?</h3>
+    <p>Kolaborasi punya inisiatif. <code>@mariorioio__ → @willie27_</code> artinya Mario (lokal) mengajak Willie (nasional) — bukan sebaliknya. Ini secara matematis berbeda dan mencerminkan dinamika nyata.</p>
+    <div class="callout callout-amber" style="margin-top:12px">
+      <strong>Implikasi penting:</strong> Graf ini hanya <em>weakly connected</em>, bukan strongly connected. Hanya ada <strong>1 edge</strong> yang menghubungkan komunitas lokal ke nasional: <code>@mariorioio__ → @willie27_</code>. Hapus edge ini, dan dua komunitas terputus total.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Cycle dalam jaringan</h3>
+    <canvas id="cycleViz" class="mini-viz" height="170"></canvas>
+    <p style="margin-top:10px;font-size:13px;color:var(--text3)">Contoh cycle dari data asli: Willie → Vilmei → Fadil → Willie. Cycle ini penting — PageRank dirancang untuk menangani pengaruh yang berputar.</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 03 Algoritma -->
+<section id="algoritma" class="fade-in">
+  <div class="section-label">03 / Algoritma</div>
+  <div class="section-title">3 metode analisis yang digunakan</div>
+  <div class="section-desc">Masing-masing menjawab pertanyaan berbeda tentang jaringan yang sama.</div>
+
+  <!-- Degree -->
+  <div class="algo-card">
+    <div class="algo-header" style="background:var(--blue-light)">
+      <h3 style="color:var(--blue)">1. Degree Centrality</h3>
+      <p style="font-size:13px;color:var(--text2);margin-top:4px">Mengukur volume koneksi langsung — siapa paling banyak berkolaborasi</p>
+      <div class="complexity">O(V + E) — linier, N = 28, pembagi = 27</div>
+    </div>
+    <div class="algo-body">
+      <p><strong>Formula (in-degree):</strong></p>
+      <div class="formula">DC(v) = in-degree(v) / (N − 1) = in-degree(v) / 27</div>
+      <p>Kita pakai <em>in-degree</em>: berapa banyak kreator lain yang menunjuk (mengajak collab) ke node v. Nilai dinormalisasi dengan membagi (N−1) = 27 agar berada di rentang [0, 1].</p>
+      <canvas id="degreeViz" class="mini-viz" height="200" style="margin:16px 0"></canvas>
+      <div class="pseudo">
+<span class="cm">// Degree Centrality — O(V + E)</span>
+<span class="kw">function</span> <span class="fn">degreeCentrality</span>():
+  inDeg = {} <span class="cm">// in-degree tiap node</span>
+  <span class="kw">for each</span> node v: inDeg[v] = <span class="num">0</span>
+  <span class="kw">for each</span> edge (u → v): inDeg[v] += <span class="num">1</span>
+  <span class="kw">for each</span> node v:
+    DC[v] = inDeg[v] / (N − <span class="num">1</span>)  <span class="cm">// N = 28</span>
+  <span class="kw">return</span> DC</div>
+      <div class="algo-analogy"><strong>Analogi:</strong> Di kelas, siapa yang paling sering diajak kerja kelompok oleh teman-temannya? Degree hitung frekuensinya — tidak peduli siapa yang mengajak.</div>
+      <p style="margin-top:12px"><strong>Hasil data asli:</strong> @mariorioio__ punya in-degree = 13 → DC = 13/27 ≈ 48.1%. Ini tertinggi di seluruh jaringan.</p>
+    </div>
+  </div>
+
+  <!-- PageRank -->
+  <div class="algo-card">
+    <div class="algo-header" style="background:var(--accent-light)">
+      <h3 style="color:var(--accent)">2. PageRank</h3>
+      <p style="font-size:13px;color:var(--text2);margin-top:4px">Mengukur pengaruh berlapis — kualitas koneksi, bukan hanya kuantitas</p>
+      <div class="complexity">O(k × (V + E)), k = 60 iterasi, d = 0.85</div>
+    </div>
+    <div class="algo-body">
+      <p><strong>Formula iterasi:</strong></p>
+      <div class="formula">PR(v) = (1−d)/N + d × Σ<sub>u∈in(v)</sub> PR(u) / out-degree(u)</div>
+      <p>Setiap iterasi, node mendistribusikan sebagian PageRank-nya ke node yang ia tunjuk. Proses ini diulang 60 kali hingga nilai konvergen. Damping factor <code>d = 0.85</code> mensimulasikan 85% kemungkinan pengguna terus mengikuti rantai kolaborasi.</p>
+      <canvas id="pagerankViz" class="mini-viz" height="200" style="margin:16px 0"></canvas>
+      <div class="pseudo">
+<span class="cm">// PageRank — O(k × (V + E)), k = 60</span>
+<span class="kw">function</span> <span class="fn">pageRank</span>(d = <span class="num">0.85</span>, iters = <span class="num">60</span>):
+  <span class="kw">for each</span> node v: PR[v] = <span class="num">1</span>/N  <span class="cm">// inisialisasi 1/28 ≈ 0.0357</span>
+  <span class="kw">repeat</span> iters <span class="kw">times</span>:
+    next = {}
+    <span class="kw">for each</span> node v: next[v] = (<span class="num">1</span>−d)/N
+    <span class="kw">for each</span> node u:
+      share = d × PR[u] / out-degree(u)
+      <span class="kw">for each</span> neighbor v <span class="kw">of</span> u:
+        next[v] += share
+    PR = next
+  <span class="kw">return</span> PR</div>
+      <div class="algo-analogy"><strong>Analogi:</strong> Bukan siapa yang paling populer — tapi siapa yang direkomendasikan oleh orang-orang berpengaruh. Rekomendasi dari Deddy Corbuzier lebih berharga dari 100 rekomendasi akun biasa.</div>
+      <p style="margin-top:12px"><strong>Hasil data asli:</strong> @mariorioio__ = <strong>13.69%</strong> — lebih dari 2× peringkat 2 (Vilmei 5.48%). Ini karena semua 13 kreator lokal menunjuk ke Mario.</p>
+    </div>
+  </div>
+
+  <!-- Community Detection -->
+  <div class="algo-card">
+    <div class="algo-header" style="background:var(--green-light)">
+      <h3 style="color:var(--green)">3. Community Detection</h3>
+      <p style="font-size:13px;color:var(--text2);margin-top:4px">Menemukan kelompok yang terbentuk berdasarkan pola kolaborasi</p>
+      <div class="complexity">O(V + E) — partisi manual dengan validasi modularity</div>
+    </div>
+    <div class="algo-body">
+      <p><strong>Formula modularity:</strong></p>
+      <div class="formula">Q = Σ<sub>c</sub> [ L<sub>c</sub>/m − (d<sub>c</sub>/2m)² ]</div>
+      <p>Di mana <code>L<sub>c</sub></code> = jumlah edge dalam komunitas c, <code>m</code> = total edge, <code>d<sub>c</sub></code> = total degree node di komunitas c. Q mendekati 1 berarti komunitas sangat rapat.</p>
+      <canvas id="communityViz" class="mini-viz" height="200" style="margin:16px 0"></canvas>
+      <p><strong>Hasil data asli:</strong> Q = <strong>0.71</strong> — komunitas sangat kuat. Hanya ada 1 dari 66 edge (1.5%) yang melintasi batas komunitas: <code>@mariorioio__ → @willie27_</code>.</p>
+      <div class="grid-2" style="margin-top:14px">
+        <div class="card" style="padding:16px">
+          <h3 style="font-size:14px"><span style="color:var(--nasional)">●</span> Komunitas Nasional</h3>
+          <p style="font-size:13px">14 node — Raffi, Atta, Deddy, Willie, Vilmei, dll.</p>
+          <p style="font-size:13px">61% total edge</p>
+        </div>
+        <div class="card" style="padding:16px">
+          <h3 style="font-size:14px"><span style="color:var(--lokal)">●</span> Komunitas Lokal Bengkulu</h3>
+          <p style="font-size:13px">14 node — Mario, Peuy Batik, Keyla, Atalap, dll.</p>
+          <p style="font-size:13px">38% total edge</p>
+        </div>
+      </div>
+      <div class="algo-analogy"><strong>Insight:</strong> Dua komunitas ini nyaris tidak saling berinteraksi. @mariorioio__ adalah satu-satunya jembatan — tanpa dia, komunitas lokal Bengkulu terisolasi dari jaringan nasional.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Perbandingan 3 metode</h3>
+    <div class="compare-row">
+      <div class="compare-icon" style="background:var(--blue-light)">📊</div>
+      <div class="compare-content">
+        <h4 style="color:var(--blue)">Degree Centrality — O(V + E)</h4>
+        <p>Siapa paling banyak diajak collab? Cepat, simpel, berbasis volume. Hasil: @mariorioio__ #1 (48.1%), @vilmei #2 (29.6%).</p>
+      </div>
+    </div>
+    <div class="compare-row">
+      <div class="compare-icon" style="background:var(--accent-light)">⚡</div>
+      <div class="compare-content">
+        <h4 style="color:var(--accent)">PageRank — O(k·(V+E))</h4>
+        <p>Siapa paling berpengaruh secara kualitas? Akurat, berbasis struktur jaringan. Hasil: @mariorioio__ #1 (13.69%), @vilmei #2 (5.48%).</p>
+      </div>
+    </div>
+    <div class="compare-row">
+      <div class="compare-icon" style="background:var(--green-light)">👥</div>
+      <div class="compare-content">
+        <h4 style="color:var(--green)">Community Detection — O(V + E)</h4>
+        <p>Kelompok apa yang terbentuk? Berbasis partisi manual + modularity. Hasil: 2 komunitas, Q = 0.71, 1 cross-community edge.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 04 7 Pertanyaan -->
+<section id="pertanyaan" class="fade-in">
+  <div class="section-label">04 / Analisis Wajib</div>
+  <div class="section-title">7 pertanyaan — dijawab dengan data asli</div>
+  <div class="section-desc">Semua jawaban berdasarkan dataset final: 28 node, 66 edge.</div>
+
+  <div class="q-card">
+    <div class="q-num">1</div>
+    <div class="q-content">
+      <h4>Jenis graf apa yang digunakan?</h4>
+      <p><strong>Directed Graph (Digraph)</strong> — setiap edge punya arah. <code>A → B</code> berarti A mengajak B berkolaborasi, dan ini berbeda dari <code>B → A</code>. Graf ini juga mengandung multi-edge potensial dan self-loop nihil. Dipilih karena kolaborasi punya inisiatif yang asimetris.</p>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-num">2</div>
+    <div class="q-content">
+      <h4>Berapa kardinalitas vertex dan edge?</h4>
+      <p><strong>|V| = 28</strong> node (14 nasional + 14 lokal Bengkulu) dan <strong>|E| = 66</strong> edge berarah. Densitas graf = 66 / (28 × 27) ≈ 8.7% — tergolong <em>sparse</em>, wajar untuk jaringan sosial nyata.</p>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-num">3</div>
+    <div class="q-content">
+      <h4>Apakah graf connected?</h4>
+      <p><strong>Weakly connected</strong> — semua 28 node terhubung jika arah edge diabaikan. Namun <strong>tidak strongly connected</strong> karena tidak ada path berarah dari semua node nasional ke semua node lokal. Hanya ada 1 jembatan antar komunitas: <code>@mariorioio__ → @willie27_</code>. Isolasi komunitas lokal adalah temuan kunci.</p>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-num">4</div>
+    <div class="q-content">
+      <h4>Apakah terdapat cycle?</h4>
+      <p><strong>Ya</strong> — terdapat banyak cycle dari mutual collab. Contoh: <code>@willie27_ ↔ @vilmei</code>, <code>@vilmei ↔ @riaricis1795</code>, <code>@vilmei ↔ @fadiljaidi</code>, <code>@jessnolimit ↔ @siscakohl</code>. Cycle ini penting bagi PageRank — pengaruh "berputar" dan terakumulasi di node pusat jaringan.</p>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-num">5</div>
+    <div class="q-content">
+      <h4>Algoritma apa yang paling optimal?</h4>
+      <p><strong>PageRank</strong> — paling optimal untuk mengukur pengaruh dalam jaringan sosial karena mempertimbangkan kualitas koneksi, bukan hanya kuantitas. Degree hanya melihat volume (bisa dimanipulasi), PageRank melihat siapa yang menunjukmu. Kompleksitas O(k·(V+E)) masih linier dan scalable untuk dataset jauh lebih besar.</p>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-num">6</div>
+    <div class="q-content">
+      <h4>Bagaimana skalabilitas solusi?</h4>
+      <p>Sangat baik. <strong>Degree Centrality O(V+E)</strong> dan <strong>PageRank O(k·(V+E))</strong> — keduanya linier terhadap ukuran graf. Pada dataset 28 node ini, PageRank konvergen dalam 60 iterasi. Jika diperluas ke 10.000 node, 60 iterasi tetap cukup karena konvergensi bergantung pada struktur, bukan hanya ukuran.</p>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-num">7</div>
+    <div class="q-content">
+      <h4>Apa inovasi yang dapat dikembangkan?</h4>
+      <p><strong>Prediksi kolaborasi berikutnya</strong> — berdasarkan jarak dalam graf. @jessnolimit dan @mariorioio__ hanya 2 hop (via @willie27_). Probabilitas kolaborasi tinggi. Inovasi lain: deteksi komunitas dinamis (siapa yang berpindah klaster), identifikasi akun yang hanya "konsumsi" (banyak in-degree, sedikit out-degree), dan alert jika bridge node dihapus.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 05 Hasil -->
+<section id="hasil" class="fade-in">
+  <div class="section-label">05 / Hasil Nyata</div>
+  <div class="section-title">Visualisasi interaktif dan ranking final</div>
+  <div class="section-desc">Graf 28 node dengan ukuran node sesuai algoritma yang dipilih.</div>
+
+  <div class="graph-container">
+    <canvas id="graphCanvas" height="420"></canvas>
+    <div class="graph-controls">
+      <button class="graph-btn active" onclick="setGraphMode('community', this)">Community</button>
+      <button class="graph-btn" onclick="setGraphMode('pagerank', this)">PageRank</button>
+      <button class="graph-btn" onclick="setGraphMode('degree', this)">Degree</button>
+    </div>
+    <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;font-size:12px;color:var(--text2)">
+      <span style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#c15f3c;display:inline-block"></span>Nasional (14)</span>
+      <span style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#6e8a4f;display:inline-block"></span>Lokal Bengkulu (14)</span>
+      <span style="display:flex;align-items:center;gap:6px"><span style="border:1.5px dashed #dc2626;width:24px;display:inline-block"></span>Bridge antar komunitas</span>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:14px">
+    <div class="card">
+      <h3>📊 Top 10 PageRank</h3>
+      <table class="rank-table" id="pr-table"></table>
+    </div>
+    <div class="card">
+      <h3>📊 Top 10 Degree Centrality</h3>
+      <table class="rank-table" id="dc-table"></table>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>💡 Divergensi Ranking</h3>
+    <p>@mariorioio__ konsisten #1 di kedua algoritma — ini <strong>true influencer</strong>. Tapi perhatikan divergensi lainnya: @raffinagita1717 masuk top 10 degree (banyak kolaborasi) tapi PageRank-nya rendah karena kebanyakan dari akun yang kurang berpengaruh. Sebaliknya, @vilmei PageRank-nya tinggi karena semua yang menunjuknya adalah kreator besar.</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 06 Temuan Kunci -->
+<section id="temuan" class="fade-in">
+  <div class="section-label">06 / Temuan Kunci</div>
+  <div class="section-title">4 insight dari analisis graf</div>
+
+  <div class="card">
+    <div class="finding-row">
+      <div class="finding-num">01</div>
+      <div>
+        <strong>@mariorioio__ adalah hub mutlak komunitas lokal</strong>
+        <p style="font-size:14px;color:var(--text2);margin-top:4px">PageRank 13.69% — lebih dari 2× peringkat kedua. 13 dari 14 kreator lokal menunjuknya. Jika node ini dihapus, komunitas lokal Bengkulu hancur menjadi 13 node terisolasi.</p>
+      </div>
+    </div>
+    <div class="finding-row">
+      <div class="finding-num">02</div>
+      <div>
+        <strong>Hanya 1 jembatan antar komunitas dari 66 edge</strong>
+        <p style="font-size:14px;color:var(--text2);margin-top:4px"><code>@mariorioio__ → @willie27_</code> adalah satu-satunya koneksi komunitas lokal ke nasional (1.5% dari semua edge). Modularity Q = 0.71 — dua dunia yang hampir tidak bersentuhan.</p>
+      </div>
+    </div>
+    <div class="finding-row">
+      <div class="finding-num">03</div>
+      <div>
+        <strong>Followers ≠ pengaruh dalam jaringan</strong>
+        <p style="font-size:14px;color:var(--text2);margin-top:4px">@raffinagita1717 punya 75,2 juta followers (terbanyak di dataset) tapi PageRank-nya rendah. @mariorioio__ hanya punya ~1.239 followers tapi PageRank #1. Ini membuktikan PageRank mengukur pengaruh struktural, bukan popularitas publik.</p>
+      </div>
+    </div>
+    <div class="finding-row">
+      <div class="finding-num">04</div>
+      <div>
+        <strong>Komunitas nasional lebih rapat dari lokal</strong>
+        <p style="font-size:14px;color:var(--text2);margin-top:4px">Komunitas nasional punya cycle mutual yang banyak (Willie↔Vilmei, Vilmei↔Fadil, Jess↔Sisca, dll). Komunitas lokal lebih berbentuk bintang (star graph) dengan Mario di pusat — kurang tahan terhadap removal node pusat.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-green" style="margin-top:14px">
+    <strong>Kesimpulan:</strong> Untuk kampanye promosi dengan jangkauan maksimal di dua komunitas, kolaborasi dengan @mariorioio__ (lokal) dan @vilmei (nasional) — keduanya konsisten di top 3 PageRank dan Degree. @mariorioio__ adalah satu-satunya node yang menghubungkan kedua dunia.
+  </div>
+</section>
+
+<footer>Kelompok 2 — Social Network Influence Detection — IF2151 Teori Graf · 2026</footer>
+</div>
+
+<script>
+const F = 'Plus Jakarta Sans';
+const NASIONAL = '#c15f3c', LOKAL = '#6e8a4f';
+
+function drawArrow(ctx, x1, y1, x2, y2, r, color, w) {
+  const angle = Math.atan2(y2 - y1, x2 - x1);
+  const tx = x2 - Math.cos(angle) * r, ty = y2 - Math.sin(angle) * r;
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(tx, ty);
+  ctx.strokeStyle = color; ctx.lineWidth = w || 1.5; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(tx, ty);
+  ctx.lineTo(tx - 8 * Math.cos(angle - 0.35), ty - 8 * Math.sin(angle - 0.35));
+  ctx.lineTo(tx - 8 * Math.cos(angle + 0.35), ty - 8 * Math.sin(angle + 0.35));
+  ctx.closePath(); ctx.fillStyle = color; ctx.fill();
+}
+function drawNode(ctx, x, y, r, color, label, tc) {
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fillStyle = color; ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.1)'; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.fillStyle = tc || '#fff';
+  ctx.font = `600 ${Math.max(9, Math.min(12, r / 2))}px "${F}",sans-serif`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(label, x, y);
+}
+
+// Node-Edge viz
+(function () {
+  const c = document.getElementById('nodeEdgeViz');
+  const ctx = c.getContext('2d'); c.width = 680; c.height = 160;
+  drawArrow(ctx, 170, 80, 295, 80, 28, '#94a3b8', 2);
+  drawArrow(ctx, 360, 80, 485, 80, 28, '#94a3b8', 2);
+  ctx.setLineDash([5, 4]);
+  drawArrow(ctx, 350, 52, 222, 55, 28, 'rgba(220,38,38,0.4)', 1.5);
+  ctx.setLineDash([]);
+  drawNode(ctx, 140, 80, 28, LOKAL, 'Mario');
+  drawNode(ctx, 325, 80, 28, NASIONAL, 'Willie');
+  drawNode(ctx, 515, 80, 28, NASIONAL, 'Vilmei');
+  ctx.fillStyle = '#64748b'; ctx.font = `500 11px "${F}"`;
+  ctx.textAlign = 'center';
+  ctx.fillText('→ collab (bridge)', 232, 68);
+  ctx.fillText('→ mutual collab', 420, 68);
+  ctx.fillText('← mutual', 285, 42);
+})();
+
+// Cycle viz
+(function () {
+  const c = document.getElementById('cycleViz');
+  const ctx = c.getContext('2d'); c.width = 680; c.height = 170;
+  drawArrow(ctx, 314, 52, 214, 122, 26, '#c15f3c', 2);
+  drawArrow(ctx, 234, 138, 446, 138, 26, '#c15f3c', 2);
+  drawArrow(ctx, 460, 122, 358, 52, 26, '#c15f3c', 2);
+  drawArrow(ctx, 218, 105, 318, 55, 26, 'rgba(193,95,60,0.35)', 1.5);
+  drawNode(ctx, 338, 38, 26, NASIONAL, 'Willie');
+  drawNode(ctx, 198, 138, 26, NASIONAL, 'Vilmei');
+  drawNode(ctx, 472, 138, 26, NASIONAL, 'Fadil');
+  ctx.fillStyle = '#c15f3c'; ctx.font = `700 12px "${F}"`;
+  ctx.textAlign = 'center'; ctx.fillText('CYCLE — Willie ↔ Vilmei ↔ Fadil ↔ Willie', 338, 163);
+})();
+
+// Degree viz
+(function () {
+  const c = document.getElementById('degreeViz');
+  const ctx = c.getContext('2d'); c.width = 680; c.height = 200;
+  const center = { x: 338, y: 100 };
+  const ring = [
+    { x: 120, y: 50 }, { x: 200, y: 160 }, { x: 280, y: 185 },
+    { x: 395, y: 185 }, { x: 478, y: 160 }, { x: 560, y: 50 },
+    { x: 500, y: 30 }, { x: 220, y: 30 }, { x: 150, y: 130 },
+    { x: 340, y: 195 }, { x: 530, y: 130 }, { x: 240, y: 185 },
+    { x: 440, y: 185 }
+  ];
+  ring.forEach(n => drawArrow(ctx, n.x, n.y, center.x, center.y, 32, 'rgba(110,138,79,0.3)', 1.2));
+  ring.forEach((n, i) => drawNode(ctx, n.x, n.y, 16, '#a3b899', String.fromCharCode(65 + i), '#fff'));
+  drawNode(ctx, 338, 100, 32, LOKAL, 'Mario');
+  ctx.fillStyle = LOKAL; ctx.font = `700 12px "${F}"`; ctx.textAlign = 'center';
+  ctx.fillText('In-degree = 13 — Degree Centrality = 13/27 ≈ 48.1%', 338, 20);
+})();
+
+// PageRank viz
+(function () {
+  const c = document.getElementById('pagerankViz');
+  const ctx = c.getContext('2d'); c.width = 680; c.height = 200;
+  ctx.fillStyle = '#f3f1ec'; ctx.fillRect(0, 0, 680, 200);
+  // Left side: 3 small nodes → medium node
+  const small = [{ x: 70, y: 50 }, { x: 70, y: 110 }, { x: 70, y: 170 }];
+  small.forEach(n => drawArrow(ctx, 85, n.y, 220, 110, 22, '#d1d5db', 1.2));
+  // Right side: 2 big nodes → Mario
+  drawArrow(ctx, 380, 60, 510, 110, 30, NASIONAL, 2);
+  drawArrow(ctx, 380, 160, 510, 110, 30, NASIONAL, 2);
+  small.forEach(n => drawNode(ctx, n.x, n.y, 14, '#d1d5db', '', '#64748b'));
+  drawNode(ctx, 244, 110, 22, '#f59e0b', 'Kreator X');
+  drawNode(ctx, 360, 60, 22, NASIONAL, 'Willie');
+  drawNode(ctx, 360, 160, 22, NASIONAL, 'Vilmei');
+  drawNode(ctx, 540, 110, 30, LOKAL, 'Mario');
+  ctx.font = `600 11px "${F}"`; ctx.textAlign = 'center';
+  ctx.fillStyle = '#b45309'; ctx.fillText('Degree tinggi', 244, 146); ctx.fillText('PR rendah', 244, 160);
+  ctx.fillStyle = LOKAL; ctx.fillText('Degree = 13', 540, 152); ctx.fillText('PR = 13.69%!', 540, 167);
+  ctx.fillStyle = '#64748b'; ctx.font = `500 10px "${F}"`;
+  ctx.fillText('3 akun kecil', 70, 192); ctx.fillText('kreator nasional', 360, 192);
+})();
+
+// Community viz
+(function () {
+  const c = document.getElementById('communityViz');
+  const ctx = c.getContext('2d'); c.width = 680; c.height = 200;
+  ctx.beginPath(); ctx.ellipse(185, 100, 145, 82, 0, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(193,95,60,0.06)'; ctx.fill();
+  ctx.strokeStyle = 'rgba(193,95,60,0.25)'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]); ctx.stroke(); ctx.setLineDash([]);
+  ctx.beginPath(); ctx.ellipse(495, 100, 145, 82, 0, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(110,138,79,0.06)'; ctx.fill();
+  ctx.strokeStyle = 'rgba(110,138,79,0.25)'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]); ctx.stroke(); ctx.setLineDash([]);
+  const gN = [{ x: 135, y: 70 }, { x: 225, y: 70 }, { x: 140, y: 130 }, { x: 230, y: 130 }];
+  const gL = [{ x: 445, y: 70 }, { x: 540, y: 70 }, { x: 450, y: 130 }, { x: 545, y: 130 }];
+  [[0,1],[0,2],[1,2],[1,3],[2,3],[0,3]].forEach(([a,b])=>{ctx.beginPath();ctx.moveTo(gN[a].x,gN[a].y);ctx.lineTo(gN[b].x,gN[b].y);ctx.strokeStyle='rgba(193,95,60,0.3)';ctx.lineWidth=1.5;ctx.stroke()});
+  // Star for lokal — hub in center
+  const hub = { x: 495, y: 100 };
+  gL.forEach(n=>{drawArrow(ctx,n.x,n.y,hub.x,hub.y,20,'rgba(110,138,79,0.3)',1.2)});
+  // Bridge
+  ctx.setLineDash([4, 4]);
+  drawArrow(ctx, 495, 88, 232, 68, 18, 'rgba(220,38,38,0.5)', 1.5);
+  ctx.setLineDash([]);
+  ['W','V','I','J'].forEach((l, i) => drawNode(ctx, gN[i].x, gN[i].y, 18, NASIONAL, l));
+  gL.forEach((n, i) => drawNode(ctx, n.x, n.y, 16, '#a3b899', ['K','A','P','S'][i]));
+  drawNode(ctx, hub.x, hub.y, 22, LOKAL, 'Mario');
+  ctx.font = `700 12px "${F}"`; ctx.textAlign = 'center';
+  ctx.fillStyle = NASIONAL; ctx.fillText('Nasional — rapat (mutual)', 185, 192);
+  ctx.fillStyle = LOKAL; ctx.fillText('Lokal — bintang (hub Mario)', 495, 192);
+  ctx.fillStyle = '#dc2626'; ctx.font = `500 10px "${F}"`; ctx.fillText('bridge 1 edge', 338, 76);
+})();
+
+// ============== Interactive Graph ==============
+const GN = [
+  // Nasional (0–13)
+  {id:0,  label:'Willie',   short:'Wi',  x:195, y:90,  comm:0, pr:0.0528, indeg:4},
+  {id:1,  label:'Vilmei',   short:'Vi',  x:305, y:55,  comm:0, pr:0.0548, indeg:8},
+  {id:2,  label:'Ibnu',     short:'Ib',  x:390, y:105, comm:0, pr:0.0338, indeg:4},
+  {id:3,  label:'Jess',     short:'Js',  x:290, y:160, comm:0, pr:0.0384, indeg:4},
+  {id:4,  label:'Baim',     short:'Bm',  x:175, y:165, comm:0, pr:0.0253, indeg:4},
+  {id:5,  label:'Fadil',    short:'Fd',  x:380, y:195, comm:0, pr:0.0269, indeg:3},
+  {id:6,  label:'Atta',     short:'At',  x:295, y:240, comm:0, pr:0.0171, indeg:3},
+  {id:7,  label:'Aurelie',  short:'Au',  x:395, y:280, comm:0, pr:0.0148, indeg:2},
+  {id:8,  label:'Raffi',    short:'Rf',  x:185, y:260, comm:0, pr:0.0188, indeg:2},
+  {id:9,  label:'Ria',      short:'Ri',  x:95,  y:130, comm:0, pr:0.0158, indeg:2},
+  {id:10, label:'Windah',   short:'Wn',  x:100, y:210, comm:0, pr:0.0256, indeg:2},
+  {id:11, label:'Sisca',    short:'Sc',  x:90,  y:285, comm:0, pr:0.0173, indeg:2},
+  {id:12, label:'Deddy',    short:'Dc',  x:275, y:325, comm:0, pr:0.0201, indeg:1},
+  {id:13, label:'Fuji',     short:'Fj',  x:480, y:155, comm:0, pr:0.0202, indeg:2},
+  // Lokal (14–27)
+  {id:14, label:'Mario',    short:'Mr',  x:600, y:195, comm:1, pr:0.1369, indeg:13},
+  {id:15, label:'Peuy',     short:'Py',  x:540, y:100, comm:1, pr:0.0390, indeg:3},
+  {id:16, label:'Keyla',    short:'Ky',  x:640, y:105, comm:1, pr:0.0344, indeg:1},
+  {id:17, label:'Atalap',   short:'Al',  x:700, y:170, comm:1, pr:0.0344, indeg:1},
+  {id:18, label:'Alifah',   short:'Af',  x:695, y:250, comm:1, pr:0.0148, indeg:1},
+  {id:19, label:'Nandi',    short:'Nd',  x:635, y:300, comm:1, pr:0.0148, indeg:1},
+  {id:20, label:'Aldo',     short:'Ad',  x:545, y:325, comm:1, pr:0.0158, indeg:2},
+  {id:21, label:'Okt',      short:'Ok',  x:490, y:280, comm:1, pr:0.0148, indeg:2},
+  {id:22, label:'Ezilla',   short:'Ez',  x:500, y:370, comm:1, pr:0.0148, indeg:2},
+  {id:23, label:'Layla',    short:'La',  x:610, y:370, comm:1, pr:0.0148, indeg:2},
+  {id:24, label:'Azky',     short:'Sk',  x:710, y:330, comm:1, pr:0.0148, indeg:2},
+  {id:25, label:'Akbar',    short:'Ab',  x:740, y:240, comm:1, pr:0.0063, indeg:1},
+  {id:26, label:'Galeh',    short:'Gl',  x:560, y:410, comm:1, pr:0.0044, indeg:1},
+  {id:27, label:'IkatDuta', short:'ID',  x:660, y:430, comm:1, pr:0.0076, indeg:7},
+];
+
+const GE = [
+  // Willie
+  [0,1],[0,2],[0,3],[0,4],[0,5],
+  // Vilmei
+  [1,13],[1,10],[1,0],[1,9],[1,5],
+  // Atta → Vilmei, Atta → Ibnu, Atta → Jess
+  [6,1],[6,2],[6,3],
+  // Aurelie → Vilmei, Baim → Vilmei
+  [7,1],[4,1],
+  // Ibnu
+  [2,0],[2,1],[2,13],[2,4],[2,11],[2,5],
+  // Jess
+  [3,10],[12,3],[6,3],[3,11],[11,3],
+  // Baim
+  [4,8],[4,6],[4,7],[4,0],[12,4],
+  // Fadil
+  [5,8],[5,12],[5,6],[5,7],[5,4],
+  // Ria, Sisca
+  [9,1],[9,2],
+  // Mario hub
+  [14,15],[14,16],[14,17],[14,0],
+  [27,14],[16,14],[17,14],[18,14],[19,14],[20,14],[21,14],[22,14],[23,14],[25,14],[26,14],[24,14],
+  // Ikatan Duta
+  [27,20],[27,25],[27,21],[27,22],[27,23],[27,24],
+  [26,27],
+  // Peuy
+  [18,15],[19,15],[15,14],
+];
+
+const prMax14 = 0.1369, dcMax14 = 13;
+
+function nodeR14(n) {
+  return 10 + (n.pr / prMax14) * 12;
+}
+function nodeDR14(n) {
+  return 10 + (n.indeg / dcMax14) * 12;
+}
+function nodeColor14(n, mode) {
+  if (mode === 'community') return n.comm === 0 ? NASIONAL : LOKAL;
+  if (mode === 'pagerank') {
+    const t = n.pr / prMax14;
+    return `hsl(${t > 0.5 ? 20 : 200},${50 + t * 40}%,${60 - t * 30}%)`;
+  }
+  const t = n.indeg / dcMax14;
+  return `hsl(${140 - t * 10},${45 + t * 30}%,${60 - t * 25}%)`;
+}
+
+let graphMode = 'community';
+const canvas14 = document.getElementById('graphCanvas');
+const ctx14 = canvas14.getContext('2d');
+canvas14.width = 780; canvas14.height = 420;
+
+function drawGraph() {
+  ctx14.clearRect(0, 0, canvas14.width, canvas14.height);
+  if (graphMode === 'community') {
+    [[185, 195, 140, 90, NASIONAL], [600, 235, 140, 80, LOKAL]].forEach(([cx, cy, rx, ry, col]) => {
+      ctx14.beginPath(); ctx14.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+      ctx14.fillStyle = col + '12'; ctx14.fill();
+      ctx14.strokeStyle = col + '40'; ctx14.lineWidth = 1.5;
+      ctx14.setLineDash([6, 4]); ctx14.stroke(); ctx14.setLineDash([]);
+    });
+  }
+  GE.forEach(([a, b]) => {
+    const pa = GN[a], pb = GN[b];
+    const r = (graphMode === 'pagerank' ? nodeR14(pb) : nodeDR14(pb)) + 2;
+    const cross = pa.comm !== pb.comm;
+    if (cross) { ctx14.setLineDash([4, 4]); }
+    drawArrow(ctx14, pa.x, pa.y, pb.x, pb.y, r, cross ? 'rgba(220,38,38,0.55)' : 'rgba(0,0,0,0.1)', cross ? 1.5 : 1);
+    if (cross) ctx14.setLineDash([]);
+  });
+  GN.forEach(n => {
+    const r = graphMode === 'pagerank' ? nodeR14(n) : nodeDR14(n);
+    drawNode(ctx14, n.x, n.y, r, nodeColor14(n, graphMode), n.short);
+  });
+}
+function setGraphMode(m, btn) {
+  graphMode = m;
+  document.querySelectorAll('.graph-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  drawGraph();
+}
+drawGraph();
+
+// Tables
+const prSorted = [...GN].sort((a, b) => b.pr - a.pr).slice(0, 10);
+const dcSorted = [...GN].sort((a, b) => b.indeg - a.indeg).slice(0, 10);
+
+function buildTable(id, rows, valFn, maxV, color) {
+  const el = document.getElementById(id);
+  let h = '<thead><tr><th>#</th><th>Node</th><th>Score</th><th style="width:80px"></th></tr></thead><tbody>';
+  rows.forEach((n, i) => {
+    const v = valFn(n);
+    const pct = (v / maxV * 100).toFixed(0);
+    const commDot = n.comm === 0 ? NASIONAL : LOKAL;
+    h += `<tr>
+      <td class="rank-num">${i + 1}</td>
+      <td style="font-weight:600;font-size:12px"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:${commDot};display:inline-block;flex-shrink:0"></span>${n.label}</span></td>
+      <td style="font-family:'JetBrains Mono';font-size:11px">${(v * 100).toFixed(2)}%</td>
+      <td><div class="rank-bar"><div class="rank-bar-fill" style="width:${pct}%;background:${color}"></div></div></td>
+    </tr>`;
+  });
+  el.innerHTML = h + '</tbody>';
+}
+buildTable('pr-table', prSorted, n => n.pr, prMax14, LOKAL);
+buildTable('dc-table', dcSorted, n => n.indeg / 27, 13/27, NASIONAL);
+
+// Fade-in observer
+const obs = new IntersectionObserver(e => { e.forEach(x => { if (x.isIntersecting) x.target.classList.add('visible'); }); }, { threshold: 0.08 });
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
